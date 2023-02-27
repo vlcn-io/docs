@@ -245,8 +245,8 @@ We can also perform concurrent edits on each DB and then merge them together. In
 
 <div class="runnable-code">
   <div>
-const db1TrackedPeers = db1.execO(`SELECT quote(site_id) as site, clock FROM crsql_tracked_peers WHERE event = 0`);
-const db2TrackedPeers = db2.execO(`SELECT quote(site_id) as site, clock FROM crsql_tracked_peers WHERE event = 0`);
+const db1TrackedPeers = db1.execO(`SELECT quote(site_id) as site, version FROM crsql_tracked_peers WHERE event = 0`);
+const db2TrackedPeers = db2.execO(`SELECT quote(site_id) as site, version FROM crsql_tracked_peers WHERE event = 0`);
 
 return {
   db1TrackedPeers,
