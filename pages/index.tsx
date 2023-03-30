@@ -1,12 +1,20 @@
+import styles from "@/styles/Home.module.css";
+import Image from "next/image";
+import { useEffect } from "react";
+
 export default function Index() {
+  useEffect(() => {
+    document.querySelector("html")?.classList.add(styles.html);
+    document.querySelector("body")?.classList.add(styles.body);
+  }, []);
   return (
     <>
       <header>
-        <img src="./assets/logo.png" className="logo-img"></img>
+        <img src="/logo.png" className={styles["logo-img"]}></img>
       </header>
-      <section className="hero">
-        <div className="hero-inner">
-          <div className="hero-copy">
+      <section className={styles.hero}>
+        <div className={styles["hero-inner"]}>
+          <div className={styles["hero-copy"]}>
             <h1>Device Sync Simplified</h1>
             <h3>
               Develop multi-device applications that react to changing state in
@@ -27,7 +35,7 @@ export default function Index() {
           </div>
           <div className="sep"></div>
           <div className="hero-img-container">
-            <img src="./assets/hero.png" className="hero-img"></img>
+            <img src="/hero.png" className="hero-img"></img>
           </div>
         </div>
       </section>
@@ -45,10 +53,7 @@ export default function Index() {
       <main>
         <div className="iso-card">
           <div>
-            <img
-              className="replicated"
-              src="assets/isometrics/replicated.png"
-            ></img>
+            <img className="replicated" src="/isometrics/replicated.png"></img>
           </div>
           <div className="sep"></div>
           <div className="iso-cap">
@@ -63,10 +68,7 @@ export default function Index() {
         </div>
         <div className="iso-card">
           <div>
-            <img
-              className="reactive"
-              src="assets/isometrics/reactive.png"
-            ></img>
+            <img className="reactive" src="/isometrics/reactive.png"></img>
           </div>
           <div className="sep"></div>
           <div className="iso-cap">
@@ -80,7 +82,7 @@ export default function Index() {
         </div>
         <div className="iso-card">
           <div>
-            <img src="assets/isometrics/realtime.png"></img>
+            <img src="/isometrics/realtime.png"></img>
           </div>
           <div className="sep"></div>
           <div className="iso-cap">
@@ -93,7 +95,7 @@ export default function Index() {
         </div>
         <div className="iso-card">
           <div>
-            <img src="assets/isometrics/hand-cube.png"></img>
+            <img src="/isometrics/hand-cube.png"></img>
           </div>
           <div className="sep"></div>
           <div className="iso-cap">
@@ -119,7 +121,7 @@ export default function Index() {
       <section className="use"></section>
       <footer>
         <div>
-          <img src="assets/logo.png" width="182"></img>
+          <img src="/logo.png" width="182"></img>
         </div>
         <hr />
         <div className="fsocial">

@@ -1,0 +1,8 @@
+.runnable-code > div:first-child {
+  display: none;
+}
+
+.cm-editor {
+  font-size: 1rem;
+  margin-bottom: 8px;
+}

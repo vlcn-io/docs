@@ -1,0 +1,79 @@
+
+.tbl-contain {
+  text-align: center;
+}
+
+#tbl-a thead tr {
+  background-color: #980000;
+  color: #ffffff;
+  text-align: left;
+}
+
+#tbl-b thead tr {
+  background-color: #0e0098;
+  color: #ffffff;
+  text-align: left;
+}
+
+#tbl-a tbody tr:last-of-type {
+  border-bottom: 2px solid #980000;
+}
+
+#tbl-b tbody tr:last-of-type {
+  border-bottom: 2px solid #0e0098;
+}
+
+.flip-text {
+  transform: scale(-1, 1);
+}
+
+.pair-tables {
+  display: flex;
+  gap: 10px;
+}
+
+.merge-contain {
+  text-align: center;
+}
+
+#tbl-merge {
+  margin-top: 15px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 400px;
+}
+
+#tbl-merge thead tr {
+  background-color: #630098;
+  color: #ffffff;
+  text-align: left;
+}
+
+#tbl-merge tbody tr:last-of-type {
+  border-bottom: 2px solid #630098;
+}
+
+#tbl-merge .a-row {
+  background-color: #9800008c;
+}
+
+#tbl-merge .b-row {
+  background-color: #0e00988a;
+}
+
+.tie-contain {
+  display: flex;
+  gap: 10px;
+}
+
+.ex-tie button {
+  height: 50px;
+}
+
+button:not(:disabled) {
+  cursor: pointer;
+}
+
+.ex-tie label {
+  cursor: pointer;
+}

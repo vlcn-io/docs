@@ -1,6 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;700;900&display=swap");
 
-:root {
+.html {
   --hero-bg: #b9e2f5;
   /* --hero-bg: black; */
   /* --color: white; */
@@ -20,8 +20,8 @@
   --social-fs: 2vw;
 }
 
-html,
-body {
+.html,
+.body {
   margin: 0;
   padding: 0;
   font-family: "Raleway", sans-serif;
@@ -38,11 +38,11 @@ body {
 // 
 */
 
-a {
+.html a {
   color: var(--black);
 }
 
-header {
+.html header {
   background: var(--hero-bg);
   padding-left: var(--hero-leftpad);
   padding-top: 30px;
@@ -133,7 +133,7 @@ header {
   color: var(--color);
 }
 
-main {
+.html main {
   margin-top: 80px;
   margin-left: var(--hero-leftpad);
   margin-right: var(--hero-leftpad);
@@ -221,22 +221,22 @@ main {
   line-height: 24px;
 }
 
-code {
+.html code {
   font-size: 16px;
 }
 
-footer {
+.html footer {
   background: #f0f2f3;
   text-align: center;
   padding: 80px;
   padding-bottom: 30px;
 }
 
-footer > hr {
+.html footer > hr {
   margin-top: 40px;
 }
 
-footer > .fsocial {
+.html footer > .fsocial {
   font-size: 28px;
   margin-top: 40px;
 }
@@ -250,7 +250,7 @@ footer > .fsocial {
 }
 
 @media (max-width: 1600px) {
-  body {
+  .body {
     --hero-leftpad: 4vw;
     --hero-rightpad: 1vw;
     --hero-copy-w: 38vw;
@@ -269,7 +269,7 @@ footer > .fsocial {
 }
 
 @media (max-width: 1200px) {
-  body {
+  .body {
     --hero-leftpad: 5vw;
     --hero-rightpad: 5vw;
     --hero-h1: 6vw;
@@ -289,14 +289,14 @@ footer > .fsocial {
     left: 0;
     right: 0;
     bottom: 0;
-    background-image: url("./assets/hero.png");
+    background-image: url("/hero.png");
     background-repeat: no-repeat;
     background-size: cover;
     width: 100%;
     filter: opacity(0.3) blur(5px);
   }
 
-  main {
+  .html main {
     grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
   }
 
@@ -326,7 +326,7 @@ footer > .fsocial {
 }
 
 @media (max-width: 800px) {
-  body {
+  .body {
     --logo-w: 20vw;
     --hero-h1: 8vw;
     --hero-h3: 3vw;
@@ -336,7 +336,7 @@ footer > .fsocial {
     --social-fs: 4vw;
   }
 
-  main {
+  .html main {
     grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
     gap: 40px;
     margin-top: 40px;
@@ -348,7 +348,7 @@ footer > .fsocial {
 }
 
 @media (max-width: 600px) {
-  body {
+  .body {
     --logo-w: 20vw;
     --hero-h1: 12vw;
     --hero-h3: 4vw;
