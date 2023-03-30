@@ -1,6 +1,12 @@
 import styles from "@/styles/Home.module.css";
 import Image from "next/image";
 import { useEffect } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faDiscord,
+  faTwitter,
+  faGithubAlt,
+} from "@fortawesome/free-brands-svg-icons";
 
 export default function Index() {
   useEffect(() => {
@@ -47,13 +53,13 @@ export default function Index() {
       </section>
       <section className={styles["social"]}>
         <a href="https://github.com/vlcn-io">
-          <i className="fa-brands fa-github-alt"></i>
+          <FontAwesomeIcon icon={faGithubAlt} />
         </a>
         <a href="https://discord.gg/AtdVY6zDW3">
-          <i className="fa-brands fa-discord"></i>
+          <FontAwesomeIcon icon={faDiscord} />
         </a>
         <a href="https://twitter.com/vlcnio">
-          <i className="fa-brands fa-twitter"></i>
+          <FontAwesomeIcon icon={faTwitter} />
         </a>
       </section>
       <main>
@@ -138,13 +144,13 @@ export default function Index() {
         <hr />
         <div className={styles["fsocial"]}>
           <a href="https://github.com/vlcn-io">
-            <i className="fa-brands fa-github-alt"></i>
+            <FontAwesomeIcon icon={faGithubAlt} />
           </a>
           <a href="https://discord.gg/AtdVY6zDW3">
-            <i className="fa-brands fa-discord"></i>
+            <FontAwesomeIcon icon={faDiscord} />
           </a>
           <a href="https://twitter.com/vlcnio">
-            <i className="fa-brands fa-twitter"></i>
+            <FontAwesomeIcon icon={faTwitter} />
           </a>
         </div>
         <div className={styles["copyright"]}>

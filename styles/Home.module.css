@@ -104,7 +104,7 @@
 
 .html .docs-btn {
   background: black;
-  margin-left: 14px;
+  margin-left: 18px;
   color: white;
 }
 
@@ -128,8 +128,8 @@
   padding-bottom: 2vw;
 }
 
-.social i {
-  margin-right: 30px;
+.social a {
+  margin-right: 37px;
   color: var(--color);
 }
 
@@ -242,7 +242,7 @@
 }
 
 .fsocial > a {
-  padding: 20px;
+  padding: 24px;
 }
 
 .copyright {
