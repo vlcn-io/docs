@@ -1,0 +1,1 @@
+- broken link checking: https://github.com/hashicorp/gh-action-check-broken-links

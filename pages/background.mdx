@@ -1,0 +1,27 @@
+import { Callout } from "nextra-theme-docs";
+
+# Background
+
+We want applications:
+
+1. That don't break when the network hiccups
+2. That can sync across devices
+3. Allow users to collaborate
+4. Allow users to view and edit their data while offline
+5. Provide instant interactions
+
+Vulcan is (1) [a database extension](./cr-sqlite/intro) and (2) [a set of integrations](./integrations/intro) to allow you to create these kinds of applications.
+
+## How it Works
+
+> It's like git, for your data.
+
+The [cr-sqlite](./cr-sqlite/intro) component of Vulcan extends sqlite to enable it to merge changes from other databases and resolve conflicting edits. This means that users can write to their local databases and merge those changes with other users or devices whenever a network connection is available.
+
+This capability is the foundation of the (5) features listed above as all of these involve a "merging of edits" problem.
+
+<Callout type="info">
+  For those that want a better understanding of the theory behind Vulcan, see
+  the [deep dive section](./deep-dive/causal-consistency). Otherwise, continue
+  to the getting started section.
+</Callout>

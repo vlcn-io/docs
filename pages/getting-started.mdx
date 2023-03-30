@@ -1,0 +1,36 @@
+# Getting Started
+
+Vulcan is split into a few components:
+
+1. Conflict-free database (vlcn.io/cr-sqlite)
+2. UI Integrations (vlcn.io/react)
+3. Networking
+4. Live query engine
+
+## CR-SQLite
+
+`CR-SQLite` is a SQLite extension that allow sqlite databases to be merged together. This extension can be used independently of all other Vulcan components and loaded into existing SQLite deployments. The extension can be used from any language that has SQLite bindings.
+
+[Get started with CR-SQLite](./cr-sqlite/intro)
+
+## UI Integrations
+
+To prove the concept of a database that syncs and resolves merge conflicts we had to build some demo applications. In that process, we've put together higher level abstractions to interact with the database from JavaScript and React. These integrations are for building React or JavaScript applications that uses the conflict-free database.
+
+[Get started with React](./react/intro)
+
+The UI integration bundles a networking layer but you may choose to bring your own as well.
+
+## Networking
+
+`cr-sqlite` is network agnostic. You can bring whatever transport you like (protobuffs, trpc, websockets, etc.) so long as you follow a few conventions. All that being said, Vulcan also provides a default networking layer.
+
+[Get started with networking](./networking/intro)
+
+## Live Query Engine
+
+To enable applications at scale & extremely time-sensitive interactions, we're building a smart live query (reactive query) engine. This is currently a work in progress but based around the ideas of [segmeent & interval trees](https://stackoverflow.com/questions/17466218/what-are-the-differences-between-segment-trees-interval-trees-binary-indexed-t) and [differential dataflow](https://github.com/TimelyDataflow/differential-dataflow).
+
+The reactive queries available in the React integration are not yet based on this engine. They take a simpler approach of re-running queries when the tables those queries use are updated. We've seen this simple approach work for resolving ~50 concurrent queries in a single frame in the browser but we'd like to do better.
+
+The live query engine will also enable scaling on the server and support multi-tenant use cases.

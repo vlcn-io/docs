@@ -1,7 +1,16 @@
 const withNextra = require("nextra")({
-  theme: "./theme.tsx",
+  theme: "nextra-theme-docs",
+  themeConfig: "./theme.config.jsx",
 });
 
 module.exports = withNextra({
   reactStrictMode: true,
 });
+
+// const withNextra = require("nextra")({
+//   theme: "./theme.tsx",
+// });
+
+// module.exports = withNextra({
+//   reactStrictMode: true,
+// });
