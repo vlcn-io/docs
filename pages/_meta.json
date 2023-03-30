@@ -1,7 +1,8 @@
 {
   "background": {},
   "getting-started": {},
-  "deep-dive": {
-    "title": "Deep Dive"
-  }
+  "cr-sqlite": "CR-SQLite",
+  "react": "React",
+  "deep-dive": "Deep Dive",
+  "concepts": "Concepts"
 }

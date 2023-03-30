@@ -31,6 +31,6 @@ The UI integration bundles a networking layer but you may choose to bring your o
 
 To enable applications at scale & extremely time-sensitive interactions, we're building a smart live query (reactive query) engine. This is currently a work in progress but based around the ideas of [segmeent & interval trees](https://stackoverflow.com/questions/17466218/what-are-the-differences-between-segment-trees-interval-trees-binary-indexed-t) and [differential dataflow](https://github.com/TimelyDataflow/differential-dataflow).
 
-The reactive queries available in the React integration are not yet based on this engine. They take a simpler approach of re-running queries when the tables those queries use are updated. We've seen this simple approach work for resolving ~50 concurrent queries in a single frame in the browser but we'd like to do better.
+The reactive queries available in the React integration are not yet based on this engine. They take a simpler approach of re-running queries when the tables those queries use are updated. We've seen this simple approach work for resolving ~100 concurrent queries in a single frame in the browser but we'd like to do better.
 
 The live query engine will also enable scaling on the server and support multi-tenant use cases.

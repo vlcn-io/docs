@@ -1,0 +1,125 @@
+import { Callout } from "nextra-theme-docs";
+
+# Quickstart
+
+`CR-SQLite` exposes three main APIs.
+
+## [crsql_as_crr](./api-methods/crsql_as_crr)
+
+A function to upgrade existing tables to "conflict free replicated relations", or [crrs](../concepts/crr), for short.
+
+```sql
+SELECT crsql_as_crr('table_name');
+```
+
+## [crsql_changes](./api-methods/crsql_changes)
+
+A virtual table to ask the database for changesets or to apply changesets from another database.
+
+1. Get local changes after version `v`
+
+```sql
+SELECT * FROM crsql_changes WHERE db_version > :v AND site_id IS NULL
+```
+
+2. Get all changes excluding those synced from `some_site` after version `v`
+
+```sql
+SELECT * FROM crsql_changes WHERE db_version > :v AND site_id != :some_site
+```
+
+3. Merge changes in from another peer
+
+```sql
+INSERT INTO crsql_changes VALUES [patches receied from select on another peer]
+```
+
+## [crsql_begin/commit_alter](./api-methods/crsql_begin_alter)
+
+Utilities to aid in schema migrations.
+
+```sql
+-- begin altering `table_name`
+SELECT crsql_begin_alter(:table_name);
+-- any number of schema alterations against `table_name`
+ALTER TABLE table_name ...;
+SELECT crsql_commit_alter(:table_name);
+```
+
+Application code uses the function extension to enable crr support on tables.
+
+Networking code uses the `crsql_changes` virtual table to fetch and apply changes.
+
+<Callout type="info">
+  Why are `SELECT` statements modifying DB state? SQLite doesn't allow us to
+  extend its grammar. This is the simplest way to get what we need given the
+  constraint. libSQL, however, will allow us to extend their grammar. Be on the
+  lookout for a dedicated syntax to create crrs (`CREATE TABLE ... AS CRR`) in
+  the future.
+</Callout>
+
+## 30k Foot View
+
+Usage looks like:
+
+```sql
+-- load the extension if it is not statically linked
+-- this should always be the first operation on the connection
+.load crsqlite
+.mode column
+-- create tables as normal
+create table foo (a primary key, b);
+create table baz (a primary key, b, c, d);
+
+-- update those tables to be crrs / crdts
+select crsql_as_crr('foo');
+select crsql_as_crr('baz');
+
+-- insert some data / interact with tables as normal
+insert into foo (a,b) values (1,2);
+insert into baz (a,b,c,d) values ('a', 'woo', 'doo', 'daa');
+
+-- ask for a record of what has changed
+select * from crsql_changes;
+
+table  pk   cid  val    col_version  db_version  site_id
+-----  ---  ---  -----  -----------  ----------  -------
+foo    1    b    2      1            1           1(�zL
+                                                 \hx
+
+baz    'a'  b    'woo'  1            2           1(�zL
+                                                 \hx
+
+baz    'a'  c    'doo'  1            2           1(�zL
+                                                 \hx
+
+baz    'a'  d    'daa'  1            2           1(�zL
+                                                 \hx
+
+-- merge changes from a peer
+insert into crsql_changes
+  ("table", pk, cid, val, col_version, db_version, site_id)
+  values
+  ('foo', 5, 'b', '''thing''', 5, 5, X'7096E2D505314699A59C95FABA14ABB5');
+insert into crsql_changes ("table", pk, cid, val, col_version, db_version, site_id)
+  values
+  ('baz', '''a''', 'b', 123, 101, 233, X'7096E2D505314699A59C95FABA14ABB5');
+
+-- check that peer's changes were applied
+select * from foo;
+a  b
+-  -----
+1  2
+5  thing
+
+select * from baz;
+a  b    c    d
+-  ---  ---  ---
+a  123  doo  daa
+
+-- tear down the extension before closing the connection
+-- https://sqlite.org/forum/forumpost/c94f943821
+select crsql_finalize();
+```
+
+That was a whirlwind. You can see a [line-by-line breakdown of using cr-sqlite](https://observablehq.com/@tantaman/cr-sqlite-basic-setup) as well as continue [to the tutorials](./guides/merging-databases) & [api documentation](./api-methods/crsql_as_crr).

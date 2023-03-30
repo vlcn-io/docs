@@ -1,0 +1,19 @@
+# crsql_commit_alter
+
+For an end to end overview of migrations, see [migrations](./migrations.html).
+
+`crsql_commit_alter` must be called after alteration against a crr begun with `crsql_begin_alter`.
+
+# Usage:
+
+```sql
+SELECT crsql_commit_alter('table_name');
+```
+
+# Example:
+
+```sql
+SELECT crsql_begin_alter('foo');
+ALTER TABLE foo ADD COLUMN c TEXT;
+SELECT crsql_commit_alter('foo');
+```
