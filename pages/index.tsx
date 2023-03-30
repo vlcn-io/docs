@@ -20,26 +20,32 @@ export default function Index() {
               Develop multi-device applications that react to changing state in
               real-time.
             </h3>
-            <p className="subtext">
+            <p className={styles["subtext"]}>
               VLCN is an open-source library for state management and sync. VLCN
               augments <a href="https://www.sqlite.org/">SQLite</a>, giving it
               the power to merge changes from other peers, notify your
               application of changes, and traverse remote datasets.
             </p>
-            <a href="./waitlist.html" className="action-btn waitlist-btn">
+            <a
+              href="./waitlist.html"
+              className={styles["action-btn"] + " " + styles["waitlist-btn"]}
+            >
               Join The Beta
             </a>
-            <a href="docs/background-concepts" className="action-btn docs-btn">
+            <a
+              href="docs/background-concepts"
+              className={styles["action-btn"] + " " + styles["docs-btn"]}
+            >
               Read the Docs
             </a>
           </div>
-          <div className="sep"></div>
-          <div className="hero-img-container">
-            <img src="/hero.png" className="hero-img"></img>
+          <div className={styles["sep"]}></div>
+          <div className={styles["hero-img-container"]}>
+            <img src="/hero.png" className={styles["hero-img"]}></img>
           </div>
         </div>
       </section>
-      <section className="social">
+      <section className={styles["social"]}>
         <a href="https://github.com/vlcn-io">
           <i className="fa-brands fa-github-alt"></i>
         </a>
@@ -51,12 +57,15 @@ export default function Index() {
         </a>
       </section>
       <main>
-        <div className="iso-card">
+        <div className={styles["iso-card"]}>
           <div>
-            <img className="replicated" src="/isometrics/replicated.png"></img>
+            <img
+              className={styles["replicated"]}
+              src="/isometrics/replicated.png"
+            ></img>
           </div>
-          <div className="sep"></div>
-          <div className="iso-cap">
+          <div className={styles["sep"]}></div>
+          <div className={styles["iso-cap"]}>
             <h1>Replicated</h1>
             <p>
               Replicate and merge state without conflict between multiple
@@ -66,12 +75,15 @@ export default function Index() {
             </p>
           </div>
         </div>
-        <div className="iso-card">
+        <div className={styles["iso-card"]}>
           <div>
-            <img className="reactive" src="/isometrics/reactive.png"></img>
+            <img
+              className={styles["reactive"]}
+              src="/isometrics/reactive.png"
+            ></img>
           </div>
-          <div className="sep"></div>
-          <div className="iso-cap">
+          <div className={styles["sep"]}></div>
+          <div className={styles["iso-cap"]}>
             <h1>Reactive</h1>
             <p>
               As state changes locally or is synced from other devices, your
@@ -80,12 +92,12 @@ export default function Index() {
             </p>
           </div>
         </div>
-        <div className="iso-card">
+        <div className={styles["iso-card"]}>
           <div>
             <img src="/isometrics/realtime.png"></img>
           </div>
-          <div className="sep"></div>
-          <div className="iso-cap">
+          <div className={styles["sep"]}></div>
+          <div className={styles["iso-cap"]}>
             <h1>Real-time</h1>
             <p>
               Break the speed of light by reading and writing data locally;
@@ -93,12 +105,12 @@ export default function Index() {
             </p>
           </div>
         </div>
-        <div className="iso-card">
+        <div className={styles["iso-card"]}>
           <div>
             <img src="/isometrics/hand-cube.png"></img>
           </div>
-          <div className="sep"></div>
-          <div className="iso-cap">
+          <div className={styles["sep"]}></div>
+          <div className={styles["iso-cap"]}>
             <h1>Relational</h1>
             <p>
               You have all the power of SQL at your fingertips, augmented with
@@ -111,20 +123,20 @@ export default function Index() {
           </div>
         </div>
       </main>
-      <section className="examples">
+      <section className={styles["examples"]}>
         <center>
           <h2>
             <a href="docs/getting-started">Get Started</a>
           </h2>
         </center>
       </section>
-      <section className="use"></section>
+      <section className={styles["use"]}></section>
       <footer>
         <div>
           <img src="/logo.png" width="182"></img>
         </div>
         <hr />
-        <div className="fsocial">
+        <div className={styles["fsocial"]}>
           <a href="https://github.com/vlcn-io">
             <i className="fa-brands fa-github-alt"></i>
           </a>
@@ -135,8 +147,8 @@ export default function Index() {
             <i className="fa-brands fa-twitter"></i>
           </a>
         </div>
-        <div className="copyright">
-          Copyright © 2022 One Law LLC, All rights reserved.
+        <div className={styles["copyright"]}>
+          Copyright © 2023 One Law LLC, All rights reserved.
         </div>
       </footer>
     </>
