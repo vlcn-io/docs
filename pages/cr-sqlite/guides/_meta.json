@@ -1,4 +1,5 @@
 {
   "merging-databases": {},
-  "browser-persistence": {}
+  "persistence": {},
+  "browser-tabs": {}
 }

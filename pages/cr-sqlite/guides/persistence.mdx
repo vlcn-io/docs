@@ -29,7 +29,6 @@ window.onbeforeunload = () => {
 await db.exec(
 \`CREATE TABLE IF NOT EXISTS todo (id primary key, "text", completed)\`
 );
-await db.exec("SELECT crsql_as_crr('todo')");
 provide db;`}
 />
 

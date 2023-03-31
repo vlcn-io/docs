@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "links": "blc http://localhost:3000/ -ro"
   },
   "dependencies": {
     "@codemirror/commands": "^6.2.2",
@@ -30,5 +31,8 @@
     "react-json-view": "^1.21.3",
     "react-object-view": "^0.3.4",
     "typescript": "5.0.2"
+  },
+  "devDependencies": {
+    "broken-link-checker": "^0.7.8"
   }
 }

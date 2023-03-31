@@ -1,16 +1,16 @@
 # crsql_begin_alter
 
-For an end to end overview of migrations, see [migrations](./migrations.html).
+For an end to end overview of migrations, see [migrations](../migrations).
 
-`crsql_begin_alter` starts an alteration of a `crr`. If a transaction has not already begun, `crsql_begin_alter` starts one. Any call to `crsql_begin_alter` must be followed by a call to [`crsql_commit_alter`](./crsql_commit_alter.html) after the schema alteration is complete.
+`crsql_begin_alter` starts an alteration of a `crr`. If a transaction has not already begun, `crsql_begin_alter` starts one. Any call to `crsql_begin_alter` must be followed by a call to [`crsql_commit_alter`](./crsql_commit_alter) after the schema alteration is complete.
 
-# Usage:
+## Usage:
 
 ```sql
 SELECT crsql_begin_alter('table_name');
 ```
 
-# Example:
+## Example:
 
 ```sql
 SELECT crsql_begin_alter('foo');

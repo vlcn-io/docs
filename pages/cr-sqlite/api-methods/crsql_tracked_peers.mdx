@@ -6,7 +6,7 @@ This table is useful for authors of custom network / syncing layers. While `crsq
 
 > Coming soon: If you do not want `crsqlite` to do any automatic tracking of peers, provide -1 to the hidden column `tag` of `crsql_changes` when performing an insert. You may also set `tag` to any other nonzero custom value
 
-# Table Structure
+## Table Structure
 
 ```sql
 CREATE TABLE crsql_tracked_peers(
@@ -25,7 +25,7 @@ CREATE TABLE crsql_tracked_peers(
 5. **tag** - used to differentiate sync sets. Tag is set to `0` for whole database syncs. Inserts into `crsql_changes` where tag is set to `-1` will not create tracking events. If you're only syncing subsets of the databse then this tag represents the subset you're syncing, such as an id of a "root node" of some sub-graph. Coming soon -- see [[docs/replicated-subgraphs]]
 6. **event** - 0 for receive events, 1 for send events. Values below 1000 are reserved for `crsqlite`
 
-# Using `crsql_tracked_peer`
+## Using `crsql_tracked_peers`
 
 `crsqlite` automatically inserts & updates this table when processing inserts into `crsql_changes`. On transaction commit, `crsqlite`:
 
@@ -36,7 +36,7 @@ If the user does not provide a `tag` value during insert to `crsql_changes` it i
 
 `crsqlite` only updates `tracked_peers` on receive events and thus always sets event to `0`. Custom sync providers can use this table to track send events by setting the event to `1` on insert.
 
-See the [sync guide](./guide-sync) to understand how to leverage this table when creating a custom sync provider.
+See the [sync guide](../guides/merging-databases) to understand how to leverage this table when creating a custom sync provider.
 
 ## Tag Values
 

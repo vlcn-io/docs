@@ -1,0 +1,113 @@
+import { Callout } from "nextra-theme-docs";
+import RunnableCode from "@/components/RunnableCode";
+
+# Browser Tabs
+
+An amazing benefit of storing your application state in `SQLite` is that you get cross tab sync mostly for free. Let's take a look at how this works.
+
+<Callout type="info">
+  No CRDTs or CRRs are required for cross tab sync given all tabs are operating
+  locally against the same database file. Given that, this guide will mostly
+  cover run of the mill SQLite features.
+</Callout>
+
+Start by importing the cr-sqlite wasm bundle
+
+<RunnableCode
+  code={`const initWasm = await import('https://esm.sh/@vlcn.io/crsqlite-wasm@0.9.1')
+const sqlite = await initWasm.default(() => "https://esm.sh/@vlcn.io/crsqlite-wasm@0.9.1/dist/crsqlite.wasm");
+provide sqlite;`}
+/>
+
+then create a database and table to store our demo state.
+
+<RunnableCode
+  code={`use sqlite;
+const db = await sqlite.open("guide-tabs");
+window.onbeforeunload = () => {
+  return db.close();
+};
+await db.exec(
+  "CREATE TABLE IF NOT EXISTS note (id primary key, content)"
+);
+provide db;`}
+/>
+
+Now lets stick a row in there.
+
+<RunnableCode
+  code={`use db;
+await db.exec(\`INSERT OR IGNORE INTO note VALUES (1, 'Type something');\`);`}
+/>
+
+Next, we'll need a UI to display and update our note. A `textarea` has been added to this document further down so let's attach event listeners to it. In the listener we'll write to the database when the textarea changes.
+
+For a sophisticated editor you'd want to save deltas and not the entire document contents on each edit.
+
+<RunnableCode
+  code={`use db;
+const notepad = document.getElementById("notepad");
+notepad.oninput = () => {
+  return db.exec(\`UPDATE note SET content = '\${notepad.value}' WHERE id = 1\`);
+};
+provide notepad;`}
+/>
+
+Finally, subscribe to database changes. One additional trick we throw in there is to forward db change events to a broadcast channel so other tabs can be made aware when the underlying database has changed.
+
+<RunnableCode
+  code={`use db;
+use notepad;
+const bc = new BroadcastChannel("tabs-demo");
+const onDbUpdate = (
+  updateType,
+  db,
+  tableName,
+  rowid,
+  fromBc
+) => {
+  if (!fromBc) {
+    bc.postMessage({updateType, db, tableName, rowid});
+    return;
+  }
+  if (tableName === "note" && rowid === 1n) {
+    updateNote();
+  }
+};
+bc.onmessage = (msg) => {
+  const data = msg.data;
+  onDbUpdate(data.updateType, data.db, data.tableName, data.rowid, true);
+}
+const updateNote = async () => {
+  const note = await db.execO(
+    "SELECT content FROM note WHERE id = 1"
+  );
+  notepad.value = note[0].content;
+};
+db.onUpdate(onDbUpdate);
+updateNote();`}
+/>
+
+To see that everything works, open this page in multiple tabs or windows and start typing away into the notepad below. You should see the changes propagate to all tabs.
+
+<br />
+<textarea
+  id="notepad"
+  style={{ width: 400, height: 100, background: "#eee" }}
+></textarea>
+
+## Doing Better
+
+This showed you the base primitives (`db.onUpdate` and `BroadcastChannel`) that you can use to keep all tabs in sync. Integrations with React, Svelte and other UI frameworks make this vastly simpler.
+
+For example, in React you can simply do:
+
+```ts
+const allTodos: Todo[] = useQuery<Todo>(
+  ctx,
+  ["todo"],
+  "SELECT * FROM todo ORDER BY id DESC"
+).data;
+```
+
+to subscribe a component to a query. This method is used in the [todomvc example](https://github.com/vlcn-io/live-examples).

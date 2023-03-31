@@ -8,5 +8,6 @@ export default {
     defaultTheme: "light",
     forcedTheme: "light",
   },
+  docsRepositoryBase: "https://github.com/tantaman/vlcn-nextra/blob/main",
   // ...
 };

@@ -2,7 +2,7 @@
 
 `crsql_changes` is a virtual table that can be used to pull a changeset out of the database and/or apply a changeset to the database.
 
-# Table Structure
+## Table Structure
 
 ```sql
 CREATE TABLE crsql_changes(
@@ -24,9 +24,9 @@ CREATE TABLE crsql_changes(
 6. **db_version** - the lamport clock of the database. Used to track whether or not a site has seen changes from another database.
 7. **site_id** - the site responsible for the change
 
-Note: if you migrate the schema of a `crr` without using `crsql_alter_begin` you can end up in a case where tables and columns in a changeset do not exist. The changeset applicator will ignore these but this can lead to a divergence between databases. See the [migrations](./migrations.html) section.
+Note: if you migrate the schema of a `crr` without using `crsql_alter_begin` you can end up in a case where tables and columns in a changeset do not exist. The changeset applicator will ignore these but this can lead to a divergence between databases. See the [migrations](../migrations) section.
 
-# Pulling Changesets
+## Pulling Changesets
 
 To retrieve a changeset from the database you can query the `crsql_changes` table like any other table. The preferred way to do this, however, is as follows:
 
@@ -44,9 +44,9 @@ This query will return all changes from the databse after a provided version and
 
 You may also query against other columns -- such as the table name -- if you are only interested in a subset of changes like those to a given table.
 
-Seen the [sync guide](guide-sync) to learn more about pulling changes from this table.
+Seen the [sync guide](../guides/merging-databases) to learn more about pulling changes from this table.
 
-# Applying Changesets
+## Applying Changesets
 
 The output of
 
