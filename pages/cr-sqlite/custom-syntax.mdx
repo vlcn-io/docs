@@ -1,0 +1,21 @@
+# Custom Syntax
+
+A current eye-sore of CR-SQLite is the use of `SELECT` statements to invoke functions which does some sort of modification of the database schema. Another eye-sore is the requirement to wrap alterations of `crr`s with `crsql_begin/commit_alter`.
+
+Luckily, we're partnering with the folks over at the [libsql](https://libsql.org/) project to add a dedicated syntax for CRR creation and modification.
+
+```sql
+CREATE CLSet post (
+ id INTEGER PRIMARY KEY,
+ views COUNTER,
+ content PERITEXT,
+ owner_id LWW INTEGER
+);
+```
+
+The above defines a CRR where:
+
+- The table is a CLSet ([causal length set](https://dl.acm.org/doi/pdf/10.1145/3380787.3393678))
+- Views is a COUNTER ([distributed counter](https://www.cs.utexas.edu/~rossbach/cs380p/papers/Counters.html))
+- Content is PERITEXT ([collaborative text](https://www.inkandswitch.com/peritext/))
+- owner_id is a LWW register

@@ -2,5 +2,7 @@
   "intro": "Intro",
   "quickstart": "Quickstart",
   "guides": "Guides",
-  "api-methods": "API Methods"
+  "api-methods": "API Methods",
+  "migrations": {},
+  "crdts": "CRDTs"
 }
