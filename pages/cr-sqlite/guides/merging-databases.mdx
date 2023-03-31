@@ -1,0 +1,28 @@
+import RunnableCode from "@/components/RunnableCode";
+
+# Merging Databases
+
+Cell A
+
+<RunnableCode
+  code={`const x = 1;
+provide x;
+return x;`}
+/>
+
+Cell B
+
+<RunnableCode
+  code={`use x;
+const y = x * 2;
+provide y;
+return y;`}
+/>
+
+Cell C
+
+<RunnableCode
+  code={`use x;
+use y;
+return x + y;`}
+/>
