@@ -1,0 +1,57 @@
+import { Callout } from "nextra-theme-docs";
+
+# Migrations
+
+Tables that have been upgraded to `crr`s need some extra handling during schema modification. This is because bookkeeping metadata needs to be migrated as well.
+
+When modifying the schema of a `crr`:
+
+1. Be sure you start that modification with a call to `crsql_begin_alter`
+2. Complete that modification with a call to `crsql_commit_alter`
+
+calls to [`crsql_begin_alter`](./api-methods/crsql_begin_alter) and [`crsql_commit_alter`](./api-methods/crsql_commit_alter) may be nested as well as occur in an outer transaction.
+
+If the alter fails, all levels of transactions and savepoints will be rolled back.
+
+## Usage
+
+```sql
+SELECT crsql_begin_alter('table_name');
+...
+SELECT crsql_commit_alter('table_name');
+```
+
+## Example
+
+```sql
+SELECT crsql_begin_alter('foo');
+ALTER TABLE foo ADD COLUMN c TEXT;
+SELECT crsql_commit_alter('foo');
+SELECT crsql_begin_alter('bar');
+ALTER TABLE bar ADD COLUMN baz TEXT;
+SELECT crsql_commit_alter('bar');
+```
+
+Currently supported schema alterations:
+
+1. add columns
+2. drop columns
+3. rename columns
+4. modifying indices
+
+Support for renaming tables is a work in progress.
+
+## Automatic Migrations
+
+<Callout type="warning">
+  Automatic migrations should only be used during development at this time.
+</Callout>
+
+Automatic migrations work by diffing the current schema of the database with a desired schema.
+Alter table and index statements are automatically generated and applied to the database.
+
+This will be in the v0.10 release and can be accomplished like so:
+
+```sql
+SELECT crsql_migrate('contents of your schema file');
+```
