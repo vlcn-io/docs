@@ -9,6 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@codemirror/commands": "^6.2.2",
+    "@codemirror/lang-javascript": "^6.1.4",
+    "@codemirror/view": "^6.9.3",
     "@fortawesome/fontawesome-svg-core": "^6.4.0",
     "@fortawesome/free-brands-svg-icons": "^6.4.0",
     "@fortawesome/free-solid-svg-icons": "^6.4.0",
@@ -16,6 +19,7 @@
     "@types/node": "18.15.11",
     "@types/react": "18.0.31",
     "@types/react-dom": "18.0.11",
+    "codemirror": "^6.0.1",
     "eslint": "8.37.0",
     "eslint-config-next": "13.2.4",
     "next": "13.2.4",

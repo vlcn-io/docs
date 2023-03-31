@@ -38,7 +38,7 @@ export default function Index() {
               Join The Beta
             </a>
             <a
-              href="docs/background-concepts"
+              href="background"
               className={styles["action-btn"] + " " + styles["docs-btn"]}
             >
               Read the Docs
@@ -131,7 +131,7 @@ export default function Index() {
       <section className={styles["examples"]}>
         <center>
           <h2>
-            <a href="docs/getting-started">Get Started</a>
+            <a href="background">Get Started</a>
           </h2>
         </center>
       </section>
