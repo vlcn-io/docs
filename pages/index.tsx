@@ -11,6 +11,10 @@ export default function Index() {
   useEffect(() => {
     document.querySelector("html")?.classList.add(styles.html);
     document.querySelector("body")?.classList.add(styles.body);
+    return () => {
+      document.querySelector("html")?.classList.remove(styles.html);
+      document.querySelector("body")?.classList.remove(styles.body);
+    };
   }, []);
   return (
     <>

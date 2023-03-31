@@ -1,0 +1,53 @@
+html,
+body {
+  /* background: #fcfcfc; */
+  background: black;
+  color: white;
+  position: relative;
+  overflow-y: hidden;
+}
+
+form {
+  width: 450px;
+  /* margin-top: 200px; */
+
+  padding: 60px;
+  border-radius: 20px;
+  /* box-shadow: 0px 20px 50px rgba(0, 0, 0, 0.02); */
+
+  font-weight: bold;
+  font-size: 32px;
+
+  position: absolute;
+  top: 20px;
+  left: calc(50% - 300px);
+}
+
+form > div {
+  margin-bottom: 10px;
+}
+
+form input {
+  font-size: 24px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  line-height: 30px;
+  padding: 10px;
+  width: 100%;
+  border: 0;
+  outline: none;
+  padding-right: 0px;
+}
+
+.submit {
+  cursor: pointer;
+  width: 200px;
+  float: right;
+}
+
+.astro {
+  position: absolute;
+  top: 500px;
+  right: calc(50% - 320px);
+  width: 100px;
+}

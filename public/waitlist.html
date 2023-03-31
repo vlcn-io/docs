@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>vlcn.io - Moving Software Forward</title>
+  <link rel="stylesheet" href="waitlist.css">
+
+  <meta name="keywords" content="software, schemas, data">
+  <meta name="author" content="Matt Wonlaw">
+  <meta name="copyright" content="© 2023 One Law LLC">
+  <meta name="description"
+    content="Develop with your data model anywhere. Query and load data reactively. Replicate between peers without a central server.">
+  <meta property="og:site_name" content="vlcn.io">
+  <meta property="og:title" content="vlcn - Moving Software Forward">
+  <meta property="og:description"
+    content="Develop with your data model on the client. Query and load data reactively. Replicate between peers without a central server.">
+  <!-- <meta property="og:image" content="https://aphrodite.sh/assets/gods/zeus.png"> -->
+  <meta property="og:image:alt" content="Zeus">
+  <meta property="og:image:width" content="266">
+  <meta property="og:image:height" content="200">
+  <meta name="twitter:card" content="summary_large_image">
+  <!-- <meta name="twitter:image" content="https://aphrodite.sh/assets/gods/zeus.png"> -->
+  <meta name="twitter:image:alt" content="vlcn">
+  <meta name="twitter:site" content="@tantaman">
+  <meta name="twitter:label1" content="Reading time">
+  <meta name="twitter:data1" content="1 minutes">
+  <script src="https://kit.fontawesome.com/a492436217.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+  <canvas id="canvas" style="width: 100%; height: 100%; padding: 0;margin: 0;"></canvas>
+  <script>
+    const canvas = document.getElementById("canvas");
+    const c = canvas.getContext("2d");
+
+    let w;
+    let h;
+
+    const setCanvasExtents = () => {
+      w = window.innerWidth;
+      h = window.innerHeight;
+      canvas.width = w;
+      canvas.height = h;
+    };
+
+    setCanvasExtents();
+
+    window.onresize = () => {
+      setCanvasExtents();
+    };
+
+    const makeStars = count => {
+      const out = [];
+      for (let i = 0; i < count; i++) {
+        const s = {
+          x: Math.random() * 1600 - 800,
+          y: Math.random() * 900 - 450,
+          z: Math.random() * 1000
+        };
+        out.push(s);
+      }
+      return out;
+    };
+
+    let stars = makeStars(10000);
+
+    const clear = () => {
+      c.fillStyle = "black";
+      c.fillRect(0, 0, canvas.width, canvas.height);
+    };
+
+    const putPixel = (x, y, brightness) => {
+      const intensity = brightness * 255;
+      const rgb = "rgb(" + intensity + "," + intensity + "," + intensity + ")";
+      c.fillStyle = rgb;
+      c.fillRect(x, y, 1, 1);
+    };
+
+    const moveStars = distance => {
+      const count = stars.length;
+      for (var i = 0; i < count; i++) {
+        const s = stars[i];
+        s.z -= distance;
+        while (s.z <= 1) {
+          s.z += 1000;
+        }
+      }
+    };
+
+    let prevTime;
+    const init = time => {
+      prevTime = time;
+      requestAnimationFrame(tick);
+    };
+
+    const tick = time => {
+      let elapsed = time - prevTime;
+      prevTime = time;
+
+      moveStars(elapsed * 0.1);
+
+      clear();
+
+      const cx = w / 2;
+      const cy = h / 2;
+
+      const count = stars.length;
+      for (var i = 0; i < count; i++) {
+        const star = stars[i];
+
+        const x = cx + star.x / (star.z * 0.001);
+        const y = cy + star.y / (star.z * 0.001);
+
+        if (x < 0 || x >= w || y < 0 || y >= h) {
+          continue;
+        }
+
+        const d = star.z / 1000.0;
+        const b = 1 - d * d;
+
+        putPixel(x, y, b);
+      }
+
+      requestAnimationFrame(tick);
+    };
+
+    requestAnimationFrame(init);
+  </script>
+  <form action="/api/waitlist" method="post">
+    <div>
+      Name
+    </div>
+    <div>
+      <input type="text" name="name" />
+    </div>
+    <div>
+      Company
+    </div>
+    <div>
+      <input type="text" name="company" />
+    </div>
+    <div>
+      Email
+    </div>
+    <div>
+      <input type="email" required name="email" />
+    </div>
+    <div>
+      <input class="submit" type="submit" value="Submit" />
+    </div>
+  </form>
+
+  <img class="astro" src="/astrounaut.png" />
+</body>
+
+</html>
