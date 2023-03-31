@@ -3,5 +3,10 @@ export default {
   project: {
     link: "https://github.com/vlcn-io/cr-sqlite",
   },
+  darkMode: false,
+  nextThemes: {
+    defaultTheme: "light",
+    forcedTheme: "light",
+  },
   // ...
 };

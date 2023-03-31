@@ -88,7 +88,14 @@ export class CodeNode {
       return [___ret, ${[...this.provides].join(", ")}];
     }`;
 
-    const fn = eval(code);
+    let fn;
+    try {
+      fn = eval(code);
+    } catch (e) {
+      console.log(code);
+      throw e;
+    }
+
     const result = fn(...inputs);
 
     let i = 1;

@@ -1,0 +1,15 @@
+.root {
+  margin-top: 12px;
+}
+
+.editor {
+  /* background: 192830; */
+}
+
+.root pre {
+  margin-top: 12px;
+  padding-left: 0px;
+  background: #192830;
+  padding: 16px;
+  border-radius: 8px;
+}

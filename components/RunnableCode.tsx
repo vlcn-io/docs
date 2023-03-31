@@ -2,6 +2,14 @@ import { useEffect, useRef, useState } from "react";
 import createEditor from "./createEditor";
 import { EditorView } from "codemirror";
 import { CodeNode } from "./CodeNode";
+import { ObjectView } from "react-object-view";
+import styles from "./RunnableCode.module.css";
+
+// import dynamic from "next/dynamic";
+// const ReactJson = dynamic(() => import("react-json-view"), { ssr: false });
+const palette = {
+  base00: "#192830",
+};
 
 export default function RunnableCode({ code }: { code: string }) {
   const editorEl = useRef<HTMLDivElement>(null);
@@ -46,11 +54,15 @@ export default function RunnableCode({ code }: { code: string }) {
   }, [editorEl.current]);
 
   return (
-    <div>
-      <div ref={editorEl}></div>
+    <div className={styles.root}>
+      <div className={styles.editor} ref={editorEl}></div>
       <pre style={{ display: result !== undefined ? "block" : "none" }}>
         <code>
-          {error !== undefined ? error?.message : JSON.stringify(result)}
+          {error !== undefined ? (
+            error?.message
+          ) : (
+            <ObjectView data={{ "": result }} palette={palette} />
+          )}
         </code>
       </pre>
     </div>
