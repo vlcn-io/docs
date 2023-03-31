@@ -1,0 +1,53 @@
+import RunnableCode from "@/components/RunnableCode";
+import DocGlobals from "@/components/DocGlobals";
+import { Callout } from "nextra-theme-docs";
+
+<DocGlobals />
+
+# Persistence
+
+Persistence is as you'd expect -- just provide a file name when opening the database.
+
+An example for browser environments follows below.
+
+Import the required packages and init the wasm:
+
+<RunnableCode
+  code={`const initWasm = await import('https://esm.sh/@vlcn.io/crsqlite-wasm@0.9.1')
+const sqlite = await initWasm.default(() => "https://esm.sh/@vlcn.io/crsqlite-wasm@0.9.1/dist/crsqlite.wasm");
+provide sqlite;`}
+/>
+
+Now create a database. To make it persisted all you need to do is pass in a filename. Omitting the filename runs the database in memory.
+
+<RunnableCode
+  code={`use sqlite;
+const db = await sqlite.open("guide-persistence");
+window.onbeforeunload = () => {
+  return db.close();
+};
+await db.exec(
+\`CREATE TABLE IF NOT EXISTS todo (id primary key, "text", completed)\`
+);
+await db.exec("SELECT crsql_as_crr('todo')");
+provide db;`}
+/>
+
+And finally, write then read some data to check it out:
+
+<RunnableCode
+  code={`use db;
+const items = ['Milk', 'Bread', 'Peas', 'Carrots', 'Lentils', 'Cake', 'Squirrels'];
+await db.exec(
+  \`INSERT INTO todo (id, "text", completed) VALUES (
+    '\${nanoid()}',
+    'Buy \${items[(Math.random() * items.length) | 0]}',
+    0
+  )\`);
+return await db.execO("SELECT * FROM todo");
+`}
+/>
+
+To check that it did indeed persist, refresh this page a few times and see the number of todos grow!
+
+You can also see a more detailed setup guide on ObservableHQ: https://observablehq.com/@tantaman/cr-sqlite-basic-setup
