@@ -1,6 +1,8 @@
 import GSetExample from "@/components/blog/GSetExample";
 import TieBreakExample from "@/components/blog/TieBreakExample";
 import ChangesSinceExample from "@/components/blog/ChangesSinceExample";
+import { Callout } from "nextra-theme-docs";
+import Overflowit from "@/components/blog/Overflowit";
 
 # A Gentle Introduction to CRDTs
 
@@ -249,3 +251,85 @@ In our proxy example:
 You can play with the idea below. Note that each node's local time is just a simple integer counter in this case. Works just as well as (actually better than) system time for our purposes and is a gentle introduction to the next error.
 
 <ChangesSinceExample />
+
+### Error 4: Trusting System Time
+
+You can't trust system time. Even more so in a distributed setting. Multiply that distrust in a distributed setting where internet is spotty. Forget about it in any setting where you do not control the devices.
+
+System time moves with its own rules and breaks many assumptions we have about it.
+
+1. An error [of just .001% in your system clock results in 1 second drift per day](https://www.eecis.udel.edu/~ntp/ntpfaq/NTP-s-sw-clocks.htm). If your clock is not often re-syncing its time, it will get off. Re-syncing can also cause your clock to move backwards if it was ahead.
+2. Users can change their system time resulting in meaningless values and later events getting timestamped before earlier ones
+3. [Introduction of leap seconds](https://engineering.fb.com/2022/07/25/production-engineering/its-time-to-leave-the-leap-second-in-the-past/) which can cause [time to run backwards within a single process](https://blog.cloudflare.com/how-and-why-the-leap-second-affected-cloudflare-dns/).
+4. Different cores on a machine can [have different values for the current system time](https://www.ibm.com/support/pages/clock-moves-backwards-big-old-168817-168816-example).
+
+## About Time
+
+So how do we handle time? CRDTs do not require a notion of time -- it isn't part of the strict mathematical definiton. [Mike Toomim](https://braid.org) has a great quote about how CRDTs collapse time, they remove time from the equation.
+
+Take a grow only set as an example. Time doesn't matter -- the state can always merge and merge at any point even without knowing about time.
+
+Even so, "time" is going to be an important factor in many CRDTs since -
+
+- Users will want to know what happened before what
+- For something like last write wins, we want to know which writes happened before which
+- Time helps figure out deltas between state for efficient syncing
+
+Given we shouldn't trust system time and can't trust it where we're going (distributed, possibly peer to peer, and unknown connectivity) we need to free our mind from the common conception of time.
+
+What we really care about is _what events could have caused what other events_. If two devices _never communicate_ then what transpired on one could not have caused events to transpire on the other (ignoring backchannels). If the devices do communicate then you have a watermark at which to divide what events could have caused (and thus happened before) what other events.
+
+Concretely, if I create a new document on my device but never send it to you then clearly you can't have made edits to that document. We don't need the system clock to tell us that. We can generalize this to everything about participants and events in a network in order to get a stable logical clock that allows us to partially order all events in the system.
+
+That is probably about as clear as mud so let's build a logical clock to understand this a bit better.
+
+## Basic Logical Clock
+
+The simplest logical clock implementation is simply to keep an integer in your process that you increment for every event. Each event gets timestamped with this counter.
+
+<Callout type="info">
+  Because I've had engineers worry about this in the past: a 64bit unsigned
+  integer can be incremented 1 million times a second for 6,000 centuries before
+  overflowing.
+
+```js
+2^64 / (10^6 * 60 * 60 * 24 * 365 * 100) ~= 5,849
+```
+
+  <Overflowit /> (I'll wait...)
+</Callout>
+
+To totally order events within your process, order by that timestamp. To scale this up to many cores, use an atomic integer that you can [compare-and-swap](https://en.wikipedia.org/wiki/Compare-and-swap).
+
+But how can we keep time across many devices? And without coordinating? Or if we're perf sensitive and don't want any contention between cores via a shared atomic int?
+
+## Logical Clocks, Distributed
+
+A distributed logical clock builds upon the basic logical clock. Every node keeps their own independent counter that they increment on their own. The one key change is that whenever two nodes exchange information they also exchange clock values. Each node then sets their internal clock to `max(peer_clock, my_clock) + 1`.
+
+This change lays the foundation for being able to determine what happened before what across many loosely connected peers in a network.
+
+## Happens-before, Explained
+
+This solves the issue of not having a clock in our control. We control the counter since it is internal to whatever software we're deploying. We also know the counter will never run backwards. A surprising thing we now know is that if an event we receive from a peer has a greater clock value than our clock, it must have been a concurrent or later write. It could not be a write that happened before our writes.
+
+That last sentence is probably a head scratcher. Surely a lower logical time on node A could have happened after a larger logical time on node B. In terms of wall time this is true. In terms of causality, it is not. A lower time event on node A could not have been caused by a higher time event on node B. For that to have happened, node A's clock would have to be greater than node B's given we bump local logical clocks forward when nodes communicate.
+
+Alas, clocks deserve their own separate discussion. There are limitations with the described clock and there are better logical clocks with more guarantees to consider and compare against.
+
+Suffice it to say: time, when considered as "what caused what", is best thought of as a [DAG](https://en.wikipedia.org/wiki/Directed_acyclic_graph).
+
+We'll explore this in-depth and implement "event sourced CRDTs" and sequence/text CRDTs atop it. We'll also dive deeper into supporting deletes, sorting, counters, updates of individual columns in a row and more.
+
+Eventually we'll get into the theory and abstract definition of a CRDT.
+
+## Wrapping Up
+
+If you just want CRDTs in your relational database then try `vlcn` and [`cr-sqlite`](https://github.com/vlcn-io/cr-sqlite)! We're solving all of these problems and bringing a simple, declarative and easy to use APIs to `CRDTs`!
+
+```sql
+CREATE TABLE foo (id primary key, bar, baz);
+SELECT crsql_as_crr('foo'); -- (crr means conflict free replicated relation)
+```
+
+We're even thinking about things like foreign key constraints, transactions, garbage collection and more!
