@@ -1,0 +1,47 @@
+# Column CRDTs
+
+In addition to having a data type, a column in a table can be assigned a CRDT type. The assigned CRDT controls how merging of the column is performed.
+
+## LWW
+
+A Last Write Wins register is a register which can hold any primitive value. Multiple writes to the same register by different peers are resolved by taking the last write. If the two writes were concurrent, the largest value is taken.
+
+By default, all columns in a `crr` are treated as last write wins registers.
+
+## Fractional Index
+
+Fractional indices are used to assign a user defined ordering to a row. They work by dividing the space available between two rows and assigning that number to the thing being moved.
+
+| order | item |
+| ----- | ---- |
+| 0.0   | a    |
+| 1.0   | b    |
+
+If we want to insert an item between `a` and `b`, we can divide the space between them by two and assign that number to the new item.
+
+| order | item |
+| ----- | ---- |
+| 0.0   | a    |
+| 0.5   | c    |
+| 1.0   | b    |
+
+Moving is a similar process. If we want to move `b` after `a`, we can divide the space between `a` and `c` by two and assign that number to `b`.
+
+| order | item |
+| ----- | ---- |
+| 0.0   | a    |
+| 0.25  | b    |
+| 0.5   | c    |
+
+CR-SQLite's distributed fractional index primitive takes care of:
+
+1. Allowing nodes to assign orderings without coordinating
+2. Handling precision overflow
+3. Calculating new positions
+4. Handling conflicting ordering assignments
+
+See [api-methods/crsql_fract_as_ordered](/api-methods/crsql_fract_as_ordered) for usage instructions.
+
+## Counter
+
+Counter CRDTs are currently not yet supported.

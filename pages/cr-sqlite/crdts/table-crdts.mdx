@@ -1,0 +1,21 @@
+# Table CRDTs
+
+The type of CRDT chosen for a table controls what rows are included or excluded when merging tables together from different databases.
+
+There are a few basic strategieis:
+
+- Tables can only Grow (Grow Only Set)
+- Tables can grow and shrink, but once a row is deleted it cannot be re-inserted (Delete Wins Set)
+- Tables can grow and shrink, deleted rows can be re-inserted and re-deleted (Causal Length Set)
+
+By default all `crrs` are currently modeled as delete wins sets. A future version of `cr-sqlite` will model all `crrs`` as causal length sets instead. The reason being that is the most generic form upon which any other type can be built in user space.
+
+Today you can implement causal length in user space by using "soft deletion".
+
+1. Add an `is_deleted` column to your table
+2. When you delete a row set `is_deleted` to `true`
+3. When you re-insert a row set `is_deleted` to `false`
+
+Obviously the drawback here is that your reads would need to manually filter out deleted rows.
+
+If you want grow only semantics, install a trigger on your `crr` that prevents deletes. That or don't issue a delete against the table.

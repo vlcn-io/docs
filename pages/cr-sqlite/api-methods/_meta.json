@@ -6,5 +6,6 @@
   "crsql_tracked_peers": "crsql_tracked_peers",
   "crsql_dbversion": "crsql_dbversion",
   "crsql_siteid": "crsql_siteid",
+  "crsql_fract_as_ordered": "crsql_fract_as_ordered",
   "sqlite-apis": "SQLite APIs"
 }
