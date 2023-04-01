@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import styles from "./GSetExample.module.css";
+import styles from "./GentleCrdts.module.css";
 import randomWords from "../randomWords";
 import Tbl from "./Tbl";
 import type { Row } from "./Tbl";

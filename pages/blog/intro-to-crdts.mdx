@@ -1,4 +1,5 @@
 import GSetExample from "@/components/blog/GSetExample";
+import TieBreakExample from "@/components/blog/TieBreakExample";
 
 # A Gentle Introduction to CRDTs
 
@@ -85,3 +86,67 @@ A slightly more useful incarnation of a grow only set is a database table where 
 A table structured in this way can always be written to by separate nodes and merged back together without conflict since it is a grow only set. Use the example below to add rows to different grow-only tables and then merge them together.
 
 <GSetExample />
+
+A grow only table is intereseting but you'll eventually want to do one or more of the following:
+
+1. Modify a row
+2. Run a reduce job over a set of rows to come up with a "view" of some object state
+3. Delete a row
+
+So how can we support all of this in a conflict-free way? Let's look at row modifications first.
+
+The simplest trick for merging rows is to "take the last write." Two people wrote the same row? Take whomever's write is newer. This approach is pretty straightforward but, aside from losing writes, there are ways it can go wrong that are not always apparent.
+
+Looking into the ways it can be incorrectly implemented will help us understand why CRDTs have the properties they do and how to build a correct one.
+
+## Last Write - What Can Go Wrong?
+
+We'll take that "last write wins" is acceptable for the use case as a given. Now let's take some stabs at implementing a grow only table that supports last write replacements of rows.
+
+The first solution would be to timestamp rows with the current system time of the node that did the write. Remember we need nodes to be able to work without internet connectivitiy so we only have access to that node's local clock.
+
+From simplest to most complex, the four common mistakes in a last write wins setup are:
+
+1. Forgetting to update the loser's timestamp
+2. Having the wrong tie breaker for concurrent edits
+3. "Clock Pushing" when one node proxies another
+4. Trusting system time!
+
+### Error 1: Forgetting to Update the Loser's Timestamp
+
+When a node merges with another node and they both changed the same row, we'll take the row with the highest clock value. This can go wrong if we forget to update the timestamp of the row along with all the other values in that row. I.e., if we don't fully replace the losing node's row with the winning node's row.
+
+**Node A:**
+
+| id  | content | time     |
+| --- | ------- | -------- |
+| x   | this    | 13:01:01 |
+
+**Node B:**
+
+| id  | content | time     |
+| --- | ------- | -------- |
+| x   | that    | 12:00:00 |
+
+A\<-\>B merge and say B does not update the time for it's row to match the max between A's row time and B's row time.
+
+**Node B, after incorrect merge:**
+
+| id  | content  | time                                         |
+| --- | -------- | -------------------------------------------- |
+| x   | **this** | <span style={{color: "red"}}>12:00:00</span> |
+
+Now if Node C comes along with a modificaiton to the same row, but at time 12:30, it'll overwrite the current value. This, however, isn't the last write since A's write was later. We now have an inconsistent state.
+
+This is a trivial bug but covering it will help to understand logical clocks. To reiterate, the correct solution is to take the whole row including timestamp.
+
+### Error 2: Forgetting & Inconsistent Tie Breaking
+
+This error is about not having a correct tie breaker for concurrent edits. It is possible that two processes provide the exact same time for an update. If you do not handle this case in a specific way you will end up with divergent state between processes.
+
+Maybe concurrent edits are unlikely in your case but:
+
+1. You should never rule them out and
+2. We need to cover it since the 4th error, and solving the 4th error, will make this one more likely.
+
+<TieBreakExample />

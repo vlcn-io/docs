@@ -1,6 +1,6 @@
 export type Row = { id: string; content: string; classname?: string };
 import React from "react";
-import styles from "./GSetExample.module.css";
+import styles from "./GentleCrdts.module.css";
 
 export default function Tbl({ rows }: { rows: Row[] }) {
   return (
@@ -13,7 +13,7 @@ export default function Tbl({ rows }: { rows: Row[] }) {
       </thead>
       <tbody>
         {rows.map((row) => (
-          <tr className={row.classname}>
+          <tr className={row.classname} key={row.id}>
             <td>{row.id}</td>
             <td>{row.content}</td>
           </tr>

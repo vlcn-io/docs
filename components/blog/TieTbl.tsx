@@ -1,12 +1,17 @@
 import React from "react";
+import styles from "./GentleCrdts.module.css";
 
-export default function TieTbl(row: {
-  id: string;
-  content: string;
-  time: string;
+export default function TieTbl({
+  row,
+}: {
+  row: {
+    id: string;
+    content: string;
+    time: string;
+  };
 }) {
   return (
-    <table>
+    <table className={styles.table}>
       <thead>
         <tr>
           <th>id</th>
