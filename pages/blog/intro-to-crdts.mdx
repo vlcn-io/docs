@@ -1,0 +1,87 @@
+import GSetExample from "@/components/blog/GSetExample";
+
+# A Gentle Introduction to CRDTs
+
+Conflict Free Replicated Data types (CRDTs) can be tricky. You may spend months reading papers and implementing different algorithms before they finally click and become simple. That or they'll seem simple out of the gate and you'll be missing a bunch of nuance.
+
+What follows is an attempt at distilling all the hard understanding work into a condensed and easy to understand set of reading for a software developer without any background in CRDTs or distributed systems.
+
+Outline of what's to come:
+
+1. The quick definition of a CRDT
+2. When you need a CRDT
+3. More About What a CRDT is
+4. A Simple CRDT
+5. Last Write Wins & What Can Go Wrong
+6. Getting More Complicated and Rethinking Time
+
+## Quick Definition
+
+From Wikipedia:
+
+> A CRDT is a data structure that is replicated across multiple computers in a network, with the following features:
+>
+> 1. The application can update any replica independently, concurrently and without coordinating with other replicas.
+> 2. An algorithm (itself part of the data type) automatically resolves any inconsistencies that might occur.
+> 3. Although replicas may have different state at any particular point in time, they are guaranteed to eventually converge.
+
+We'll clarify and expand on this definition later.
+
+## When you need a CRDT
+
+CRDTs are needed in situations where you want multiple processes to modify the same state without coordinating their writes to that state.
+
+Imagine a situation where you have a shared business document. Ideally you, and others, can modify your copies of that document even when internet access is down. When internet is restored, you and your peer's changes can all be merged together without conflict.
+
+![shared-business-doc](/blog/gentle-intro-to-crdts/business-doc-central.png)
+
+Even in situations where you do have excellent connectivity, CRDTs are useful to present a realtime experience to users. CRDTs allow all writes to be processed locally and merged with remote nodes later rather than requiring round-trips to a server for every write.
+
+![realtime-ex](/blog/gentle-intro-to-crdts/realtime-ex.png)
+
+Lastly, CRDTs can be merged in any order so changes don't need to go through a central server. This allows truly "serverless" setups where every node is a peer on equal footing, able to merge state with any other peer at any time.
+
+![shared-business-doc](/blog/gentle-intro-to-crdts/business-doc-p2p.png)
+
+What I'm describing here is very similar to decentralized version control (e.g., git and mercurial). In git, you commit locally and eventually merge and push your changes into a remote repository. Unlike git, CRDTs don't have merge conflicts. Conflict resolution is handled by the CRDT algorithm itself. Although not exactly a CRDT, git will be a useful model to refer back to since it is something already familiar to most developers and incorporates similar concepts.
+
+We're not yet ready to tackle the complexities of git so let's start with understanding what a CRDT is and then looking at one of the simplest crdts.
+
+## What is a CRDT?
+
+I'll skip the mathematical definition (lattice, join, meet, etc.) for now and focus on a practical definition.
+
+A CRDT is a data type that can be:
+
+1. Copied to multiple machines
+2. Be modified independently by those machines without any coordination and for any length of time
+3. All divergent copies of that state can be merged back together in any order and by any machine. Once all machines have seen all divergent copies, they're guaranteed to have all converged to the same final state.
+
+> The last point is important given it allows peer to peer merging of state rather than requiring merges to go through a central server. We'll come back to this to understand why algorithms which rely on merging state in a cetnralized way can't always be applied in a peer to peer setting.
+
+Going back to git, it's the same as giving every developer a copy of the repository and allowing each developer to make changes locally. At the end of the day, every developer in an organization can merge changes with every other developer however they like: pair-wise, round-robin, or through a central repository. Once all merges are complete, every developer will have the same state (assuming merge conflicts were deterministically resolved). Unlike git, a CRDT wouldn't hit merge conflicts and can merge out of order changes.
+
+Let's see how this actually works and how you can implement it in the large (full blown applications) and in the small (individiual fields in a record).
+
+## A Simple CRDT
+
+One of the simplest CRDTs is a set that can only grow. A set being defined as:
+
+1. An unordered collection of elements
+2. Each element in the collection is distinct
+3. Adding an element to a set that is already in the set does not change the set
+
+So your normal `Set` type in Java/JavaScript/Python/etc.
+
+A set that only grows is a CRDT since:
+
+1. You can give a copy of that set to any number of nodes
+2. Each node can add any elements it likes to its copy of the set
+3. All sets from all nodes can be merged back together in any order
+4. Once all merges are complete, all nodes will have the same set (the union of all individual sets)
+
+A slightly more useful incarnation of a grow only set is a database table where each row is keyed by a UUID (tangent: [use uuidv7 for primary keys](https://blog.devgenius.io/analyzing-new-unique-identifier-formats-uuidv6-uuidv7-and-uuidv8-d6cc5cd7391a)) and only inserts are allowed (no updates or deletes).
+
+A table structured in this way can always be written to by separate nodes and merged back together without conflict since it is a grow only set. Use the example below to add rows to different grow-only tables and then merge them together.
+
+<GSetExample />

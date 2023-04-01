@@ -1,1 +1,9 @@
 # Constraints
+
+Tables that have been upgraded to `crrs` may not have:
+
+1. Foreign key Constraints
+2. Unique constraints that are not the primary key
+3. Check constraints
+
+While there are techniques that allow preserving foreign keys, even under conditions created by eventual consistency, they all have nuanced tradeoffs. Throwing out these constraints for `crrs` is something that is clear and keeps the model easy to undestand.

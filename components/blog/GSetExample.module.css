@@ -1,0 +1,115 @@
+.table {
+  text-align: left;
+  border-collapse: collapse;
+  margin: 10px 0;
+  width: 400px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}
+
+.table thead tr {
+  background-color: #009879;
+  color: #ffffff;
+  text-align: left;
+}
+
+.table th,
+.table td {
+  padding: 12px 15px;
+}
+
+.table tbody tr {
+  border-bottom: 1px solid #dddddd;
+}
+
+.table tbody tr:nth-of-type(even) {
+  background-color: #f3f3f3;
+}
+
+.tbl_contain {
+  text-align: center;
+}
+
+.tbl_a thead tr {
+  background-color: #980000;
+  color: #ffffff;
+  text-align: left;
+}
+
+.tbl_b thead tr {
+  background-color: #0e0098;
+  color: #ffffff;
+  text-align: left;
+}
+
+.tbl_a tbody tr:last-of-type {
+  border-bottom: 2px solid #980000;
+}
+
+.tbl_b tbody tr:last-of-type {
+  border-bottom: 2px solid #0e0098;
+}
+
+.flip_text {
+  transform: scale(-1, 1);
+}
+
+.pair_tables {
+  display: flex;
+  gap: 10px;
+}
+
+.merge_contain {
+  text-align: center;
+}
+
+.tbl_merge {
+  margin-top: 15px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 400px;
+}
+
+.tbl_merge thead tr {
+  background-color: #630098;
+  color: #ffffff;
+  text-align: left;
+}
+
+.tbl_merge tbody tr:last-of-type {
+  border-bottom: 2px solid #630098;
+}
+
+.tbl_merge .a_row {
+  background-color: #9800008c !important;
+}
+
+.tbl_merge .b_row {
+  background-color: #0e00988a !important;
+}
+
+.tie-contain {
+  display: flex;
+  gap: 10px;
+}
+
+.ex_tie button {
+  height: 50px;
+}
+
+.btn {
+  background-color: #009879;
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 15px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.btn button:not(:disabled) {
+  cursor: pointer;
+}
+
+.ex_tie label {
+  cursor: pointer;
+}
