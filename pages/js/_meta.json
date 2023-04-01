@@ -1,8 +1,7 @@
 {
   "wasm": "WASM",
   "nodejs": "Node JS",
-  "vanilla-js": {},
-  "react": {},
+  "react": "UI - React",
   "syncing": {},
   "example-apps": {}
 }

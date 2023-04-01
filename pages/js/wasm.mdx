@@ -1,0 +1,360 @@
+import { Callout } from "nextra-theme-docs";
+
+# WASM
+
+Vulcan provides a wasm build of `cr-sqlite` that can be used in browser environments. In WebWorkers, the UI Thread, ServiceWorker and SharedWorkers.
+
+> Each of the [cr-sqlite guides](/cr-sqlite/guides/merging-databases) leverages the WASM build to provide working examples in the browser.
+
+The WASM build of `cr-sqlite` is available on [npm](https://www.npmjs.com/package/@vlcn.io/crsqlite-wasm) and [esm.sh](https://esm.sh/@vlcn.io/crsqlite-wasm).
+
+## Basic Usage
+
+<Callout type="info">
+The `wasmUrl` import assumes you are using a bundler which understands the `?url` import syntax (such as [vite](https://vitejs.dev/)).
+</Callout>
+
+Install the package:
+
+```bash
+> npm install @vlcn.io/crsqlite-wasm
+```
+
+Import the package:
+
+```js
+import initWasm from "@vlcn.io/crsqlite-wasm";
+import wasmUrl from "@vlcn.io/crsqlite-wasm/crsqlite.wasm?url";
+```
+
+Use it:
+
+```js
+const sqlite = await initWasm(wasmUrl);
+const db = await sqlite.open("my_database.db");
+```
+
+For more examples, see this annotated notebook of using `cr-sqlite` in the browser: https://observablehq.com/@tantaman/cr-sqlite-basic-setup
+
+More guides:
+
+- [Merging databases](/cr-sqlite/guides/merging-databases)
+- [Persistence](/cr-sqlite/guides/persistence)
+- [Browser tab sync](/cr-sqlite/guides/browser-tabs)
+
+## API Docs
+
+### initWasm
+
+Initializes the wasm module. Returns the top level SQLite API.
+
+```ts
+initWasm(wasmUrl: string): Promise<SQLite>;
+```
+
+**Params:**
+
+1. wasmUrl - points to where to fetch the wasm file from.
+
+**Example:**
+```ts
+import initWasm from "@vlcn.io/crsqlite-wasm";
+import wasmUrl from "@vlcn.io/crsqlite-wasm/crsqlite.wasm?url";
+
+const sqlite = await initWasm(wasmUrl);
+```
+
+
+### SQLite::open
+
+Opens a database connection.
+
+```ts
+function open(path?: string): Promise<DB>;
+```
+
+**Params:**
+
+1. path - the path to the database file. If not provided, an in-memory database will be created.
+
+**Example:**
+```ts
+const db = await sqlite.open("my_database.db");
+```
+
+### DB::exec
+
+Executes a SQL statement. Returns a promise that resolves when the statement has been executed. Returns no value. See execO and execA to receive values back. Rejects the promise on failure.
+
+For better perfromance, preparing your queries is recommended.
+
+```ts
+function exec(sql: string, bind?: SQLiteCompatibleType[]): Promise<void>;
+```
+
+**Params:**
+1. sql - the sql to execute
+
+**Example:**
+```ts
+await db.exec("CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT)");
+```
+
+### DB::execO
+
+Executes a SQL statement, returning the selected rows as objects.
+
+```ts
+function execO<T extends {}>(sql: string, bind?: SQLiteCompatibleType[]): Promise<T[]>;
+```
+
+**Params:**
+1. sql - the sql to execute
+2. bind - optional array of values to bind to the query
+
+**Example:**
+```ts
+const users = await db.execO<{ id: bigint, name: string }>("SELECT * FROM users");
+```
+
+### DB::execA
+
+The same as `execO` but returns the results as arrays rather than objects.
+
+```ts
+function execO<T extends any[]>sql: string, bind?: SQLiteCompatibleType[]): Promise<T[]>;
+```
+
+**Example:**
+```ts
+const users = await db.execA<[bigint, string]>("SELECT * FROM users");
+```
+
+### DB::execMany
+
+Executes multiple SQL statements. Returns a promise that resolves when all statements have been executed. Returns no value. Rejects the promise on failure.
+
+```ts
+function execMany(sql: string[]): Promise<void>;
+```
+
+**Params:**
+1. sql - the sql to execute
+
+**Example:**
+```ts
+await db.execMany([
+  `CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT);`,
+  `CREATE TABLE posts (id INTEGER PRIMARY KEY, user_id INTEGER, title TEXT);`,
+]);
+```
+
+### DB::prepare
+
+Prepares a statement that is intended to be re-used. This can significantly improve performance for queries that are frequently executed as the query planning step is only run a single time rather than each time the query is run.
+
+<Callout type="warning">
+  Prepared statements must be finalized (see Stmt::finalize)! Not doing so will result in a memory leak. Future versions may include auto-finalization of prepared statements.
+</Callout>
+
+```ts
+function prepare(sql: string): Promise<Stmt>;
+```
+
+**Params:**
+1. sql - the sql to prepare
+
+**Example:**
+```ts
+const stmt = await db.prepare("SELECT * FROM users WHERE id = ?");
+```
+
+### DB::tx
+
+Executes the provided lambda in a transaction. Aside from making sure writes happen atomically and reads are isolated, transactions also provide a significant performance boost.
+
+Wrapping a batch of reads or a batch of writes into a transaction will be an order of magnitude quicker than executing them outside of a transaction. This is due to the fact that SQLite implicitly opens and closes a transaction for each query if it is not already part of one. Grouping queries into a transaction eliminates this extra overhead for each query.
+
+<Callout type="info">
+  The React `useQuery` hook will do this batching for you on read.
+</Callout>
+
+<Callout type="warning">
+  You must use the provided `tx` passed to the lambda to execute queries in the transaction. Failing to do so will deadlock the database.
+</Callout>
+
+
+```ts
+function tx<T>(fn: (tx: TXAsync) => Promise<T>): Promise<T>;
+```
+
+**Params:**
+1. fn - the lambda to execute in a transaction. The lambda is passed a `TXAsync` instance which is identical to `DB` except that it is intended to be used within a transaction to execute queries.
+
+**Example:**
+```ts
+await db.tx(async (tx) => {
+  await tx.exec("INSERT INTO users (name) VALUES ('Alice')");
+  await tx.exec("INSERT INTO users (name) VALUES ('Bob')");
+});
+```
+
+**Example with a prepared statement:**
+```ts
+// statements can be prepared outside the tx if desired
+const stmt = await db.prepare("INSERT INTO users (id, name) VALUES (?, ?)");
+
+await db.tx(async (tx) => {
+  // run the statement with the tx
+  await stmt.run(tx, [shortuuid(), "Alice"]);
+  await stmt.run(tx, [shortuuid(), "Bob"]);
+});
+
+await stmt.finalize(null);
+```
+
+### DB::close
+
+Close the database.
+
+```ts
+function close(): Promise<void>;
+```
+
+**Example:**
+```ts
+await db.close();
+```
+
+### DB::onUpdate
+
+Register for update notifications whenever a row is inserted, updated, or deleted. See the sqlite [update_hook docs](https://www.sqlite.org/c3ref/update_hook.html) for more information.
+
+Unlike the sqlite update_hook, however, any number of callbacks may be registered. Each callback will be called in the order it was registered.
+
+```ts
+function onUpdate(fn: (type: UpdateType, dbName: string, tblName: string, rowid: bigint) => void): void;
+```
+
+<Callout type="info">
+  `onUpdate` will eventually be superseeded by a native reactive query layer that allows you to subscribe to specific queries. A proof of concept implementation of this is available in the `react` integration via the `useQuery` hook.
+</Callout>
+
+**Params:**
+1. fn - the callback to register
+
+**Example:**
+```ts
+db.onUpdate((type, dbName, tblName, rowid) => {
+  console.log(`row ${rowid} in ${dbName}.${tblName} was ${type}`);
+});
+```
+
+### Stmt::run
+
+Runs the statement, returning nothing. See `get` and `all` for variants that return data.
+
+```ts
+function run(tx: TXAsync | null, ...bind?: SQLiteCompatibleType[]): Promise<void>;
+```
+
+**Params:**
+1. tx - the transaction to run the statement in. null will run the statement against the root database.
+2. bind - optional values to bind to the query
+
+**Example:**
+```ts
+const stmt = await db.prepare("INSERT INTO users (id, name) VALUES (?, ?)");
+await stmt.run(null, [shortuuid(), "Alice"]);
+await stmt.run(null, [shortuuid(), "Bob"]);
+```
+
+### Stmt::get
+
+Runs the statement, returning the first row as an object.
+
+```ts
+function get<T extends {}>(tx: TXAsync | null, ...bind?: SQLiteCompatibleType[]): Promise<T | null>;
+```
+
+**Params:**
+1. tx - the transaction to run the statement in. null will run the statement against the root database.
+2. bind - optional values to bind to the query
+
+**Example:**
+```ts
+const stmt = await db.prepare("SELECT * FROM users WHERE id = ?");
+const user = await stmt.get<{ id: bigint, name: string }>(null, [id]);
+```
+
+### Stmt::all
+
+Runs the statement, returning all rows as an array of objects.
+
+```ts
+function all<T extends {}>(tx: TXAsync | null, ...bind?: SQLiteCompatibleType[]): Promise<T[]>;
+```
+
+**Params:**
+1. tx - the transaction to run the statement in. null will run the statement against the root database.
+2. bind - optional values to bind to the query
+
+**Example:**
+```ts
+const stmt = await db.prepare("SELECT * FROM users");
+const users = await stmt.all<{ id: bigint, name: string }>(null);
+```
+
+### Stmt::raw
+
+Toggle raw mode. When on the statement will return arrays of arrays rather than arrays of objects.
+
+Note: an API that mutates an object to change its behavior is not good. This will be changed in a future release and was only added for compatibility with [better-sqlite3](https://www.npmjs.com/package/better-sqlite3).
+
+```ts
+function raw(isRaw?: boolean): this;
+```
+
+**Params:**
+1. isRaw - whether to enable raw mode. If not provided, raw mode will be disabled.
+
+### Stmt::bind
+
+Bind values to the prepared statement.
+
+```ts
+function bind(args: SQLiteCompatibleType[]): this;
+```
+
+**Params:**
+1. bind - values to bind to the query
+
+**Example:**
+```ts
+const stmt = await db.prepare("SELECT * FROM users WHERE id = ?");
+stmt.bind([id]);
+const user = await stmt.get<{ id: bigint, name: string }>(null);
+```
+
+### Stmt::finalize
+
+Reclaims the resources used by the prepared statement. Must be called when you are done with the statement in order to prevent resource leaks. Future versions may [hook this up to the garbage collector](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/FinalizationRegistry) to prevent leaks automatically.
+
+```ts
+function finalize(tx: TXAsync | null): Promise<void>;
+```
+
+**Params:**
+1. tx - If you prepares the statement within a transaction and want to finalize it in the same transaction, pass that transaction in here. Use null otherwise. Generally you should prepare and finalize statements against the root db rather than in a transaction. Statements prepared at the root can still be used inside of transactions.
+
+**Example:**
+```ts
+const stmt = await db.prepare("INSERT INTO users (id, name) VALUES (?, ?)");
+await stmt.run(null, [shortuuid(), "Alice"]);
+await stmt.run(null, [shortuuid(), "Bob"]);
+await stmt.finalize(null);
+```
+
+### TXAsync
+
+All methods available on `DB` are also avaialble on `TXAsync`. The only difference is that `TXAsync` is intended to be used within a transaction.

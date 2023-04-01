@@ -2,8 +2,11 @@
   "background": {},
   "getting-started": {},
   "cr-sqlite": "CR-SQLite",
-  "js": "JavaScript",
+  "js": {
+    "title": "JavaScript",
+    "display": "hidden"
+  },
   "deep-dive": "Deep Dive",
   "concepts": "Concepts",
-  "blog": "Articles"
+  "articles": "Articles"
 }
