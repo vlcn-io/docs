@@ -1,4 +1,5 @@
 import React from "react";
+import styles from "./GentleCrdts.module.css";
 
 export default function PushTbl({
   rows,
@@ -6,12 +7,12 @@ export default function PushTbl({
   rows: {
     id: string;
     content: string;
-    row_time: string;
-    local_row_time: string;
+    row_time: number;
+    local_row_time: number;
   }[];
 }) {
   return (
-    <table>
+    <table className={styles.table}>
       <thead>
         <tr>
           <th>id</th>
@@ -23,7 +24,7 @@ export default function PushTbl({
       <tbody>
         {rows.map((row) => {
           return (
-            <tr>
+            <tr key={row.id}>
               <td>{row.id}</td>
               <td>{row.content}</td>
               <td>{row.row_time}</td>

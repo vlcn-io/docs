@@ -1,5 +1,6 @@
 import GSetExample from "@/components/blog/GSetExample";
 import TieBreakExample from "@/components/blog/TieBreakExample";
+import ChangesSinceExample from "@/components/blog/ChangesSinceExample";
 
 # A Gentle Introduction to CRDTs
 
@@ -150,3 +151,101 @@ Maybe concurrent edits are unlikely in your case but:
 2. We need to cover it since the 4th error, and solving the 4th error, will make this one more likely.
 
 <TieBreakExample />
+
+The two common ways of getting the tie breaker wrong when there are concurrent edits are:
+
+1. Forgetting about tie breaking entirely
+2. Always taking a peer's value on concurrent edit
+
+I.e.,
+
+**Forgetting (Always Rejecting)**
+
+```javascript
+// we forgot the `peer_time == my_time` case!
+// We are always rejecting the peer_value on concurrent writes.
+if (peer_time > my_time) {
+  my_value = peer_value;
+}
+```
+
+and
+
+**Always Taking**
+
+```javascript
+// Better but also unsafe. Always taking the peer_value on concurrent writes.
+if (peer_time >= my_time) {
+  my_value = peer_value;
+}
+```
+
+To solve this there are two options:
+
+1. Choose the greatest value when there are concurrent edits
+2. Choose the value from the node with the largest node name
+
+Going with option (1), all nodes will choose `z` as the winner (`z > b > a`).
+
+Going with option (2), all nodes will choose `a` as the winner (`node name C > node name B > node name A`).
+
+> You can test each strategy by trying out the example above -
+>
+> 1. Choose a tie breaker
+> 2. Merge every node's state into every other node's
+> 3. No matter what order you merge things, the end result will be convergence except in the always reject and always take cases. Always reject will never converge. Always take will converge or not converge depending on the order in which peers merge.
+
+Always take is somewhat subtle. To make it fail to converge in the example:
+
+1. Merge **C** into **A**
+2. Merge **B** into **A**
+3. Merge **A** into **B**
+4. Merge **C** into **B**
+5. Your last two choices don't matter. You're already inconsistent.
+
+### Error 3: Clock Pushing when Proxying Changes
+
+This isn't strictly related to last write wins but will come up when you want to start syncing partial updates from a source to a destination. As in, sync all changes that haven't already been synced.
+
+To do this, you'll need a way to figure out all changes a node has that you do not have. The simple way is to record the max timestamp from a node that you have merged with. Next time you merge, you ask for all rows after that timestamp.
+
+![record-max](/blog/gentle-intro-to-crdts/record-max.png)
+
+This, however, can break when nodes acts as proxies for other nodes in the network.
+
+![proxy-push](/blog/gentle-intro-to-crdts/proxy-push.png)
+
+Imagine this case:
+
+- Node A has all changes from node B up and until `12:00:00`,
+- Node B receives changes from node C which includes rows created prior to `12:00:00` since B hasn't synced with C in some time.
+- Node A now wants all changes from B again but asks for changes _after_ `12:00:00` since it thinks it already has all changes up to that time.
+
+If A will eventually talk to C on its own, this may not be a problem. If B is going to proxy changes from C and forward them to A, this will be a problem. A will not ask for the old rows B received from C since A believes it is up to date with B up to `12:00:00`.
+
+So what can we do?
+
+An incorrect solution is to "clock push" -- to record the timestamp for the row as being `max(current_time, row_time)`. This makes old writes look new and starts breaking merges down the line.
+
+A correct solution is to retain two timestamps for a row:
+
+- The time the row was written (created or updated) by whomever wrote it. We'll call this `row_time`
+- The local time of the process upon reception of or local modification of the row. We'll call this `local_row_time`
+
+The latter timestamp can be used to track `changes_since` and is always set to current time whenever a row is inserted or updated on a node -- either via local update or sync. The former timestamp is used for merging.
+
+| id  | content | row_time | local_row_time |
+| --- | ------- | -------- | -------------- |
+| x   | foo     | 13:00:00 | 14:00:00       |
+| y   | bar     | 12:00:00 | 14:30:00       |
+| z   | baz     | 13:04:01 | 13:20:32       |
+
+In our proxy example:
+
+1. When B receives new rows from C, it tags all those rows' `local_row_time` column with current time.
+2. When A wants changes from B, it tracks `changes_since` by recording the largest `local_row_time` it has seen from B
+3. Merging is done via `row_time` so last write semantics are still corretly respected.
+
+You can play with the idea below. Note that each node's local time is just a simple integer counter in this case. Works just as well as (actually better than) system time for our purposes and is a gentle introduction to the next error.
+
+<ChangesSinceExample />
