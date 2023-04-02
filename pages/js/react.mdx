@@ -4,47 +4,220 @@ import RunnableCode from "@/components/RunnableCode";
 # React
 
 <Callout type="info">
-We're currently buidling something like "create-react-app" for vulcan to quickly scaffold a project. Till then, you can read the interactive guide here.
+We're currently buidling a "create-react-app" for vulcan to quickly scaffold a new project. Till then, you can read the interactive example below and view the [example repository](https://github.com/vlcn-io/live-examples/).
 </Callout>
 
 The react integration is provided by the [@vlcn.io/react](https://www.npmjs.com/package/@vlcn.io/react) package and centers around a `useQuery` hook that allows you to subscribe to a query and get the data in your component.
 
-## Installation & Usage
+## Installation
+
+Install:
 
 ```bash
-> npm install @vlcn.io/react
+> npm install @vlcn.io/react @vlcn.io/rx-tbl
 ```
+
+Import:
 
 ```js
 import { useQuery } from "@vlcn.io/react";
+import tblrx from "@vlcn.io/rx-tbl";
 ```
 
-## Example
+## API
 
-<Callout type="info">
-Below is a live/notebook style example. You can modify code in any cell and press `shift + enter` to run it.
+### useQuery
 
-The live example is different from a real app in two ways:
-1. Cells use `dynamic` imports rather than regular imports. In your app, you can use regular imports.
-2. Cells use `use` and `provide` statements. These allow cells on the same page to share data with one another. In your app, these statements would not exist.
-</Callout>
+```ts
+type QueryData<T> = {
+  readonly loading: boolean;
+  readonly error?: Error;
+  readonly data: T;
+};
 
-First, let's import the `cr-sqlite` wasm bundle and create a database.
+type CtxAsync = {
+  readonly db: DBAsync;
+  readonly rx: TblRx;
+};
 
-<RunnableCode code={`const initWasm = await import('https://esm.sh/@vlcn.io/crsqlite-wasm@0.9.1');
+function useQuery<R, M = R[]>(
+  ctx: CtxAsync,
+  query: SQL<R>,
+  bindings?: any[],
+  postProcess?: (rows: R[]) => M
+): QueryData;
+```
+
+**Params:**
+
+- `ctx` - The context object that contains the database and rx-tbl instance.
+- `query` - The query to run.
+- `bindings` - The bindings to use for the query (optional)
+- `postProcess` - A function to post process the data (optional)
+
+
+**Usage:**
+
+```js
+function MyComponent({ctx}) {
+  const { data, loading, error } = useQuery(ctx, "SELECT * FROM users WHERE country = ?", ["NZ"]);
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
+  return (
+    <ul>
+      {data.map((user) => (
+        <li key={user.id}>{user.name}</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+### first
+
+Returns the first element of an array or undefined if the array is empty. Useful for queries that return a single row.
+
+```ts
+function first<T>(data: T[]): T | undefined;
+```
+
+**Usage:**
+
+```ts
+const countRow = useQuery(ctx, "SELECT count(*) as c FROM users", null, first).data;
+const count = countRow?.c;
+```
+
+### firstPick
+
+Returns the first column of the first element of an array or undefined if the array is empty. Useful for queries that return a single row and a single column.
+
+```ts
+function firstPick<T>(data: any[]): T | undefined;
+```
+
+**Usage:**
+
+```ts
+const count = useQuery(ctx, "SELECT count(*) FROM users", null, firstPick).data;
+// count is a number
+```
+
+### pick
+
+Pick the value of the first column of each row. Useful for queries that return a single column.
+
+```ts
+function pick<T extends any, R>(data: T[]): R[];
+```
+
+**Usage:**
+
+```ts
+const names = useQuery(ctx, "SELECT name FROM users", null, pick).data;
+// names is a string[]
+```
+
+## Live Example
+
+Below is a live notebook style example. You can modify code in any cell and press `shift + enter` to run it. Sharing variables between cells is done via `provide` and `use` statements.
+Given we're running everything natively in the browser (no babel or esbuild compilation step), we use [htm](https://github.com/developit/htm) to write JSX-like syntax.
+
+Let's import the `cr-sqlite` wasm bundle and create a database with a basic schema.
+
+<RunnableCode code={`const initWasm = await import('@vlcn.io/crsqlite-wasm');
 const sqlite = await initWasm.default(
   () => "https://esm.sh/@vlcn.io/crsqlite-wasm@0.9.1/dist/crsqlite.wasm"
 );
 
 const db = await sqlite.open("react-example.db");
+await db.exec(\`CREATE TABLE IF NOT EXISTS todo (id PRIMARY KEY, content, complete)\`);
 provide db;`} />
 
-Next, we'll create a basic schema for our application.
+Now we'll write the react component for our todo list.
 
 <RunnableCode code={`use db;
-await db.exec(\`CREATE TABLE IF NOT EXISTS todo (id PRIMARY KEY, content, complete)\`);`} />
+const [vlcnReact, React, htm] = await Promise.all([
+  import("@vlcn.io/react"),
+  import("react"),
+  import("htm/react"),
+]);
 
-Now the react component for our todo list.
+const { useQuery, firstPick } = vlcnReact;
+const { html } = htm;
+const { useState } = React;
+const nanoid=(t=21)=>crypto.getRandomValues(new Uint8Array(t)).reduce(((t,e)=>t+=(e&=63)<36?e.toString(36):e<62?(e-26).toString(36).toUpperCase():e>62?"-":"_"),"");
 
-<RunnableCode code={`use db;
-await db.exec()`} />
+function TodoItem({ctx, todo}) {
+  const toggle = () => {
+    ctx.db.exec("UPDATE todo SET complete = ? WHERE id = ?", [
+      todo.complete === 0 ? 1 : 0,
+      todo.id,
+    ]);
+  };
+  const del = () => {
+    ctx.db.exec("DELETE FROM todo WHERE id = ?", [todo.id]);
+  };
+
+  return html\`<li key=\${todo.id} class=\${todo.complete ? "complete" : ""} onClick=\${toggle}>
+    \${todo.content}
+    <button onClick=\${del} />
+  </li>\`;
+}
+
+function TodoList({ ctx }) {
+  const todos = useQuery(ctx, "SELECT * FROM todo").data;
+  const remaining = useQuery(
+    ctx,
+    "SELECT count(*) as c FROM todo WHERE complete = 0",
+    null,
+    firstPick
+  ).data;
+  const [newText, setNewText] = useState("");
+  const onKeyUp = (e) => {
+    if (e.key === "Enter" && e.target.value.trim() !== "") {
+      ctx.db.exec("INSERT INTO todo VALUES (?, ?, ?)", [
+        nanoid(),
+        e.target.value,
+        0,
+      ]);
+      setNewText("");
+    }
+  };
+
+  return html\`<div>
+    <h1>\${remaining} Unfinished Todos</h1>
+    <input type="text"
+      value=\${newText}
+      onChange=\${(e) => setNewText(e.target.value)}
+      placeholder="Add a todo"
+      onKeyUp=\${onKeyUp}
+    />
+    <ul>
+      \${todos.map((todo) => html\`<\${TodoItem} ctx=\${ctx} todo=\${todo} />\`)}
+    </ul>
+  </div>\`;
+}
+provide TodoList;`} />
+
+<div id="todo-app" />
+
+Lastly, we'll render the component to the page.
+
+<RunnableCode code={`use TodoList;
+use db;
+const [React, reactDom, htm, tblrx] = await Promise.all([
+  import("react"),
+  import("react-dom/client"),
+  import("htm/react"),
+  import("@vlcn.io/rx-tbl"),
+]);
+
+const { html } = htm;
+const { createRoot } = reactDom;
+
+const rx = await tblrx.default(db);
+const ctx = {db, rx};
+
+const root = createRoot(document.getElementById("todo-app"));
+root.render(html\`<\${TodoList} ctx=\${ctx} />\`);`} />

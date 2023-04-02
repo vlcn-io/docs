@@ -8,12 +8,16 @@ import { Callout } from "nextra-theme-docs";
 
 Persistence is as you'd expect -- just provide a file name when opening the database.
 
-An example for browser environments follows below.
+An example for browser environments is below.
+
+<Callout type="info">
+The example below is runnable. You can make changes to the code and re-run it by pressing `shift + enter`.
+</Callout>
 
 Import the required packages and init the wasm:
 
 <RunnableCode
-  code={`const initWasm = await import('https://esm.sh/@vlcn.io/crsqlite-wasm@0.9.1')
+  code={`const initWasm = await import('@vlcn.io/crsqlite-wasm')
 const sqlite = await initWasm.default(() => "https://esm.sh/@vlcn.io/crsqlite-wasm@0.9.1/dist/crsqlite.wasm");
 provide sqlite;`}
 />
@@ -43,7 +47,7 @@ await db.exec(
     'Buy \${items[(Math.random() * items.length) | 0]}',
     0
   )\`);
-return await db.execO("SELECT * FROM todo");
+return await db.execO(\`SELECT * FROM todo\`);
 `}
 />
 

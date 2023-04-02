@@ -9,3 +9,118 @@ html > body {
 .nx-bg-white {
   background-color: #fffff8 !important;
 }
+
+#todo-app {
+  width: 550px;
+  margin: 130px auto 0px;
+  background: #fff;
+  position: relative;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 25px 50px 0 rgba(0, 0, 0, 0.1);
+}
+
+#todo-app h1 {
+  position: absolute;
+  top: -70px;
+  width: 100%;
+  font-size: 40px;
+  font-weight: 200;
+  text-align: center;
+  color: #b83f45;
+  -webkit-text-rendering: optimizeLegibility;
+  -moz-text-rendering: optimizeLegibility;
+  text-rendering: optimizeLegibility;
+}
+
+#todo-app input {
+  width: 100%;
+}
+
+#todo-app input::-webkit-input-placeholder {
+  font-style: italic;
+  font-weight: 300;
+  color: rgba(0, 0, 0, 0.4);
+}
+
+#todo-app input::-moz-placeholder {
+  font-style: italic;
+  font-weight: 300;
+  color: rgba(0, 0, 0, 0.4);
+}
+
+#todo-app input::input-placeholder {
+  font-style: italic;
+  font-weight: 300;
+  color: rgba(0, 0, 0, 0.4);
+}
+
+#todo-app input {
+  position: relative;
+  margin: 0;
+  width: 100%;
+  font-size: 24px;
+  font-family: inherit;
+  font-weight: inherit;
+  line-height: 1.4em;
+  color: inherit;
+  padding: 6px;
+  border: 1px solid #999;
+  box-shadow: inset 0 -1px 5px 0 rgba(0, 0, 0, 0.2);
+  box-sizing: border-box;
+
+  padding: 16px 16px 16px 16px;
+  border: none;
+  background: rgba(0, 0, 0, 0.003);
+  box-shadow: inset 0 -2px 1px rgba(0, 0, 0, 0.03);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#todo-app ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+#todo-app ul li {
+  position: relative;
+  font-size: 24px;
+  border-bottom: 1px solid #ededed;
+  padding: 16px;
+  cursor: pointer;
+}
+
+#todo-app ul li:last-child {
+  border-bottom: none;
+}
+
+#todo-app li button {
+  display: none;
+  position: absolute;
+  top: 0;
+  right: 10px;
+  bottom: 0;
+  width: 40px;
+  height: 40px;
+  margin: auto 0;
+  font-size: 30px;
+  color: #cc9a9a;
+  margin-bottom: 11px;
+  transition: color 0.2s ease-out;
+}
+
+#todo-app li button:hover {
+  color: #af5b5e;
+}
+
+#todo-app li button:after {
+  content: "×";
+}
+
+#todo-app li:hover button {
+  display: block;
+}
+
+#todo-app .complete {
+  color: #cdcdcd;
+  text-decoration: line-through;
+}

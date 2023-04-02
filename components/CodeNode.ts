@@ -87,7 +87,6 @@ export class CodeNode {
   }
 
   private run(body: string) {
-    console.log(body);
     let rejected = false;
     let inputs = [];
     for (const u of this.uses.keys()) {
