@@ -3,9 +3,9 @@
   "getting-started": {},
   "cr-sqlite": "CR-SQLite",
   "js": {
-    "title": "JavaScript",
-    "display": "hidden"
+    "title": "JavaScript"
   },
+  "networking": "Networking",
   "deep-dive": "Deep Dive",
   "concepts": "Concepts",
   "articles": "Articles"
