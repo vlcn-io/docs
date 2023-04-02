@@ -20,7 +20,7 @@ export default function Index() {
   return (
     <>
       <header>
-        <Image alt="" src="/logo.png" className={styles["logo-img"]}></Image>
+        <img src="/logo.png" className={styles["logo-img"]}></img>
       </header>
       <section className={styles.hero}>
         <div className={styles["hero-inner"]}>
@@ -51,11 +51,7 @@ export default function Index() {
           </div>
           <div className={styles["sep"]}></div>
           <div className={styles["hero-img-container"]}>
-            <Image
-              alt=""
-              src="/hero.png"
-              className={styles["hero-img"]}
-            ></Image>
+            <img src="/hero.png" className={styles["hero-img"]}></img>
           </div>
         </div>
       </section>
@@ -73,11 +69,10 @@ export default function Index() {
       <main>
         <div className={styles["iso-card"]}>
           <div>
-            <Image
-              alt=""
+            <img
               className={styles["replicated"]}
               src="/isometrics/replicated.png"
-            ></Image>
+            ></img>
           </div>
           <div className={styles["sep"]}></div>
           <div className={styles["iso-cap"]}>
@@ -92,11 +87,10 @@ export default function Index() {
         </div>
         <div className={styles["iso-card"]}>
           <div>
-            <Image
-              alt=""
+            <img
               className={styles["reactive"]}
               src="/isometrics/reactive.png"
-            ></Image>
+            ></img>
           </div>
           <div className={styles["sep"]}></div>
           <div className={styles["iso-cap"]}>
@@ -110,7 +104,7 @@ export default function Index() {
         </div>
         <div className={styles["iso-card"]}>
           <div>
-            <Image alt="" src="/isometrics/realtime.png"></Image>
+            <img src="/isometrics/realtime.png"></img>
           </div>
           <div className={styles["sep"]}></div>
           <div className={styles["iso-cap"]}>
@@ -123,7 +117,7 @@ export default function Index() {
         </div>
         <div className={styles["iso-card"]}>
           <div>
-            <Image alt="" src="/isometrics/hand-cube.png"></Image>
+            <img src="/isometrics/hand-cube.png"></img>
           </div>
           <div className={styles["sep"]}></div>
           <div className={styles["iso-cap"]}>
@@ -149,7 +143,7 @@ export default function Index() {
       <section className={styles["use"]}></section>
       <footer>
         <div>
-          <Image alt="" src="/logo.png" width="182"></Image>
+          <img src="/logo.png" width="182"></img>
         </div>
         <hr />
         <div className={styles["fsocial"]}>
