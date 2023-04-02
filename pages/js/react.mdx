@@ -123,6 +123,10 @@ const names = useQuery(ctx, "SELECT name FROM users", null, pick).data;
 Below is a live notebook style example. You can modify code in any cell and press `shift + enter` to run it. Sharing variables between cells is done via `provide` and `use` statements.
 Given we're running everything natively in the browser (no babel or esbuild compilation step), we use [htm](https://github.com/developit/htm) to write JSX-like syntax.
 
+<Callout type="info">
+A cool thing about `cr-sqlite` is that you get cross-tab sync for free! Open this page in many tabs and interact with the todo widget at the bottom to check it out.
+</Callout>
+
 Let's import the `cr-sqlite` wasm bundle and create a database with a basic schema.
 
 <RunnableCode code={`const initWasm = await import('@vlcn.io/crsqlite-wasm');

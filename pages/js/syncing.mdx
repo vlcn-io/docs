@@ -1,0 +1,11 @@
+# Syncing
+
+Previous pages have gone over:
+
+1. [Using the WASM module](./wasm)
+2. [Saving data to the local device](./persistence)
+3. [UI Framework integration](./react) (e.g., React)
+
+But how do we get the data off the local device and sync with others? `cr-sqlite` is network agnostic so you can bring your own networking layer. To get you started quickly, however, there is a client-server websocket implementation and a simple p2p syncing layer based on peerjs.
+
+## Websocket Client-Server Sync

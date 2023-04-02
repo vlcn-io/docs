@@ -8,6 +8,11 @@ export default {
     defaultTheme: "light",
     forcedTheme: "light",
   },
+  useNextSeoProps() {
+    return {
+      titleTemplate: "%s – vlcn.io",
+    };
+  },
   docsRepositoryBase: "https://github.com/tantaman/vlcn-nextra/blob/main",
   footer: {
     text: (
