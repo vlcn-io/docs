@@ -17,16 +17,36 @@
  */
 
 // TODO: rm from this map any resources no longer provided by anyone
-const resources = new Map<string, Resource>();
+const pathToResources = new Map<string, Map<string, Resource>>();
 
 const USE_REG = /^use\s+([A-z]{1}[A-z|0-9]*);$/gm;
 const PROVIDE_REG = /^provide\s+([A-z]{1}[A-z|0-9]*);$/gm;
 
 function getResouce(id: string) {
+  if (!pathToResources.has(window.location.pathname)) {
+    pathToResources.set(window.location.pathname, new Map());
+  }
+  const resources = pathToResources.get(window.location.pathname)!;
   if (!resources.has(id)) {
     resources.set(id, new Resource(id));
   }
   return resources.get(id);
+}
+
+export function clearResources() {
+  for (const [_, resources] of pathToResources) {
+    for (const [_, resource] of resources) {
+      if (
+        resource.resolution &&
+        typeof resource.resolution === "object" &&
+        resource.resolution.close != null &&
+        typeof resource.resolution.close === "function"
+      ) {
+        resource.resolution.close();
+      }
+    }
+  }
+  pathToResources.clear();
 }
 
 export class CodeNode {
@@ -39,13 +59,12 @@ export class CodeNode {
   constructor() {}
 
   eval(code: string) {
-    console.log(code);
     const [uses, body, provides] = this.parse(code);
     this.body = body;
     const noLongerUses = [...this.uses.keys()].filter((u) => !uses.has(u));
 
     for (const u of noLongerUses) {
-      resources.get(u)?.off(this.onResourceReady);
+      getResouce(u)?.off(this.onResourceReady);
     }
 
     this.uses = new Map();
@@ -68,6 +87,7 @@ export class CodeNode {
   }
 
   private run(body: string) {
+    console.log(body);
     let rejected = false;
     let inputs = [];
     for (const u of this.uses.keys()) {

@@ -36,8 +36,7 @@ const sqlite = await initWasm.default(
   () => "https://esm.sh/@vlcn.io/crsqlite-wasm@0.9.1/dist/crsqlite.wasm"
 );
 
-// we'll use an in-memory DB for this example
-const db = await sqlite.open(":memory:");
+const db = await sqlite.open("react-example.db");
 provide db;`} />
 
 Next, we'll create a basic schema for our application.
