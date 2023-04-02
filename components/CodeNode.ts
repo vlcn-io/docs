@@ -39,6 +39,7 @@ export class CodeNode {
   constructor() {}
 
   eval(code: string) {
+    console.log(code);
     const [uses, body, provides] = this.parse(code);
     this.body = body;
     const noLongerUses = [...this.uses.keys()].filter((u) => !uses.has(u));

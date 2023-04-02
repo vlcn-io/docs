@@ -20,6 +20,25 @@ export const nanoid = (t = 21) =>
 export default function DocGlobals() {
   useEffect(() => {
     (window as any).nanoid = nanoid;
+    return () => {
+      // // close the dbs registered by any demos.
+      // // @ts-ignore
+      // window.db?.close();
+      // // @ts-ignore
+      // window.db1?.close();
+      // // @ts-ignore
+      // window.db2?.close();
+      // // @ts-ignore
+      // window.db3?.close();
+      // // @ts-ignore
+      // window.db = null;
+      // // @ts-ignore
+      // window.db1 = null;
+      // // @ts-ignore
+      // window.db2 = null;
+      // // @ts-ignore
+      // window.db3 = null;
+    };
   }, []);
   return <div></div>;
 }

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import createEditor from "./createEditor";
 import { EditorView } from "codemirror";
 import { CodeNode } from "./CodeNode";
+// @ts-ignore
 import { ObjectView } from "react-object-view";
 import styles from "./RunnableCode.module.css";
 

@@ -1,8 +1,51 @@
 import { Callout } from "nextra-theme-docs";
+import RunnableCode from "@/components/RunnableCode";
 
 # React
 
 <Callout type="info">
+We're currently buidling something like "create-react-app" for vulcan to quickly scaffold a project. Till then, you can read the interactive guide here.
 </Callout>
 
-See https://github.com/vlcn-io/live-examples/tree/main
+The react integration is provided by the [@vlcn.io/react](https://www.npmjs.com/package/@vlcn.io/react) package and centers around a `useQuery` hook that allows you to subscribe to a query and get the data in your component.
+
+## Installation & Usage
+
+```bash
+> npm install @vlcn.io/react
+```
+
+```js
+import { useQuery } from "@vlcn.io/react";
+```
+
+## Example
+
+<Callout type="info">
+Below is a live/notebook style example. You can modify code in any cell and press `shift + enter` to run it.
+
+The live example is different from a real app in two ways:
+1. Cells use `dynamic` imports rather than regular imports. In your app, you can use regular imports.
+2. Cells use `use` and `provide` statements. These allow cells on the same page to share data with one another. In your app, these statements would not exist.
+</Callout>
+
+First, let's import the `cr-sqlite` wasm bundle and create a database.
+
+<RunnableCode code={`const initWasm = await import('https://esm.sh/@vlcn.io/crsqlite-wasm@0.9.1');
+const sqlite = await initWasm.default(
+  () => "https://esm.sh/@vlcn.io/crsqlite-wasm@0.9.1/dist/crsqlite.wasm"
+);
+
+// we'll use an in-memory DB for this example
+const db = await sqlite.open(":memory:");
+provide db;`} />
+
+Next, we'll create a basic schema for our application.
+
+<RunnableCode code={`use db;
+await db.exec(\`CREATE TABLE IF NOT EXISTS todo (id PRIMARY KEY, content, complete)\`);`} />
+
+Now the react component for our todo list.
+
+<RunnableCode code={`use db;
+await db.exec()`} />
