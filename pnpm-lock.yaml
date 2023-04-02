@@ -69,6 +69,9 @@ dependencies:
     version: 5.0.2
 
 devDependencies:
+  '@types/better-sqlite3':
+    specifier: ^7.6.3
+    version: 7.6.3
   broken-link-checker:
     specifier: ^0.7.8
     version: 0.7.8
@@ -618,6 +621,12 @@ packages:
     dependencies:
       '@types/estree': 1.0.0
     dev: false
+
+  /@types/better-sqlite3@7.6.3:
+    resolution: {integrity: sha512-YS64N9SNDT/NAvou3QNdzAu3E2om/W/0dhORimtPGLef+zSK5l1vDzfsWb4xgXOgfhtOI5ZDTRxnvRPb22AIVQ==}
+    dependencies:
+      '@types/node': 18.15.11
+    dev: true
 
   /@types/debug@4.1.7:
     resolution: {integrity: sha512-9AonUzyTjXXhEOa0DnqpzZi6VHlqKMswga9EXjpXnnqxwLtdvPPtlO8evrI5D9S6asFRCQ6v+wpiUKbw+vKqyg==}

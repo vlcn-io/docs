@@ -2,7 +2,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import sqlite3 from "better-sqlite3";
 
-let db;
+let db: any;
 if (!process.env.FLY_APP_NAME) {
   db = sqlite3("./dev.db");
 } else {

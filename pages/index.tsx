@@ -6,6 +6,7 @@ import {
   faTwitter,
   faGithubAlt,
 } from "@fortawesome/free-brands-svg-icons";
+import Image from "next/image";
 
 export default function Index() {
   useEffect(() => {
@@ -19,7 +20,7 @@ export default function Index() {
   return (
     <>
       <header>
-        <img src="/logo.png" className={styles["logo-img"]}></img>
+        <Image alt="" src="/logo.png" className={styles["logo-img"]}></Image>
       </header>
       <section className={styles.hero}>
         <div className={styles["hero-inner"]}>
@@ -50,7 +51,11 @@ export default function Index() {
           </div>
           <div className={styles["sep"]}></div>
           <div className={styles["hero-img-container"]}>
-            <img src="/hero.png" className={styles["hero-img"]}></img>
+            <Image
+              alt=""
+              src="/hero.png"
+              className={styles["hero-img"]}
+            ></Image>
           </div>
         </div>
       </section>
@@ -68,10 +73,11 @@ export default function Index() {
       <main>
         <div className={styles["iso-card"]}>
           <div>
-            <img
+            <Image
+              alt=""
               className={styles["replicated"]}
               src="/isometrics/replicated.png"
-            ></img>
+            ></Image>
           </div>
           <div className={styles["sep"]}></div>
           <div className={styles["iso-cap"]}>
@@ -86,10 +92,11 @@ export default function Index() {
         </div>
         <div className={styles["iso-card"]}>
           <div>
-            <img
+            <Image
+              alt=""
               className={styles["reactive"]}
               src="/isometrics/reactive.png"
-            ></img>
+            ></Image>
           </div>
           <div className={styles["sep"]}></div>
           <div className={styles["iso-cap"]}>
@@ -103,20 +110,20 @@ export default function Index() {
         </div>
         <div className={styles["iso-card"]}>
           <div>
-            <img src="/isometrics/realtime.png"></img>
+            <Image alt="" src="/isometrics/realtime.png"></Image>
           </div>
           <div className={styles["sep"]}></div>
           <div className={styles["iso-cap"]}>
             <h1>Real-time</h1>
             <p>
               Break the speed of light by reading and writing data locally;
-              don't wait for network round-trips.
+              don&apos;t wait for network round-trips.
             </p>
           </div>
         </div>
         <div className={styles["iso-card"]}>
           <div>
-            <img src="/isometrics/hand-cube.png"></img>
+            <Image alt="" src="/isometrics/hand-cube.png"></Image>
           </div>
           <div className={styles["sep"]}></div>
           <div className={styles["iso-cap"]}>
@@ -142,7 +149,7 @@ export default function Index() {
       <section className={styles["use"]}></section>
       <footer>
         <div>
-          <img src="/logo.png" width="182"></img>
+          <Image alt="" src="/logo.png" width="182"></Image>
         </div>
         <hr />
         <div className={styles["fsocial"]}>
