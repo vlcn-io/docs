@@ -4,9 +4,13 @@ import { Callout } from "nextra-theme-docs";
 
 <DocGlobals />
 
-# Merging Databases
+# Whole CRR Sync
 
-The base primitives around which everything is built are tables and `crrs` ([conflict free replicated relations](/appendix/crr)).
+Whole CRR ([conflict free replicated relation](/appendix/crr)) sync means that we want all of the CRRs on different databases to be identical after they merge.
+
+What follows is an example of how to implement whole CRR sync to merge two databases together.
+
+The base primitives around which everything is built are tables and crrs.
 
 - Tables are just regular `sqlite` tables.
 - `crrs` are `sqlite` tables which can be merged with other tables on other devices
@@ -313,13 +317,4 @@ The basic ideas:
 3. Pull and apply changes to/from databases with `crsql_changes`
 4. Keep track of what you've synced with `crsql_tracked_peers`
 
-## Next Steps
-
-This guide showed you how to do whole database replication. In future guides we'll:
-
-1. Show you how you can track and replicate only a certain set of rows
-2. Sync across a network
-3. Handle migrations
-4. Build a complete app
-5. Go over other CRDT types that you can use
-6. Discuss using event sourcing to power many different CDRT "views" atop the same data
+Another example implementation of the above: https://observablehq.com/@tantaman/cr-sqlite-basic-setup

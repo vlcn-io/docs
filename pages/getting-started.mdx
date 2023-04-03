@@ -2,7 +2,7 @@
 
 Vulcan is split into a few components:
 
-1. Conflict-free database
+1. Conflict-free database (cr-sqlite)
 2. Platform Integrations
 3. Networking
 4. Live query engine
@@ -15,14 +15,14 @@ Vulcan is split into a few components:
 
 ## Platform Integrations
 
-While `cr-sqlite` can run anywhere and provide you with a database that supports merging over a SQL API, platform &language integrations exist to simplify getting started.
+While `cr-sqlite` can run anywhere and provide you with a database that supports merging over a SQL API, platform & language integrations exist to simplify things and provide a more complete experience.
 
 - [Get started with JavaScript](./js/wasm)
 - [Get started with other languages](./appendix/languages)
 
 ## Networking
 
-`cr-sqlite` is network agnostic. You can bring whatever transport you like (protobuffs, trpc, websockets, etc.) so long as you follow a few conventions. All that being said, Vulcan also provides a default networking layer.
+You can bring whatever transport you like so long as you follow a few conventions. To create a more complete experience, Vulcan also provides a default networking layer.
 
 [Get started with networking](./networking/background)
 
