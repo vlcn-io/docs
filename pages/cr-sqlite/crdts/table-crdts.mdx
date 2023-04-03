@@ -19,3 +19,4 @@ Today you can implement causal length in user space by using "soft deletion".
 Obviously the drawback here is that your reads would need to manually filter out deleted rows.
 
 If you want grow only semantics, install a trigger on your `crr` that prevents deletes. That or don't issue a delete against the table.
+

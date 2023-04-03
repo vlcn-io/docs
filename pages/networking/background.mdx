@@ -39,3 +39,4 @@ This allows `cr-sqlite` to be used in both client-server and peer-to-peer networ
 If you are using a networking layer which can deliver messages out of order then your bookkeeping logic that asks databases for "changes since X" should be aware of this and be able to handle out of order delivery. I.e., don't record yourself as being up to date up to version Y if you haven't received versions prior to Y.
 
 Given every changeset includes its starting and ending versions, you can easily ensure in-order delivery if the layers below you do not.
+
