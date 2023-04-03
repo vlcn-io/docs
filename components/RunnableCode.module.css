@@ -1,5 +1,14 @@
 .root {
   margin-top: 12px;
+  position: relative;
+}
+
+.run {
+  position: absolute;
+  z-index: 100;
+  right: 20px;
+  top: 7px;
+  cursor: pointer;
 }
 
 .editor {
@@ -12,4 +21,13 @@
   background: #192830;
   padding: 16px;
   border-radius: 8px;
+}
+
+.loading {
+  padding: 24px;
+}
+
+.spinnerContainer {
+  width: 170px;
+  margin: 0 auto;
 }

@@ -186,6 +186,10 @@ export class CodeNode {
     }
   };
 
+  waitingFor() {
+    return [...this.uses.keys()].filter((u) => !getResouce(u)?.isReady);
+  }
+
   private parse(code: string): [Set<string>, string, Set<string>] {
     const uses = new Set<string>();
     for (const m of code.matchAll(USE_REG)) {

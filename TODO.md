@@ -1,1 +1,2 @@
-- broken link checking: https://github.com/hashicorp/gh-action-check-broken-links
+- loading spinner for live examples
+- ~~broken link checking: https://github.com/hashicorp/gh-action-check-broken-links~~
