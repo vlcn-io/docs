@@ -1,0 +1,42 @@
+import { Callout } from "nextra-theme-docs";
+
+# Networking
+
+WebSocket client and server implementations are available for those who do not want to write their own network layer.
+
+The client & server currently take an opinionated approach to syncing. They sync the entire client and server database to one another such that both databases will be identical. This model is fine for single-tenant databases but would not be suitable if you'd like to run a multi-tenant database on the backend.
+
+For more on supporting single-tenant vs multi-tenant syncing use cases, refer to the networking & syncing guide.
+
+<Callout type="info">
+An official multi-tenant network layer will be available ~Q3 2023.
+</Callout>
+
+## WebSocket Client
+
+Install the dependencies:
+
+```bash
+npm install @vlcn.io/client-websocket @vlcn.io/rx-tbl
+```
+
+Import the `startSync` function. If you want to run the sync process in a worker, rather than on the UI thread, import the URL to the worker as well.
+
+```javascript
+import startSync from '@vlcn.io/client-websocket';
+import workerUri from "@vlcn.io/client-websocket/worker.js?url";
+```
+
+Now we can wire everything together.
+
+```javascript
+const sync = startSync(`wss://${window.location.hostname}/sync`, {
+  localDb: db, // the local database to sync
+  remoteDbId: dbid, // the id of the remote database to sync with
+  create: { // create the remote database if it does not exist?
+    schemaName: "myschema.sql", // the name of the schemae to apply to the remote database
+  },
+  workerUri,
+  worker: true,
+});
+```

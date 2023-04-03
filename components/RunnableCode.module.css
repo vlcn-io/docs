@@ -9,6 +9,11 @@
   right: 20px;
   top: 7px;
   cursor: pointer;
+  color: #bbb;
+}
+
+.run:hover {
+  color: black;
 }
 
 .editor {

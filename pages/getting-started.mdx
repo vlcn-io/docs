@@ -2,8 +2,8 @@
 
 Vulcan is split into a few components:
 
-1. Conflict-free database (vlcn.io/cr-sqlite)
-2. UI Integrations (vlcn.io/react)
+1. Conflict-free database
+2. Platform Integrations
 3. Networking
 4. Live query engine
 
@@ -13,19 +13,18 @@ Vulcan is split into a few components:
 
 [Get started with CR-SQLite](./cr-sqlite/intro)
 
-## UI Integrations
+## Platform Integrations
 
-To prove the concept of a database that syncs and resolves merge conflicts we had to build some demo applications. In that process, we've put together higher level abstractions to interact with the database from JavaScript and React. These integrations are for building React or JavaScript applications that uses the conflict-free database.
+While `cr-sqlite` can run anywhere and provide you with a database that supports merging over a SQL API, platform &language integrations exist to simplify getting started.
 
-[Get started with React](./js/react)
-
-The UI integration bundles a networking layer but you may choose to bring your own as well.
+- [Get started with JavaScript](./js/wasm)
+- [Get started with other languages](./appendix/languages)
 
 ## Networking
 
 `cr-sqlite` is network agnostic. You can bring whatever transport you like (protobuffs, trpc, websockets, etc.) so long as you follow a few conventions. All that being said, Vulcan also provides a default networking layer.
 
-[Get started with networking](./networking)
+[Get started with networking](./networking/background)
 
 ## Live Query Engine
 

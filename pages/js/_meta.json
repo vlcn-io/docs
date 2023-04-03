@@ -1,8 +1,9 @@
 {
   "wasm": "WASM & Browser APIs",
   "persistence": "Browser Persistence",
-  "react": "React",
-  "nodejs": "Node JS",
-  "syncing": {},
+  "networking": {},
+  "reactivity": "Reactivity",
+  "react": "ReactJS",
+  "nodejs": "NodeJS",
   "example-apps": {}
 }

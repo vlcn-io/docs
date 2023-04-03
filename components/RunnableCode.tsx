@@ -8,7 +8,6 @@ import styles from "./RunnableCode.module.css";
 import { PacmanLoader } from "react-spinners";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlay } from "@fortawesome/free-solid-svg-icons";
-import { run } from "node:test";
 
 // import dynamic from "next/dynamic";
 // const ReactJson = dynamic(() => import("react-json-view"), { ssr: false });

@@ -2,11 +2,8 @@ import { Callout } from "nextra-theme-docs";
 
 # NodeJS
 
-Given `cr-sqlite` is a run time loadable extension, you can use it in `nodejs` with any `sqlite` bindings that you desire.
-
-Some available sqlite bindings for NodeJS:
-- [better-sqlite3](https://github.com/WiseLibs/better-sqlite3)
-- [sqlite3](https://www.npmjs.com/package/sqlite3)
+Given `cr-sqlite` is a run time loadable extension you can use it in `nodejs` with any `sqlite` bindings that you desire such as
+[better-sqlite3](https://github.com/WiseLibs/better-sqlite3) or [sqlite3](https://www.npmjs.com/package/sqlite3).
 
 ## Example
 
@@ -27,14 +24,11 @@ db.loadExtension(extensionPath);
 
 ## Usage
 
-The API for interacting with the database will be the same as whatever `sqlite` bindings you chose. Creating conflict free tables and merging databases is done entirely over SQL. See the `cr-sqlite` [API documentation](/cr-sqlite/api-methods/crsql_as_crr) & [guides](/cr-sqlite/guides/merging-databases).
+The API for interacting with the database will be the same as whatever `sqlite` bindings you chose. Creating conflict free tables and merging databases is done entirely over SQL. See the `cr-sqlite` [docs](/cr-sqlite/api-methods/crsql_as_crr) & [guides](/cr-sqlite/guides/merging-databases).
 
-## Sync Server
+## Listening for changes & Networking
 
-<Callout type="info">
-Note: This section is under construction. Check back soon to see how to use the websocket server package and sync changes!
+Listening to changes from the databases and creating a sync server are covered in:
 
-Until then, you can see how the server is invoked to run the example applications: https://github.com/vlcn-io/live-examples/blob/271a9a8830ff220d5db73d78ad4431eb43bbc3f8/package.json#L11
-
-You can also use the server as a library in your own application: https://github.com/tantaman/strut/blob/a1f84f160df6b2630bfec54863caffa997f29ade/server/src/server.ts#L10
-</Callout>
+- [Reactivity](./reactivity)
+- [Networking](./networking)

@@ -2,11 +2,10 @@
   "background": {},
   "getting-started": {},
   "cr-sqlite": "CR-SQLite",
+  "networking": "Networking & Syncing",
   "js": {
     "title": "JavaScript"
   },
-  "networking": "Networking",
-  "deep-dive": "Deep Dive",
-  "concepts": "Concepts",
-  "articles": "Articles"
+  "articles": "Articles",
+  "appendix": "Appendix"
 }
