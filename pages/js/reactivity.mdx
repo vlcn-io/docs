@@ -1,11 +1,160 @@
+import { Callout } from "nextra-theme-docs";
+import RunnableCode from "@/components/RunnableCode";
+
 # Reactivity
 
-Reactivity, not to be confused with React, is the ability to observe the database for changes so you have the opportunity to react to those changes.
+Reactivity, not to be confused with React, is the ability to subscribe to the database for changes so you have the opportunity to respond to those changes.
 
 This is available through the `rx-tbl` package which will eventually be replaced by the `rx-query` package.
 
-The difference is that `rx-tbl` lets you listen for changes at a table level where as `rx-query` will let you listen for changes at a query level.
+> The difference is that `rx-tbl` lets you listen for changes at a table level where as `rx-query` will let you listen for changes at a query level.
+
+The `rx-tbl` package is used by:
+1. @vlcn.io/websocket-client to know when to send updates to the server
+2. @vlcn.io/react to know when to re-render components that have queried for data
+
+<Callout type="info">
+`rx-query` will be implemented as a native extension, rather than in JavaScript, such that it is available on all platforms.
+</Callout>
 
 ## Basic Usage
 
+Install:
+
+```bash
+npm install @vlcn.io/rx-tbl
+```
+
+Import:
+
+```js
+import tblrx from "@vlcn.io/rx-tbl";
+```
+
+Use:
+
+```js
+// see the wasm guide, or live example on this page, for creating a database
+const rx = tblrx(db);
+
+const disposable = rx.onRange(["posts"], (updateTypes) => {
+  console.log("posts changed", updateTypes);
+});
+
+disposable(); // unsubscribe the `onRange` listener
+
+rx.onAny(() => {
+  console.log('db had some change');
+});
+
+rx.onPoint("posts", "xyz", (updateTypes) => {
+  console.log("post with id xyz changed", updateTypes);
+});
+
+rx.dispose(); // uninstall the rx layer
+```
+
 ## API Docs
+
+### tblrx
+
+Wraps the database with the reactivity layer and returns a `TblRx` instance.
+
+```ts
+function tblrx(db: DB): TblRx;
+```
+
+**Params:**
+
+1. `db` - The database connection to wrap with the reactivity layer. Gotten by opening a database.
+
+### TblRx::onRange
+
+Listen for changes (insert/update/delete) to tables. Returns a `dispose` function that will stop listening for changes when called.
+
+```ts
+function onRange(
+  tables: string[],
+  callback: (updateTypes: UpdateType[]) => void
+): () => void;
+```
+
+**Params:**
+
+1. `tables` - The tables to listen for changes on.
+2. `callback` - The callback to call when a change occurs. The callback will be passed an [array of `UpdateType` values](https://www.sqlite.org/c3ref/update_hook.html).
+
+### TblRx::onPoint
+
+Listen for changes (insert/update/delete) to a specific row. Returns a `dispose` function that will stop listening for changes when called.
+
+Note: this uses the [sqlite `rowid`](https://www.sqlite.org/rowidtable.html) for the row, not the primary key. All tables that do not specify `WITHOUT rowid` have a rowid which can be retrieved via `_rowid_` in a select statement. Tables that have an integer primary key column will have the same value for the rowid and the primary key.
+
+```ts
+function onPoint(
+  table: string,
+  rowid: bigint,
+  callback: (updateTypes: UpdateType[]) => void
+): () => void;
+```
+
+**Params:**
+
+1. `table` - The table to listen for changes on.
+2. `rowid` - The rowid of the row to listen for changes on.
+3. `callback` - The callback to call when a change occurs. The callback will be passed an array of `UpdateType` values.
+
+### TblRx::onAny
+
+Listen for changes (insert/update/delete) to any table. Returns a `dispose` function that will stop listening for changes when called.
+
+```ts
+function onAny(callback: () => void): () => void;
+```
+
+### TblRx::dispose
+
+Uninstall the reactivity layer and cleans up any resources and subscriptions that were created. Leaves the database open.
+
+```ts
+function dispose(): void;
+```
+
+## Live Example
+
+Import the WASM, create the DB, install a schema.
+
+<RunnableCode code={`const initWasm = await import('https://esm.sh/@vlcn.io/crsqlite-wasm@0.9.1');
+const sqlite = await initWasm.default(
+  () => "https://esm.sh/@vlcn.io/crsqlite-wasm@0.9.1/dist/crsqlite.wasm"
+);
+
+const nanoid=(t=21)=>crypto.getRandomValues(new Uint8Array(t)).reduce(((t,e)=>t+=(e&=63)<36?e.toString(36):e<62?(e-26).toString(36).toUpperCase():e>62?"-":"_"),"");
+provide nanoid;
+
+const db = await sqlite.open(":memory:");
+await db.exec(\`CREATE TABLE IF NOT EXISTS todo (id PRIMARY KEY, content, complete)\`);
+provide db;`} />
+
+Now set up rx-tbl.
+
+<RunnableCode code={`use db;
+const tblrx = await import('https://esm.sh/@vlcn.io/rx-tbl@0.8.1');
+const rx = tblrx.default(db);
+provide rx;`} />
+
+Given all the setup is done, we can now listen for changes to the `todo` table.
+
+<RunnableCode code={`use rx;
+const disposable = rx.onRange(["todo"], (updateTypes) => {
+  console.log("todo table changed", updateTypes);
+});
+provide disposable;`} />
+
+And then start inserting data into the table.
+
+<RunnableCode code={`use db;
+await db.exec(
+  \`INSERT INTO todo (id, content, complete) VALUES (?, ?, ?)\`,
+  [nanoid(), "Bleh", 0],
+);`} />

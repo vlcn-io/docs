@@ -36,17 +36,37 @@ function getResouce(id: string) {
 export function clearResources() {
   for (const [_, resources] of pathToResources) {
     for (const [_, resource] of resources) {
-      if (
-        resource.resolution &&
-        typeof resource.resolution === "object" &&
-        resource.resolution.close != null &&
-        typeof resource.resolution.close === "function"
-      ) {
-        resource.resolution.close();
+      if (resource.resolution && typeof resource.resolution === "object") {
+        maybeDispose(resource.resolution);
       }
     }
   }
   pathToResources.clear();
+}
+
+function maybeDispose(obj: any) {
+  if (obj == null) {
+    return;
+  }
+  const cleanups = ["close", "dispose", "destroy"];
+  for (const cleanup of cleanups) {
+    if (obj[cleanup] != null && typeof obj[cleanup] === "function") {
+      maybeCatch(() => obj[cleanup]());
+    }
+  }
+}
+
+function maybeCatch(fn: () => any) {
+  try {
+    const ret = fn();
+    if (isPromise(ret)) {
+      ret.catch((e: any) => {
+        console.warn(e);
+      });
+    }
+  } catch (e) {
+    console.warn(e);
+  }
 }
 
 export class CodeNode {
@@ -229,6 +249,7 @@ class Resource {
 
   invalidate() {
     this.promise = Promise.resolve();
+    maybeDispose(this.resolution);
     this.resolution = undefined;
     this.rejection = undefined;
     this.ready = false;
