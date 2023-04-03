@@ -148,7 +148,7 @@ But what if we need to collaborate between multiple devices? We need to be able 
 
 ## Syncing, Merging, Replicating
 
-The main primitive for this is [crsql_changes](../api-methods/crsql_changes) which allows you to:
+The main primitive for this is [crsql_changes](/cr-sqlite/api-methods/crsql_changes) which allows you to:
 
 1. pull changes since a given time
 2. apply changes from another db
@@ -178,7 +178,7 @@ A bunch of stuff. The details don't really matter for now, just know that:
 
 <Callout type="info">
   To understand everything in a chageset, see
-  [crsql_changes](../api-methods/crsql_changes).
+  [crsql_changes](/cr-sqlite/api-methods/crsql_changes).
 </Callout>
 
 Let's see what happens when we apply a changeset to a new database.
@@ -240,7 +240,7 @@ components,
 
 We can also perform concurrent edits on each DB and then merge them together. In order to ensure we only sync what has changed between the last time we synced, we'll need to track `db_version` for our peers.
 
-`crsqlite` maintains a [crsql_tracked_peers](../api-methods/crsql_tracked_peers) table that tracks the `db_version` of each peer. Let's see what that looks like for each database.
+`crsqlite` maintains a [crsql_tracked_peers](/cr-sqlite/api-methods/crsql_tracked_peers) table that tracks the `db_version` of each peer. Let's see what that looks like for each database.
 
 <RunnableCode code={`use db1;
 use db2;
@@ -254,7 +254,7 @@ db2TrackedPeers
 
 You can see that `tracked_peers` only has entries in `db2`. This is because `tracked_peers` gets updated on write, not read, and we've only synced from the direction of `db1` to `db2`.
 
-Updating `tracked_peers` on read is a responsibility of network layers that need to stream changes. See [crsql_tracked_peers](../api-methods/crsql_tracked_peers).
+Updating `tracked_peers` on read is a responsibility of network layers that need to stream changes. See [crsql_tracked_peers](/cr-sqlite/api-methods/crsql_tracked_peers).
 
 ### Using Tracked Peers
 
@@ -303,10 +303,10 @@ return await db1.execA(\`SELECT * FROM crsql_changes WHERE db_version > ? AND si
 
 You've seen how you can compose:
 
-- [crsql_as_crr](../api-methods/crsql_as_crr)
-- [crsql_siteid](../api-methods/crsql_siteid)
-- [crsql_changes](../api-methods/crsql_changes)
-- [crsql_tracked_peers](../api-methods/crsql_tracked_peers)
+- [crsql_as_crr](/cr-sqlite/api-methods/crsql_as_crr)
+- [crsql_siteid](/cr-sqlite/api-methods/crsql_siteid)
+- [crsql_changes](/cr-sqlite/api-methods/crsql_changes)
+- [crsql_tracked_peers](/cr-sqlite/api-methods/crsql_tracked_peers)
 
 to build a sync layer for your application.
 

@@ -1,2 +1,3 @@
 # When Not to use Vuclan
 
+Vulcan's main component is `cr-sqlite` so your users will have a ~450kb (compressed) WASM download for browser based use cases. WASM, luckily, has none of the parsing and interpretation overhead of JS so 450kb of WASM is much quicker to start running than 450kb of JS. It is still a sizeable chunk to download, however, and something to consider for web deployments.

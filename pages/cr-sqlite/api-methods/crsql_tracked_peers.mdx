@@ -36,7 +36,7 @@ If the user does not provide a `tag` value during insert to `crsql_changes` it i
 
 `crsqlite` only updates `tracked_peers` on receive events and thus always sets event to `0`. Custom sync providers can use this table to track send events by setting the event to `1` on insert.
 
-See the [sync guide](../guides/merging-databases) to understand how to leverage this table when creating a custom sync provider.
+See the [sync guide](/networking/whole-crr-sync) to understand how to leverage this table when creating a custom sync provider.
 
 ## Tag Values
 
