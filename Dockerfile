@@ -33,6 +33,8 @@ RUN adduser --system --uid 1001 nextjs
 
 COPY --from=builder /app ./
 
+COPY --chown=nextjs:nodejs --from=builder /app/ ./
+
 USER nextjs
 
 CMD ["yarn", "start"]
