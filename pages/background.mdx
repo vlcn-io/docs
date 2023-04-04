@@ -14,11 +14,11 @@ Vulcan is [a database extension](./cr-sqlite/intro) and [set of integrations](./
 
 ## How it Works
 
-The [cr-sqlite](./cr-sqlite/intro) component of Vulcan extends sqlite to enable it to merge changes from other databases and resolve conflicting edits. This means that users can write to their local databases and merge those changes with other users or devices whenever a network connection is available.
+The [cr-sqlite](./cr-sqlite/intro) component of Vulcan extends sqlite to enable it to merge changes from other databases and resolve conflicting edits. This means that users can write to their local databases and merge those changes with other users or devices who may have also made changes. Either in real time or lazily as network conditions allow.
 
 This capability is the foundation of the 5 features listed above as all of these involve a "merging of edits" problem.
 
-> It's like git, for your data.
+> Like git, for your data.
 
 <Callout type="info">
   For those that want a better understanding of the theory behind Vulcan, see
