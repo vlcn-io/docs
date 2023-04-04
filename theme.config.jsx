@@ -13,7 +13,7 @@ export default {
       titleTemplate: "%s – vlcn.io",
     };
   },
-  docsRepositoryBase: "https://github.com/tantaman/vlcn-nextra/blob/main",
+  docsRepositoryBase: "https://github.com/vlcn-io/docs/tree/main",
   footer: {
     text: (
       <span>
