@@ -24,5 +24,36 @@ export default {
       </span>
     ),
   },
+  head: (
+    <>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <meta
+        name="keywords"
+        content="software, crdts, crrs, sqlite, conflict-free"
+      />
+      <meta name="copyright" content="© 2022 One Law LLC" />
+      <meta
+        name="description"
+        content="Develop multi-device & local-first applications that sync and react to changing state in real-time."
+      />
+      <meta property="og:site_name" content="vlcn.io" />
+      <meta property="og:title" content="Distributed State, Simplified" />
+      <meta
+        property="og:description"
+        content="Develop multi-device & local-first applications that sync and react to changing state in real-time."
+      />
+      <meta property="og:image" content="https://vlcn.io/assets/hero.png" />
+      <meta
+        property="og:image:alt"
+        content="convergent-replicated-reactive-sql"
+      />
+      <meta property="og:image:width" content="825" />
+      <meta property="og:image:height" content="674" />
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:image" content="https://vlcn.io/assets/hero.png" />
+      <meta name="twitter:image:alt" content="vlcn" />
+      <meta name="twitter:site" content="@vlcnio" />
+    </>
+  ),
   // ...
 };
