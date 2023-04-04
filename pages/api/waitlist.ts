@@ -22,7 +22,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       res.status(200).json(db.prepare("SELECT * FROM waitlist").all());
       return;
     } else {
-      res.redirect("/thanks.html");
+      res.status(200).send(html);
     }
     return;
   }
@@ -34,5 +34,26 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   );
   stmt.run(name, company, email);
 
-  res.redirect("/thanks.html");
+  res.status(200).send(html);
 }
+
+const html = `<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>vlcn.io - Moving Software Forward</title>
+  <link rel="stylesheet" href="/waitlist.css">
+</head>
+
+<body>
+  <br />
+  <br />
+  <center>
+    <h1>Thanks! We'll get back to you soon!</h1>
+    <h2><a href="/" style="color: white">vlcn.io</a></h2>
+  </center>
+</body>
+
+</html>
+`;
