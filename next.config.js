@@ -5,6 +5,14 @@ const withNextra = require("nextra")({
 
 module.exports = withNextra({
   reactStrictMode: true,
+  async rewrites() {
+    return [
+      {
+        source: "/",
+        destination: "/index.html",
+      },
+    ];
+  },
   // output: "export",
 });
 
