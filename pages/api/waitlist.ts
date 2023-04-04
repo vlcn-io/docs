@@ -6,6 +6,7 @@ let db: any;
 if (!process.env.FLY_APP_NAME) {
   db = sqlite3("./dev.db");
 } else {
+  console.log("using prod db");
   db = sqlite3("/mnt/vlcn_sqlite/prod.db");
 }
 
