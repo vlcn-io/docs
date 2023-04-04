@@ -4,25 +4,26 @@ import { Callout } from "nextra-theme-docs";
 
 We want applications:
 
-1. That don't break when the network hiccups
+1. That don't break on network hiccups
 2. That can sync across devices
 3. Allow users to collaborate
 4. Allow users to view and edit their data while offline
-5. Provide instant interactions
+5. Have instant interactions
 
-Vulcan is [a database extension](./cr-sqlite/intro) and [set of integrations](./js/wasm) to allow you to create these kinds of applications.
+Vulcan is [a database extension](./cr-sqlite/intro) and [set of integrations](./js/wasm) to allow you to create these kinds of applications without being a distributed systems expert.
 
 ## How it Works
 
-The [cr-sqlite](./cr-sqlite/intro) component of Vulcan extends sqlite to enable it to merge changes from other databases and resolve conflicting edits. This means that users can write to their local databases and merge those changes with other users or devices who may have also made changes. Either in real time or lazily as network conditions allow.
+The base of everything is [cr-sqlite](./cr-sqlite/intro). An extension to SQLite to enable it to merge in changes from other databases and automatically resolve merge conflicts.
+
+This means that users can write to their local database and merge those changes with other users or devices who may have also made independent changes to their local database. Merging can happen in real time or lazily as network conditions allow.
+
+**In technical terms:** cr-sqlite adds [multi-master replication](https://en.wikipedia.org/wiki/Multi-master_replication) and [partition tolerance](https://en.wikipedia.org/wiki/Network_partition) to SQLite via [conflict free replicated data types](https://en.wikipedia.org/wiki/Conflict-free_replicated_data_type) (CRDTs).
+
+> It's like git, for your data.
 
 This capability is the foundation of the 5 features listed above as all of these involve a "merging of edits" problem.
 
-> Like git, for your data.
-
-<Callout type="info">
-  For those that want a better understanding of the theory behind Vulcan, see
-  the [deep dive section](./appendix/causal-consistency). Otherwise, continue
-  to the getting started section.
-</Callout>
-
+For those that want a better understanding of the theory behind Vulcan & cr-sqlite, see
+the [deep dive section](./appendix/causal-consistency). Otherwise, continue
+to the getting started section.

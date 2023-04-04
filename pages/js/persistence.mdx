@@ -8,11 +8,7 @@ import { Callout } from "nextra-theme-docs";
 
 Persistence is as you'd expect -- just provide a file name when opening the database. If you don't want to persist your database, provide `":memory:"` for the filename or omit the filename. A persistent database can include have non-persisted tables via the [`CREATE TEMPORARY TABLE` statement](https://www.sqlite.org/lang_createtable.html).
 
-A persistence example using the `wasm` build is below.
-
-<Callout type="info">
-The example below is runnable. You can make changes to the code and re-run it by pressing `shift + enter`.
-</Callout>
+A runnable persistence example using the `wasm` build is below.
 
 Import the required packages and init the wasm:
 

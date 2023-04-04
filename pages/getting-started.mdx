@@ -2,18 +2,20 @@
 
 Vulcan is split into a few components:
 
-1. Conflict-free database (cr-sqlite)
-2. Platform Integrations
+1. The conflict-free database (CR-SQLite)
+2. Platform SDKs
 3. Networking
 4. Live query engine
 
-## CR-SQLite
+If an SDK already exists for your platform, visiting those docs would be the quickest way to get started. Otherwise, you'll want to start with the conflict-free database.
 
-`CR-SQLite` is a SQLite extension that allow sqlite databases to be merged together. This extension can be used independently of all other Vulcan components and loaded into existing SQLite deployments. The extension can be used from any language that has SQLite bindings.
+## Conflict-free Database (CR-SQLite)
 
-[Get started with CR-SQLite](./cr-sqlite/intro)
+`CR-SQLite` is a SQLite extension that allows sqlite databases to be merged together. This extension can be used independently of all other Vulcan components and loaded into existing SQLite deployments.
 
-## Platform Integrations
+[Get started with CR-SQLite](./cr-sqlite/installation)
+
+## Platform SDKs
 
 `cr-sqlite` can run anywhere and provide you with a database that supports merging over a SQL API. Specific platform & language SDKs also exist to provide higher level APIs.
 
@@ -29,7 +31,7 @@ You can bring whatever transport you like so long as you follow a few convention
 
 ## Live Query Engine
 
-To enable applications at scale & extremely time-sensitive interactions, we're building a smart live query (reactive query) engine. This is currently a work in progress but based around the ideas of [segmeent & interval trees](https://stackoverflow.com/questions/17466218/what-are-the-differences-between-segment-trees-interval-trees-binary-indexed-t) and [differential dataflow](https://github.com/TimelyDataflow/differential-dataflow).
+To enable applications at scale and extremely time-sensitive interactions, we're building a smart live query (reactive query) engine. This is currently a work in progress, based around the ideas of [segmeent & interval trees](https://stackoverflow.com/questions/17466218/what-are-the-differences-between-segment-trees-interval-trees-binary-indexed-t) and [differential dataflow](https://github.com/TimelyDataflow/differential-dataflow).
 
 The reactive queries available in the React integration are not yet based on this engine. They take a simpler approach of re-running queries when the tables those queries use are updated. We've seen this simple approach work for resolving ~100 concurrent queries in a single frame in the browser but we'd like to do better.
 

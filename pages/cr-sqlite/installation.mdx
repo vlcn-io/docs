@@ -5,12 +5,6 @@ import { Tab, Tabs } from "nextra-theme-docs";
 
 `cr-sqlite` is distributed as a [run time loadable extension](https://www.sqlite.org/loadext.html) for SQLite and can be used with any language that has SQLite bindings.
 
-<Callout emoji="👾">
-  If you intend to write or create conflict free tables (CRRs) from a connection
-  you _must_ load the cr-sqlite extension into that connection before
-  interacting with any CRRs.
-</Callout>
-
 ## Acquiring the extension
 
 **Pre-built binaries** - You can download a pre-built binary for your platform from [GitHub releases](https://github.com/vlcn-io/cr-sqlite/releases).
@@ -31,6 +25,12 @@ Once you've acquired the extension you'll need to load it into your SQLite conne
   If you downloaded a prebuilt binary it is recommended to rename it to `crsqlite.[dll/so/dylib]`. This follows SQLite's expected naming conventions for extensions.
   
   If you do not rename it, you will need to pass `sqlite3_crsqlite_init` as an argument to [`sqlite3_load_extension`](https://www.sqlite.org/c3ref/load_extension.html).
+</Callout>
+
+
+<Callout emoji="👾">
+  You _must_ load the cr-sqlite extension into a connection before
+  interacting with any CRRs on that connection.
 </Callout>
 
 Examples:
