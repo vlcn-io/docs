@@ -7,7 +7,7 @@ if (!process.env.FLY_APP_NAME) {
   db = sqlite3("./dev.db");
 } else {
   console.log("using prod db");
-  db = sqlite3("/mnt/vlcn_sqlite/prod.db");
+  db = sqlite3("/mnt/vlcn_sqlite/prod2.db");
 }
 
 db.exec("CREATE TABLE IF NOT EXISTS waitlist (name, company, email)");
@@ -21,8 +21,9 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     ) {
       res.status(200).json(db.prepare("SELECT * FROM waitlist").all());
       return;
+    } else {
+      res.redirect("/thanks.html");
     }
-    res.status(405).json({ message: "Method Not Allowed" });
     return;
   }
 
