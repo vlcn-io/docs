@@ -1,6 +1,6 @@
 # Custom Syntax
 
-A current eye-sore of CR-SQLite is the use of `SELECT` statements to invoke functions which does some sort of modification of the database schema. Another eye-sore is the requirement to wrap alterations of `crr`s with `crsql_begin/commit_alter`.
+A current eye-sore of CR-SQLite is the use of `SELECT` statements to invoke functions which do some sort of modification of the database schema. Another eye-sore is the requirement to wrap alterations of `crr`s with [crsql_begin_alter](/cr-sqlite/api-methods/crsql_begin_alter) and [crsql_commit_alter](/cr-sqlite/api-methods/crsql_commit_alter).
 
 Luckily, we're partnering with the folks over at the [libsql](https://libsql.org/) project to add a dedicated syntax for CRR creation and modification.
 
