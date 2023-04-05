@@ -5,12 +5,12 @@ A current eye-sore of CR-SQLite is the use of `SELECT` statements to invoke func
 Luckily, we're partnering with the folks over at the [libsql](https://libsql.org/) project to add a dedicated syntax for CRR creation and modification.
 
 ```sql
-CREATE CLSet post (
+CREATE TABLE post (
  id INTEGER PRIMARY KEY,
  views COUNTER,
  content PERITEXT,
  owner_id LWW INTEGER
-);
+) AS CausalLengthSet;
 ```
 
 The above defines a CRR where:
@@ -20,3 +20,70 @@ The above defines a CRR where:
 - Content is PERITEXT ([collaborative text](https://www.inkandswitch.com/peritext/))
 - owner_id is a LWW register
 
+
+----
+
+## Ongoing Syntax Proposal
+
+## Table Syntax
+
+Each table can be modeled as some sort of set CRDT. Grow only set, observe remove set, causal length set, etc.
+
+Given that, we could add a modified `CREATE TABLE` that is `CREATE [set_type]`
+
+Example:
+
+```sql
+CREATE [SetType] foo ( ... );
+```
+
+Other alternatives would be to keep `CREATE TABLE` and append some modifier to the end:
+
+```sql
+CREATE TABLE foo ( ... ) AS [SetType]; -- option 1
+CREATE TABLE foo ( ... ) CRDT = [SetType]; -- option 2
+```
+
+Where `SetType = CausalLengthSet | GrowOnlySet | DeleteWinsSet | AddWinsSet`
+
+> Note that, in practice, we may end up only supporting `CausalLengthSet` given that type can be used to model all of the other sets in user space.
+
+## Column Syntax
+
+Within a row, each column can be a specific type of CRDT. The type of CRDT chosen controls the semantics of how that given cell is merged.
+
+Some options for a column:
+1. Last Write Wins Register
+2. Counter
+3. Distributed Fractional Index*
+4. Multi-Value Register
+5. RGA
+6. Peritext
+
+One idea is to add an extra type (the crdt type) to the column type.
+
+Example:
+
+```sql
+CREATE TABLE foo (
+  id PRIMARY KEY,
+  views COUNTER,
+  content PERITEXT,
+  owner_id LWW INTEGER
+) AS CausalLengthSet;
+```
+
+Or generally:
+
+```sql
+CREATE TABLE [table_name] (
+  [col_name] [CRDTType] [Type],
+  ...
+) AS [SetType];
+```
+
+where `CRDTType = LWW | Counter | DistFractIndex | MVRegister | RGA | Peritext`
+
+\* Distributed Fractional Index would need to be parameterized. I can go into more detail on this one after we talk through what has been proposed so far.
+
+https://github.com/libsql/libsql/issues/147#issuecomment-1495970616
