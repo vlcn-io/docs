@@ -26,7 +26,7 @@ The `wasmUrl` import assumes you are using a bundler which understands the `?url
 Use it:
 
 ```js
-const sqlite = await initWasm(wasmUrl);
+const sqlite = await initWasm(() => wasmUrl);
 const db = await sqlite.open("my_database.db");
 ```
 
@@ -40,7 +40,7 @@ For more examples, see this [annotated notebook of using `cr-sqlite` in the brow
 Initializes the wasm module. Returns the top level SQLite API.
 
 ```ts
-function initWasm(wasmUrl: string): Promise<SQLite>;
+function initWasm(() => string): Promise<SQLite>;
 ```
 
 **Params:**
@@ -52,7 +52,7 @@ function initWasm(wasmUrl: string): Promise<SQLite>;
 import initWasm from "@vlcn.io/crsqlite-wasm";
 import wasmUrl from "@vlcn.io/crsqlite-wasm/crsqlite.wasm?url";
 
-const sqlite = await initWasm(wasmUrl);
+const sqlite = await initWasm(() => wasmUrl);
 ```
 
 
