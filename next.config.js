@@ -13,6 +13,15 @@ module.exports = withNextra({
       },
     ];
   },
+  async redirects() {
+    return [
+      {
+        source: "/blog/gentle-intro-to-crdts.html",
+        destination: "/articles/intro-to-crdts",
+        permanent: true,
+      },
+    ];
+  },
   // output: "export",
 });
 
