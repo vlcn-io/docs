@@ -4,6 +4,7 @@
   "networking": {},
   "reactivity": "Reactivity",
   "react": "ReactJS",
+  "nextjs": "NextJS",
   "nodejs": "NodeJS",
   "example-apps": {}
 }
