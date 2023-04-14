@@ -4,6 +4,8 @@
 
 The big idea is that you define a table then say which CRDTs should be used to model it.
 
+Notional example (as a [custom syntax for crdts](/cr-sqlite/custom-syntax)):
+
 ```sql
 CREATE CLSet post (
  id INTEGER PRIMARY KEY,
@@ -19,9 +21,9 @@ Tables can be thought of as a set of rows where the identity of each row is its 
 
 cr-sqlite supports modeling tables as:
 
-1. Delete Wins Sets
-2. Causal Length Sets
-3. Grow Only Sets
+1. Delete Wins Sets (✅ implemented)
+2. Causal Length Sets (🦺 coming soon)
+3. Grow Only Sets (🦺 coming soon)
 
 See [Table CRDTs](./table-crdts).
 
