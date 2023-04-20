@@ -1,5 +1,6 @@
 import React from "react";
 import { CtxAsync as Ctx, useQuery } from "@vlcn.io/react";
+import styles from "./style.module.css";
 
 export default function LwwStateTable({ ctx }: { ctx: Ctx }) {
   // select * from todo then grab clock values for the row(s)
@@ -21,7 +22,7 @@ export default function LwwStateTable({ ctx }: { ctx: Ctx }) {
   ).data;
 
   return (
-    <table className="stateTable">
+    <table className={styles.stateTable}>
       <thead>
         <tr>
           <th>id</th>
@@ -35,7 +36,9 @@ export default function LwwStateTable({ ctx }: { ctx: Ctx }) {
         {allTodos.map((todo) => {
           return (
             <tr key={todo.id}>
-              <td className="id-readout">...{todo.id.toString().slice(-4)}</td>
+              <td className={styles["id-readout"]}>
+                ...{todo.id.toString().slice(-4)}
+              </td>
               <td>{todo.text}</td>
               <td>{(todo.clocks.text || [])[0]}</td>
               <td>{todo.completed ? "true" : "false"}</td>

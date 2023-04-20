@@ -2,6 +2,7 @@ import React, { useState, useCallback } from "react";
 import { CtxAsync as Ctx, useQuery } from "@vlcn.io/react";
 import { newIID as newId } from "./id";
 import { DBAsync } from "@vlcn.io/xplat-api";
+import styles from "./style.module.css";
 
 export type Event = {
   itemId?: bigint;
@@ -40,11 +41,11 @@ function Header({
 }) {
   const [newText, setNewText] = React.useState<string>("");
   return (
-    <header className="header">
+    <header className={styles.header}>
       <h1>todos - {nodeName}</h1>
       <input
         type="text"
-        className="new-todo"
+        className={styles["new-todo"]}
         placeholder="What needs to be done?"
         value={newText}
         onChange={(e) => setNewText(e.target.value)}
@@ -98,7 +99,7 @@ const TodoView = ({
     body = (
       <input
         type="text"
-        className="edit"
+        className={styles.edit}
         autoFocus
         value={text}
         onBlur={() => saveTodo(todo, text)}
@@ -108,10 +109,10 @@ const TodoView = ({
     );
   } else {
     body = (
-      <div className="view">
+      <div className={styles.view}>
         <input
           type="checkbox"
-          className="toggle"
+          className={styles.toggle}
           checked={todo.completed}
           onChange={toggleTodo}
         />
@@ -123,7 +124,7 @@ const TodoView = ({
         >
           {todo.text}
         </label>
-        <button className="destroy" onClick={deleteTodo} />
+        <button className={styles.destroy} onClick={deleteTodo} />
       </div>
     );
   }
@@ -156,7 +157,7 @@ function Footer({
   let clearCompletedButton;
   if (remaining !== todos.length) {
     clearCompletedButton = (
-      <button className="clear-completed" onClick={clearCompleted}>
+      <button className={styles["clear-completed"]} onClick={clearCompleted}>
         Clear Done
       </button>
     );
@@ -167,15 +168,15 @@ function Footer({
   };
 
   return (
-    <footer className="footer">
-      <span className="todo-count">
+    <footer className={styles.footer}>
+      <span className={styles["todo-count"]}>
         <strong> {remaining} </strong>
         {remaining === 1 ? "item" : "items"} left
       </span>
-      <ul className="filters">
+      <ul className={styles.filters}>
         <li>
           <a
-            className={todoList.filter === "all" ? "selected" : ""}
+            className={todoList.filter === "all" ? styles.selected : ""}
             onClick={() => updateFilter("all")}
           >
             {" "}
@@ -184,7 +185,7 @@ function Footer({
         </li>
         <li>
           <a
-            className={todoList.filter === "active" ? "selected" : ""}
+            className={todoList.filter === "active" ? styles.selected : ""}
             onClick={() => updateFilter("active")}
           >
             Active
@@ -192,7 +193,7 @@ function Footer({
         </li>
         <li>
           <a
-            className={todoList.filter === "completed" ? "selected" : ""}
+            className={todoList.filter === "completed" ? styles.selected : ""}
             onClick={() => updateFilter("completed")}
           >
             Done
@@ -286,7 +287,7 @@ export default function TodoList({
         <input
           id={"toggle-all-" + nodeName + ex}
           type="checkbox"
-          className="toggle-all"
+          className={styles["toggle-all"]}
           checked={remaining === 0}
           onChange={toggleAll}
         />
@@ -301,11 +302,11 @@ export default function TodoList({
     <>
       <Header ctx={ctx} nodeName={nodeName} eventHandler={eventHandler} />
       <section
-        className="main"
+        className={styles.main}
         style={allTodos.length > 0 ? {} : { display: "none" }}
       >
         {toggleAllCheck}
-        <ul className="todo-list">
+        <ul className={styles["todo-list"]}>
           {todos.map((t) => (
             <TodoView
               ctx={ctx}

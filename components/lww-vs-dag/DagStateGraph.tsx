@@ -4,6 +4,7 @@ import { Event } from "./TodoList";
 import cytoscape from "cytoscape";
 import dagre from "cytoscape-dagre";
 import nodeHtmlLabel from "cytoscape-node-html-label";
+import styles from "./style.module.css";
 
 cytoscape.use(dagre);
 nodeHtmlLabel(cytoscape);
@@ -117,7 +118,7 @@ export default function DagStateGraph({
         valign: "center",
         halignBox: "center",
         valignBox: "center",
-        cssClass: "dag-label",
+        cssClass: styles["dag-label"],
         tpl(data: any) {
           return "<span>" + data.label + "</span>"; // your html template here
         },

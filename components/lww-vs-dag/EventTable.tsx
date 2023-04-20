@@ -1,5 +1,6 @@
 import React from "react";
 import { CtxAsync as Ctx, useQuery } from "@vlcn.io/react";
+import styles from "./style.module.css";
 
 export default function EventTable({
   ctx,
@@ -16,7 +17,7 @@ export default function EventTable({
   return (
     <>
       <h2>Events - {nodeName}</h2>
-      <table className="stateTable">
+      <table className={styles.stateTable}>
         <thead>
           <tr>
             <th>id</th>
@@ -29,7 +30,7 @@ export default function EventTable({
           {allEvents.data.map((event: any) => {
             return (
               <tr key={event.id.toString()}>
-                <td className="id-readout">
+                <td className={styles["id-readout"]}>
                   ...{event.id.toString().slice(-4)}
                 </td>
                 <td>...{(event.itemId || "").toString().slice(-4)}</td>

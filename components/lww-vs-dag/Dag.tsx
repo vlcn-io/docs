@@ -6,6 +6,7 @@ import TodoList, { Event } from "./TodoList";
 import { newIID } from "./id";
 import EventTable from "./EventTable";
 const nodeNames = ["A", "B", "C"];
+import styles from "./style.module.css";
 
 async function syncLeftToRight(l: DBAsync, r: DBAsync) {
   // We're just pulling all changes. We could pull delta states but this is a basic example.
@@ -83,7 +84,7 @@ export default function Dag({
       <div style={{ display: "flex", height: 350, overflowY: "scroll" }}>
         {ctxts.map((ctx, i) => {
           return (
-            <section className="todoapp" key={i}>
+            <section className={styles.todoapp} key={i}>
               <div style={{ background: "white" }}>
                 <TodoList
                   ctx={ctx}
@@ -98,11 +99,11 @@ export default function Dag({
       </div>
       <div>
         <center>
-          <button className="btn" disabled={syncing} onClick={syncNodes}>
+          <button className={styles.btn} disabled={syncing} onClick={syncNodes}>
             Sync Nodes &#128259;
           </button>
           <button
-            className="btn btn-secondary"
+            className={styles.btn + " " + styles["btn-secondary"]}
             disabled={syncing}
             onClick={resetState}
           >
@@ -113,7 +114,7 @@ export default function Dag({
       <div style={{ display: "flex" }}>
         {ctxts.map((ctx, i) => {
           return (
-            <section className="todoapp" key={i}>
+            <section className={styles.todoapp} key={i}>
               <DagStateGraph ctx={ctx} nodeName={nodeNames[i]} />
             </section>
           );
@@ -122,7 +123,7 @@ export default function Dag({
       <div style={{ display: "flex" }}>
         {ctxts.map((ctx, i) => {
           return (
-            <section className="todoapp" key={i}>
+            <section className={styles.todoapp} key={i}>
               <EventTable ctx={ctx} nodeName={nodeNames[i]} />
             </section>
           );

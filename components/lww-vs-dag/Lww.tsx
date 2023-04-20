@@ -3,6 +3,7 @@ import { CtxAsync as Ctx } from "@vlcn.io/react";
 import TodoList, { Event } from "./TodoList";
 import LwwStateTable from "./LwwStateTable";
 import { DBAsync } from "@vlcn.io/xplat-api";
+import styles from "./style.module.css";
 
 const nodeNames = ["A", "B", "C"];
 
@@ -55,7 +56,7 @@ export default function Lww({
       <div style={{ display: "flex", height: 400, overflowY: "scroll" }}>
         {ctxts.map((ctx, i) => {
           return (
-            <section className="todoapp" key={i}>
+            <section className={styles.todoapp} key={i}>
               <div style={{ background: "white" }}>
                 <TodoList
                   ctx={ctx}
@@ -70,7 +71,7 @@ export default function Lww({
       </div>
       <div>
         <center>
-          <button className="btn" disabled={syncing} onClick={syncNodes}>
+          <button className={styles.btn} disabled={syncing} onClick={syncNodes}>
             Sync Nodes &#128259;
           </button>
         </center>
@@ -78,7 +79,7 @@ export default function Lww({
       <div style={{ display: "flex" }}>
         {ctxts.map((ctx, i) => {
           return (
-            <section className="todoapp" key={i}>
+            <section className={styles.todoapp} key={i}>
               <LwwStateTable ctx={ctx} />
             </section>
           );
