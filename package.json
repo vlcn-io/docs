@@ -20,8 +20,15 @@
     "@types/node": "18.15.11",
     "@types/react": "18.0.31",
     "@types/react-dom": "18.0.11",
+    "@vlcn.io/crsqlite-wasm": "^0.9.4",
+    "@vlcn.io/react": "^0.9.3",
+    "@vlcn.io/rx-tbl": "^0.8.3",
+    "@vlcn.io/xplat-api": "^0.8.2",
     "better-sqlite3": "^8.2.0",
     "codemirror": "^6.0.1",
+    "cytoscape": "^3.23.0",
+    "cytoscape-dagre": "^2.5.0",
+    "cytoscape-node-html-label": "^1.2.2",
     "eslint": "8.37.0",
     "eslint-config-next": "13.2.4",
     "next": "13.2.4",
@@ -32,6 +39,7 @@
     "react-json-view": "^1.21.3",
     "react-object-view": "^0.3.4",
     "react-spinners": "^0.13.8",
+    "react-twitter-widgets": "^1.11.0",
     "typescript": "5.0.2"
   },
   "devDependencies": {

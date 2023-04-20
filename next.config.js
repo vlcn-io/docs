@@ -22,6 +22,13 @@ module.exports = withNextra({
       },
     ];
   },
+  webpack: (config, { isServer }) => {
+    config.module.rules.push({
+      test: /\.wasm/,
+      type: "asset/resource",
+    });
+    return config;
+  },
   // output: "export",
 });
 

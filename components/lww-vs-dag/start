@@ -1,0 +1,111 @@
+import * as React from "react";
+import { createRoot } from "react-dom/client";
+import sqliteWasm, { DB } from "@vlcn.io/wa-crsqlite";
+import tblrx from "@vlcn.io/rx-tbl";
+import Lww from "./Lww";
+import Dag from "./Dag";
+import { CtxAsync as Ctx } from "@vlcn.io/react";
+// @ts-ignore
+import wasmUrl from "@vlcn.io/wa-crsqlite/wa-sqlite-async.wasm?url";
+import "./base.css";
+import "./style.css";
+
+// @ts-ignore
+import postPre from "./postPre.md?raw";
+// @ts-ignore
+import postMid from "./postMid.md?raw";
+// @ts-ignore
+import postPost from "./postPost.md?raw";
+import Post from "./Post";
+
+async function start() {
+  const sqlite = await sqliteWasm((_) => wasmUrl);
+
+  const createCtx = async (db: DB) => {
+    await createSchema(db);
+    const rx = await tblrx(db);
+    return {
+      db,
+      rx,
+    };
+  };
+  const createDagCtx = async (db: DB) => {
+    await createDagSchema(db);
+    const rx = await tblrx(db);
+    return {
+      db,
+      rx,
+    };
+  };
+
+  const lwwDbs = await Promise.all<Ctx>(
+    [
+      await sqlite.open(":memory:"),
+      await sqlite.open(":memory:"),
+      await sqlite.open(":memory:"),
+    ].map(createCtx)
+  );
+  const dagDbs = await Promise.all<Ctx>(
+    [
+      await sqlite.open(":memory:"),
+      await sqlite.open(":memory:"),
+      await sqlite.open(":memory:"),
+    ].map(createDagCtx)
+  );
+
+  renderPost("post-pre", postPre);
+
+  startLww(lwwDbs as [Ctx, Ctx, Ctx]);
+  renderPost("post-mid", postMid);
+  startDag(dagDbs as [Ctx, Ctx, Ctx]);
+
+  (window as any).lwwDbs = lwwDbs;
+  (window as any).dagDbs = dagDbs;
+
+  renderPost("post-post", postPost);
+}
+
+function renderPost(id: string, content: string) {
+  const root = createRoot(document.getElementById(id)!);
+  root.render(<Post content={content} />);
+}
+
+function startLww(lwwCtxts: readonly [Ctx, Ctx, Ctx]) {
+  const root = createRoot(document.getElementById("lww-example")!);
+  root.render(<Lww ctxts={lwwCtxts} />);
+}
+
+function startDag(dagCtxts: readonly [Ctx, Ctx, Ctx]) {
+  const root = createRoot(document.getElementById("dag-example")!);
+  root.render(<Dag ctxts={dagCtxts} />);
+}
+
+async function createSchema(db: DB) {
+  await db.exec(
+    'CREATE TABLE todo (id INTEGER PRIMARY KEY, "text" TEXT, completed INTEGER);'
+  );
+  await db.exec("SELECT crsql_as_crr('todo');");
+}
+
+async function createDagSchema(db: DB) {
+  await db.transaction(async () => {
+    await db.exec(
+      'CREATE TABLE todo (id INTEGER PRIMARY KEY, "text" TEXT, completed INTEGER);'
+    );
+    await db.exec(
+      "CREATE TABLE event (id INTEGER PRIMARY KEY, item_id INTEGER, [type] TEXT, value ANY);"
+    );
+    await db.exec("CREATE INDEX event_item ON event (item_id);");
+    await db.exec(`CREATE TABLE event_dag (
+      parent_id ANY, -- the event that came before this one
+      event_id INTEGER, -- the id of the event
+      foo ANY,
+      PRIMARY KEY (parent_id, event_id)
+    ) STRICT;`);
+    await db.exec(`CREATE INDEX event_dag_event ON event_dag (event_id);`);
+    await db.exec("SELECT crsql_as_crr('event');");
+    await db.exec("SELECT crsql_as_crr('event_dag');");
+  });
+}
+
+start();

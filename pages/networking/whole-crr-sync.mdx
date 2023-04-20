@@ -240,6 +240,10 @@ components,
 
 We can also perform concurrent edits on each DB and then merge them together. In order to ensure we only sync what has changed between the last time we synced, we'll need to track `db_version` for our peers.
 
+<Callout type="info">
+  Note: crsql_tracked_peers is being removed. The responsibility of tracking peers is being moved to the network layer as what information you track can be optimized based on topology.
+</Callout>
+
 `crsqlite` maintains a [crsql_tracked_peers](/cr-sqlite/api-methods/crsql_tracked_peers) table that tracks the `db_version` of each peer. Let's see what that looks like for each database.
 
 <RunnableCode code={`use db1;
