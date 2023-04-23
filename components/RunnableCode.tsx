@@ -58,7 +58,7 @@ export default function RunnableCode({ code }: { code: string }) {
       extraBinds: [{ key: "Shift-Enter", run: runCode }],
     });
     runCode();
-  }, [editorEl.current]);
+  }, [editorEl.current, code]);
 
   return (
     <div className={styles.root}>

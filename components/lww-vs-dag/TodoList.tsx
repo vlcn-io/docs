@@ -211,7 +211,7 @@ export default function TodoList({
   eventHandler,
   ex,
 }: {
-  ctx: Ctx | null;
+  ctx: Ctx;
   nodeName: string;
   eventHandler: EventHandler;
   ex: string;
@@ -221,15 +221,12 @@ export default function TodoList({
     editing: null,
     filter: "all",
   });
-  const startEditing = useCallback(
-    (todo: Todo) => {
-      setList((old) => ({
-        ...old,
-        editing: todo.id,
-      }));
-    },
-    [list]
-  );
+  const startEditing = useCallback((todo: Todo) => {
+    setList((old) => ({
+      ...old,
+      editing: todo.id,
+    }));
+  }, []);
   const saveTodo = useCallback(
     (todo: Todo, text: string) => {
       setList((old) => ({
@@ -242,14 +239,14 @@ export default function TodoList({
         value: text,
       });
     },
-    [list]
+    [ctx]
   );
 
   // if db is null, spinner to indicate loading
-  if (db == null || ctx == null) {
-    // do some better fb like newsfeed loading indicators
-    return <div>loading...</div>;
-  }
+  // if (db == null || ctx == null) {
+  //   // do some better fb like newsfeed loading indicators
+  //   return <div>loading...</div>;
+  // }
 
   const clearCompleted = () => {
     return eventHandler(ctx, { type: "clearCompleted" });
