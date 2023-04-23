@@ -1,8 +1,14 @@
+import { Callout } from "nextra-theme-docs";
+
 # crsql_as_crr
 
 `crsql_as_crr` converts an existing table to a conflict free replicated relation. Once a table is tracked as a CRR, it can be replicated and merged with other instances of that CRR on other databases.
 
 For merging, see [crsql_changes](./crsql_changes).
+
+<Callout type="info">
+When using crsqlite, remember to use `crsql_finalie` when closing a connection!
+</Callout>
 
 ## Usage:
 

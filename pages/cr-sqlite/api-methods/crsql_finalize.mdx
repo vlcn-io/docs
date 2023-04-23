@@ -1,0 +1,13 @@
+import { Callout } from "nextra-theme-docs";
+
+# crsql_finalize
+
+Tears down the extension. Should be run on any connection that has loaded `cr-sqlite` in order to free all resources before closing the connection.
+
+<Callout type="info">
+Why can't `crsqlite` auto-destruct itself? See this issue in SQLite:  https://sqlite.org/forum/forumpost/c94f943821
+</Callout>
+
+```sql
+SELECT crsql_finalize();
+```

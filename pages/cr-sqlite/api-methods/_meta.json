@@ -1,5 +1,6 @@
 {
   "crsql_as_crr": "crsql_as_crr",
+  "crsql_finalize": "crsql_finalize",
   "crsql_changes": "crsql_changes",
   "crsql_begin_alter": "crsql_begin_alter",
   "crsql_commit_alter": "crsql_commit_alter",
