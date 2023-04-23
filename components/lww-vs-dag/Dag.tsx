@@ -75,8 +75,8 @@ export default function Dag({
       <p>
         Rather than just keeping the final state as is done with LWW, the DAG
         example keeps a record of every event. These events are linked together
-        into a "causal graph" to represent which events caused which others.
-        Processing the graph gives us the final state. <br />
+        into a &quot;causal graph&quot; to represent which events caused which
+        others. Processing the graph gives us the final state. <br />
         <br />
         In the examples below you can add todos to different lists and sync all
         the lists. The causal graphs for each node are depicted below the lists.

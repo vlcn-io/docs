@@ -31,6 +31,7 @@
     "cytoscape-node-html-label": "^1.2.2",
     "eslint": "8.37.0",
     "eslint-config-next": "13.2.4",
+    "mermaid": "^10.1.0",
     "next": "13.2.4",
     "nextra": "^2.3.0",
     "nextra-theme-docs": "^2.3.0",
@@ -44,6 +45,8 @@
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.3",
+    "@types/cytoscape": "^3.19.9",
+    "@types/cytoscape-dagre": "^2.3.0",
     "broken-link-checker": "^0.7.8"
   }
 }

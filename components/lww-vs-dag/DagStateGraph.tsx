@@ -3,6 +3,7 @@ import React from "react";
 import { Event } from "./TodoList";
 import cytoscape from "cytoscape";
 import dagre from "cytoscape-dagre";
+// @ts-ignore
 import nodeHtmlLabel from "cytoscape-node-html-label";
 import styles from "./style.module.css";
 
@@ -111,6 +112,7 @@ export default function DagStateGraph({
         },
       ],
     });
+    // @ts-ignore
     aCy.nodeHtmlLabel([
       {
         query: "node",
