@@ -251,7 +251,7 @@ In order to ensure we only sync what has changed since the last time we synced, 
 
 The `crsql_tracked_peers` table is essentially acting as a mechanism to store cursors that represent the last point in time that we synced with another peer or site. We use these values to only pull or push changes since the last time we pulled or pushed when talking with a peer.
 
-For example, if `db2` wants all changes from `db1` that it has not yet seen, `db2` can ask `db1` for changes where the `db_version` is greater than the value it has stored for `db1`.
+If `db2` wants all changes from `db1` that it has not yet seen, `db2` can ask `db1` for changes where the `db_version` is greater than the value it has stored for `db1`.
 
 example --
 
