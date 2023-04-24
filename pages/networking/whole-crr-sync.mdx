@@ -212,6 +212,7 @@ And finally apply all changes from the first database to the second.
 
 <RunnableCode
   code={`use db2;
+use deckid;
 // example of selecting changes after a db_version and only made locally
 const changes = await db1.execA(\`SELECT * FROM crsql_changes WHERE db_version > 0 AND site_id IS NULL\`);
 const db2_synced = await db2.tx(async (tx) => {
@@ -238,70 +239,28 @@ slides,
 components,
 };`} />
 
-We can also perform concurrent edits on each DB and then merge them together. In order to ensure we only sync what has changed between the last time we synced, we'll need to track `db_version` for our peers.
+We can also perform concurrent edits on each DB and then merge them together. 
 
-<Callout type="info">
-  Note: crsql_tracked_peers is being removed. The responsibility of tracking peers is being moved to the network layer as what information you track can be optimized based on topology.
-</Callout>
+### Delta State
 
-`crsqlite` maintains a [crsql_tracked_peers](/cr-sqlite/api-methods/crsql_tracked_peers) table that tracks the `db_version` of each peer. Let's see what that looks like for each database.
+In order to ensure we only sync what has changed since the last time we synced, we'll need to track the latest `db_version` we've seen from our peers.
 
-<RunnableCode code={`use db1;
-use db2;
-const db1TrackedPeers = await db1.execO(\`SELECT quote(site_id) as site, version FROM crsql_tracked_peers WHERE event = 0\`);
-const db2TrackedPeers = await db2.execO(\`SELECT quote(site_id) as site, version FROM crsql_tracked_peers WHERE event = 0\`);
-
-return {
-db1TrackedPeers,
-db2TrackedPeers
-};`} />
-
-You can see that `tracked_peers` only has entries in `db2`. This is because `tracked_peers` gets updated on write, not read, and we've only synced from the direction of `db1` to `db2`.
-
-Updating `tracked_peers` on read is a responsibility of network layers that need to stream changes. See [crsql_tracked_peers](/cr-sqlite/api-methods/crsql_tracked_peers).
+`crsqlite` provides a [crsql_tracked_peers](/cr-sqlite/api-methods/crsql_tracked_peers) table that networking layers can use to track the `db_version` of each peer. Networking layers are of course allowed to create their own tables to track this information as well.
 
 ### Using Tracked Peers
 
-The `crsql_tracked_peers` table is essentially acting as a mechanism to store cursors that represent the last point in time that we synced with another peer or site. We use these values to pull changes from other sites.
+The `crsql_tracked_peers` table is essentially acting as a mechanism to store cursors that represent the last point in time that we synced with another peer or site. We use these values to only pull or push changes since the last time we pulled or pushed when talking with a peer.
 
 For example, if `db2` wants all changes from `db1` that it has not yet seen, `db2` can ask `db1` for changes where the `db_version` is greater than the value it has stored for `db1`.
 
 example --
 
-<RunnableCode code={`use db1;
-use db2;
-// What is the site id of db1?
-const db1SiteId = (await db1.execA(\`SELECT crsql_siteid()\`))[0][0];
-// What was the latest value db2 saw from db1?
-const lastSeenDb1Version = (await db2.execO(
-  \`SELECT version FROM crsql_tracked_peers WHERE event = 0 AND site_id = ?\`,
-  [db1SiteId],
-))[0].version;
-
-provide db1SiteId;
-provide lastSeenDb1Version;
-return {
-db1SiteId,
-lastSeenDb1Version
-}`} />
-
-Now we can ask db1 for all changes since that version.
-
 <RunnableCode
-  code={`use db1;
-use lastSeenDb1Version;
-return await db1.execA(\`SELECT * FROM crsql_changes WHERE db_version > ? AND site_id IS NULL\`, [lastSeenDb1Version]);`}
+  code={`use deckid;
+return await db1.execA(\`SELECT * FROM crsql_changes WHERE db_version > ? AND site_id IS NULL\`, [4]);`}
 />
 
-As you can see, no changes were returned. This is because we've already synced all changes from db1 to db2. If we perform a write on db1, however, we'll see that the changes are returned.
-
-<RunnableCode
-  code={`use db1;
-use lastSeenDb1Version;
-use deckid;
-await db1.exec(\`UPDATE deck SET name = 'new title' WHERE id = ?\`, [deckid]);
-return await db1.execA(\`SELECT * FROM crsql_changes WHERE db_version > ? AND site_id IS NULL\`, [lastSeenDb1Version]);`}
-/>
+You can experiment with the `db_version` to see how it affects the changes that are returned.
 
 ## Wrap Up
 
@@ -322,3 +281,19 @@ The basic ideas:
 4. Keep track of what you've synced with `crsql_tracked_peers`
 
 Another example implementation of the above: https://observablehq.com/@tantaman/cr-sqlite-basic-setup
+
+## Future
+
+Reference implementations of:
+
+- A REST sync server
+- P2P sync over a lossy pub-sub channel
+
+are in progress.
+
+Reference implementations of:
+
+- [A Websocket sync server & client](/js/networking)
+- [Simple P2P sync over WebRTC](https://github.com/vlcn-io/cr-sqlite/tree/main/js/packages/p2p)
+
+already exist.
