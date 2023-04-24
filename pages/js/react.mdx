@@ -129,9 +129,9 @@ A cool thing about `cr-sqlite` is that you get cross-tab sync for free! Open thi
 
 Let's import the `cr-sqlite` wasm bundle and create a database with a basic schema.
 
-<RunnableCode code={`const initWasm = await import('https://esm.sh/@vlcn.io/crsqlite-wasm@0.10.0-next.1');
+<RunnableCode code={`const initWasm = await import('https://esm.sh/@vlcn.io/crsqlite-wasm@0.10.0');
 const sqlite = await initWasm.default(
-  () => "https://esm.sh/@vlcn.io/crsqlite-wasm@0.10.0-next.1/dist/crsqlite.wasm"
+  () => "https://esm.sh/@vlcn.io/crsqlite-wasm@0.10.0/dist/crsqlite.wasm"
 );
 
 const db = await sqlite.open("react-example.db");
@@ -142,7 +142,7 @@ Now we'll write the react component for our todo list.
 
 <RunnableCode code={`use db;
 const [vlcnReact, React, htm] = await Promise.all([
-  import("https://esm.sh/@vlcn.io/react@0.10.0-next.1"),
+  import("https://esm.sh/@vlcn.io/react@0.10.0"),
   import("https://esm.sh/react@18.2.0"),
   import("https://esm.sh/htm@3.1.1/react"),
 ]);
@@ -211,10 +211,10 @@ Lastly, we'll render the component to the page.
 <RunnableCode code={`use TodoList;
 use db;
 const [React, reactDom, htm, tblrx] = await Promise.all([
-  import("https://esm.sh/@vlcn.io/react@0.10.0-next.1"),
+  import("https://esm.sh/@vlcn.io/react@0.10.0"),
   import("https://esm.sh/react-dom@18.2.0/client"),
   import("https://esm.sh/htm@3.1.1/react"),
-  import("https://esm.sh/@vlcn.io/rx-tbl@0.9.0-next.1"),
+  import("https://esm.sh/@vlcn.io/rx-tbl@0.9.0"),
 ]);
 
 const { html } = htm;
