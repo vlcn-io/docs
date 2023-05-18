@@ -3,5 +3,17 @@
   "fractional-indexing": {},
   "recursive-ordering": {},
   "recursive-ordering-in-sqlite": {},
-  "distributed-recursive-ordering": {}
+  "distributed-recursive-ordering": {},
+  "lww-vs-dag": {
+    "title": "LWW vs DAG",
+    "theme": {
+      "layout": "full",
+      "breadcrumb": false,
+      "footer": true,
+      "sidebar": false,
+      "toc": false,
+      "pagination": false,
+      "typesetting": "article"
+    }
+  }
 }

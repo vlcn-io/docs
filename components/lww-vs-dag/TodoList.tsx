@@ -131,7 +131,8 @@ const TodoView = ({
   return (
     <li
       className={
-        (todo.completed ? "completed " : "") + (editing ? "editing" : "")
+        (todo.completed ? styles["completed"] + " " : "") +
+        (editing ? styles["editing"] : "")
       }
     >
       {body}

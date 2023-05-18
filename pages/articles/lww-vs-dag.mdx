@@ -2,14 +2,13 @@ import Lww from '/components/lww-vs-dag/Lww';
 import Dag from '/components/lww-vs-dag/Dag';
 import I from '/components/lww-vs-dag/Initialize';
 
-
-# CRDTs via Peer to Peer Event Logs
+# LWW vs P2P Event Log
 
 Event sourcing is a fairly common design pattern for deriving application state from a history of events. But is it possible to turn an event log into a CRDT? To allow nodes to append events to the log, without coordinating with other nodes? Can we merge all these copies of the log, proces them, and arrive at the same application state across all nodes?
 
 This is possible. What's even better is that it is more powerful than other approaches, such as last write wins, to solving the problem of distributing application state. We'll do a brief review of how we can distribute state with last write wins registers, cover how that is a less powerful version of an event log and then build an distributed event log.
 
-# LWW vs Event Logs
+## LWW vs Event Logs
 
 A common approach to distributing application state is to use last write wins registers. Last write wins (LWW), however, is just one interpretation of the events in the system. This interpretation discards all the information that was used to derive it. A distributed event log on the other hand:
 
@@ -62,7 +61,7 @@ On (3), this is similar to (2). We can process the event log in a way where the 
 
 We know that a grow only set of LWW registers is a CRDT from the [last article](/blog/gentle-intro-to-crdts.html) but how do we turn an event log into a CRDT? And how do we process it consistently so every node arrives at the same state after processing the log?
 
-# Interactive Examples
+## Interactive Examples
 
 To get an intuitive sense of how all this can work, we're going to set up two different examples. One for LWW and one for a P2P event log. Each example will have three todo lists that are running on different peers. You'll be able to add data to each list, merge those lists and view how the underlying state of each changes.
 
