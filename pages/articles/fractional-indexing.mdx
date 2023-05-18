@@ -41,8 +41,7 @@ Fractional indices have some gotchas that aren't apparent at first.
 You might think 52 bits of precision (for JS floats) would be plenty to continuously insert between two items. Since inserts divide the space by 2, you will actually run out of precision after 53 insertions in the wrong spot. Demonstrated below
 
 <RunnableCode
-  code={`
-let lower = 1;
+  code={`let lower = 1;
 let upper = 2;
 let midpoint = null;
 
@@ -81,8 +80,7 @@ I have a copy of this doc on my phone and desktop. I add to it on both devices s
 
 When merging these two docs via fractional indexing, I'll end up interleaving ` there` and ` dude`. Example below.
 
-<RunnableCode code={`
-const jitter = () => Math.random() * 0.0001; // not a _real_ productiom impl of jitter
+<RunnableCode code={`const jitter = () => Math.random() * 0.0001; // not a _real_ productiom impl of jitter
 const doc = [
   { c: "h", order: 0 },
   { c: "i", order: 1 }

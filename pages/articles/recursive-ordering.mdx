@@ -47,7 +47,7 @@ Where each `node` has an `id` and points to the id of its parent, providing the 
 - How do you order a table by a relationship?
 - Is ordering tables through relationships even performant?
 
-See [[blog/recursive-ordering-in-sqlite]].
+See [recursive-ordering-in-sqlite](./recursive-ordering-in-sqlite).
 
 # Pros
 
@@ -57,7 +57,7 @@ See [[blog/recursive-ordering-in-sqlite]].
 
 # Cons
 
-- Without additional constraints, this will not work in a distributed setting where writers can update the ordering without coordinating. Someone could move B before D on one node and D before B on another, creating a cycle and breaking the list. See [[blog/distributed-recursive-ordering]].
+- Without additional constraints, this will not work in a distributed setting where writers can update the ordering without coordinating. Someone could move B before D on one node and D before B on another, creating a cycle and breaking the list. See [recursive-ordering-in-sqlite](./recursive-ordering-in-sqlite).
 
 # Why is it "recursive"
 

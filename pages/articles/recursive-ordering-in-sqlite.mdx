@@ -1,3 +1,4 @@
+import RunnableCode from "@/components/RunnableCode";
 
 I previously talked about how you could order by relationships in [[blog/recursive-ordering]]. I didn't explain how you can actually implement this in a relational database and make it performant.
 
@@ -72,29 +73,23 @@ But how well does it perform?
 
 Given we can [run SQLite in the browser these days](https://sqlite.org/wasm/doc/trunk/index.md), lets fire it up and try it out.
 
-<div class="runnable-code">
-<div>
-window.dbPromise = window.sqlite3InitModule().then((sqlite3) => {
-  const db = new sqlite3.oo1.DB();
-  db.exec([
-    `CREATE TABLE node (id, parent_id, content, primary key (id));`,
-    `CREATE INDEX node_parent_id ON node (parent_id);`
-  ]);
+<RunnableCode
+code={`const sqlite3Import = await import("https://esm.sh/@sqlite.org/sqlite-wasm@3.41.2");
+sqlite3InitModule = sqlite3Import.default;
 
-  return db;
-});
-</div>
-</div>
+const sqlite3 = await sqlite3InitModule();
+const db = new sqlite3.oo1.DB();
+provide db;`} />
 
 Now lets populate 100k rows as our test set of data where each new row points to the previous row.
 
-<div class="runnable-code">
-<div>
+<RunnableCode
+code={`use db;
 function fill(db) {
   let lastId = null;
   for (let i = 0; i < 100000; ++i) {
     const id = i;
-    db.exec(`INSERT INTO node (id, parent_id, content) VALUES (?, ?, ?)`, { bind: [
+    db.exec(\`INSERT INTO node (id, parent_id, content) VALUES (?, ?, ?)\`, { bind: [
       id,
       lastId,
       "str" + i,
@@ -102,37 +97,39 @@ function fill(db) {
     lastId = id;
   }
 }
-dbPromise.then((db) => db.transaction(() => fill(db)));
-</div>
-</div>
+db.transaction(() => fill(db));`} />
 
 Then prepare different statements to benchmarking recursive ordering vs normal ordering.
 
-<div class="runnable-code">
-<div>
-dbPromise.then((db) => {
-  const recursiveQuery = `WITH RECURSIVE
-    after_node(content,level,id) AS (
-      VALUES('Root',0,?)
-      UNION ALL
-      SELECT node.content, after_node.level+1, node.id
-        FROM node JOIN after_node ON node.parent_id IS after_node.id
-      ORDER BY 2 DESC
-    )
-    SELECT content FROM after_node LIMIT ?;`
-  window.recursiveStmt = db.prepare(recursiveQuery);
-  const regularQuery = `SELECT content FROM node WHERE id > ? ORDER BY id DESC LIMIT ?`;
-  window.regularStmt = db.prepare(regularQuery);
-  const controlQuery = `SELECT content FROM node WHERE content > ? ORDER BY content DESC LIMIT ?`;
-  window.controlStmt = db.prepare(controlQuery);
-});
-</div>
-</div>
+<RunnableCode
+code={`use db;
+const recursiveQuery = \`WITH RECURSIVE
+  after_node(content,level,id) AS (
+    VALUES('Root',0,?)
+    UNION ALL
+    SELECT node.content, after_node.level+1, node.id
+      FROM node JOIN after_node ON node.parent_id IS after_node.id
+    ORDER BY 2 DESC
+  )
+  SELECT content FROM after_node LIMIT ?;\`;
+
+const recursiveStmt = db.prepare(recursiveQuery);
+const regularQuery = \`SELECT content FROM node WHERE id > ? ORDER BY id DESC LIMIT ?\`;
+const regularStmt = db.prepare(regularQuery);
+const controlQuery = \`SELECT content FROM node WHERE content > ? ORDER BY content DESC LIMIT ?\`;
+const controlStmt = db.prepare(controlQuery);
+
+provide recursiveStmt;
+provide regularStmt;
+provide controlStmt;`} />
 
 And finally, run the benchmarks.
 
-<div class="runnable-code">
-<div>
+<RunnableCode
+code={`use recursiveStmt;
+use regularStmt;
+use controlStmt;
+
 function fetchAll(stmt, bindings) {
   let numRows = 0;
   stmt.bind(bindings);
@@ -151,8 +148,8 @@ function time(fn) {
   const end = performance.now();
   return [ret, (end - start).toPrecision(4) + "ms"];
 }
-return dbPromise.then((db) => {
-  const cases = {
+
+return {
     "a - control sort first 10k": time(() => fetchAll(controlStmt, ["str0", 10000])),
     "a - regular sort first 10k": time(() => fetchAll(regularStmt, [0, 10000])),
     "a - recursive sort first 10k": time(() => fetchAll(recursiveStmt, [null, 10000])),
@@ -172,15 +169,11 @@ return dbPromise.then((db) => {
     "f - control sort last 5k": time(() => fetchAll(controlStmt, ["str90000", 5000])),
     "f - regular sort last 5k": time(() => fetchAll(regularStmt, [90000, 5000])),
     "f - recursive sort last 5k": time(() => fetchAll(recursiveStmt, [90000, 5000])),
-  };
-  return js_beautify(JSON.stringify(cases));
-});
-</div>
-</div>
+};`} />
 
-On my machine, recursive sort was about 2x slower than regular sort in all cases and between 8-12x faster than the control.
+On a macbook m1, recursive sort is about 2x slower than regular sort in all cases and between 8-12x faster than the control.
 
-The "2x slower **in all cases**" is also a good sign -- it means that the perf of a recursive sort tracks that of a run of the mill sort on an indexed column.
+The "2x slower **in all cases**" is also a good sign -- it means that the perf of a recursive sort tracks that of a run of the mill sort on an indexed column by a constant factor.
 
 Each recursive case also took the same amount of time meaning it doesn't matter from where we start fetching a range from within a large table.
 

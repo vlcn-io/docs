@@ -83,3 +83,62 @@ While it is straightforward, a drawback is that we're locked into this specific 
 > Note that the `clock` columns could be a variety of options. Here we've done an independent lamport timestamp per column.
 
 <I Comp={Dag} />
+
+> the DAG example is notional and thoroughly un-optimized. We currently re-pull and re-apply the entire DAG on sync rather than doing incremental updates. We also sync the entire DAG between nodes rather than delta states. How to incrementally process the DAG is a separate topic.
+
+# TODO
+
+Cover:
+
+- DAG view when syncing on every event
+- What branches mean
+- When branches converge
+- Event schema
+- DAG schema
+- Causal order traversal of a DAG
+- Move over the prose from https://observablehq.com/d/dc2bbfad6d64fb5e
+
+Event Schema:
+
+```sql
+CREATE TABLE event (id INTEGER PRIMARY KEY, item_id INTEGER, type TEXT, value ANY);
+CREATE INDEX event_item ON event (item_id);
+```
+
+DAG Schema:
+
+```sql
+CREATE TABLE event_dag (
+      parent_id ANY, -- the event that came before this one
+      event_id INTEGER, -- the id of the event
+      PRIMARY KEY (parent_id, event_id)
+    ) STRICT;
+CREATE INDEX event_dag_event ON event_dag (event_id);
+```
+
+Causal order traversal of a DAG:
+
+```sql
+WITH RECURSIVE
+after_node(event_id,level) AS (
+  VALUES('ROOT',0)
+  UNION ALL
+  SELECT event_dag.event_id, after_node.level+1
+    FROM event_dag JOIN after_node ON event_dag.parent_id=after_node.event_id
+   ORDER BY 2,1 DESC
+)
+
+SELECT event.id, event.item_id, event.type, event.value
+  FROM after_node JOIN event
+  ON after_node.event_id = event.id;
+```
+
+DAG Leaves:
+
+```sql
+SELECT l.event_id
+  FROM event_dag as l
+  WHERE NOT EXISTS (SELECT NULL FROM event_dag as r WHERE r.parent_id = l.event_id)
+```
+
+nit: that's an index scan :/
