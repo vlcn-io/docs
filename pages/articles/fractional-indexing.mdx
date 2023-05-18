@@ -1,0 +1,199 @@
+import RunnableCode from "@/components/RunnableCode";
+import { Callout } from "nextra-theme-docs";
+
+To enable user provided ordering of rows, most people reach for a fractional index. They're great given they let you change the position of one row without modifying any other rows. Fractional indices have a number of gotchas, however. 
+
+## How It Works
+
+Take the following array where each item records its order
+
+<RunnableCode 
+  code={`const rows = [
+  { id: 'a', order: 1 },
+  { id: 'b', order: 2 },
+  { id: 'c', order: 3 },
+  { id: 'd', order: 4 },
+  { id: 'e', order: 5 },
+  { id: 'f', order: 6 },
+];
+provide rows;`}
+/>
+
+If you want to insert something between 1 & 2, you'll have to re-number 2 and everything after it. This isn't great -- especially in a setting where you could have millions of rows.
+
+Enter fractional indices.
+
+Fractional indices let us insert between existing items by inserting at the midpoint between them.
+
+<RunnableCode
+  code={`use rows;
+return (rows[0].order + rows[1].order) / 2`} />
+
+obviously this is great for a database table that stores rows with some user defined order. You can change the order of a row without ever having to touch other rows.
+
+Sounds like heaven, right? Almost...
+
+## Fractional Indexing - Gotchas
+
+Fractional indices have some gotchas that aren't apparent at first.
+
+### Precision
+You might think 52 bits of precision (for JS floats) would be plenty to continuously insert between two items. Since inserts divide the space by 2, you will actually run out of precision after 53 insertions in the wrong spot. Demonstrated below
+
+<RunnableCode
+  code={`
+let lower = 1;
+let upper = 2;
+let midpoint = null;
+
+for (let i = 0; i < 52; ++i) {
+  midpoint = (upper + lower) / 2;
+  upper = midpoint;
+}
+
+const afterFiftyTwo = upper;
+
+midpoint = (upper + lower) / 2;
+upper = midpoint;
+
+const afterFiftyThree = upper;
+
+return [afterFiftyTwo, afterFiftyThree];`} />
+
+As you can see, our value collapses back to `1` after picking the insert to always be between a specific item and the last insertion after that item.
+
+This is worked around by using arbitrary precision floats. You can, however, run into cases where your index length becomes incredibly large in order to maintain precision.
+
+### Collisions
+
+In a distributed setting, fractional indices have problems when it comes to nodes assigning items the same orders.
+
+Say peer A inserts item X and peer B inserts item Y and both of them give X & Y position 1.5. When the peers merge, nobody will ever be able to insert between X & Y since X & Y were assigned the same order.
+
+### Interleaving
+
+Since each node is assigning orders to items independently, this can cause unwanted interleaving of data.  Say I have a document that I'm sharing with myself which says "hi".
+
+I have a copy of this doc on my phone and desktop. I add to it on both devices such that -
+
+- My phone has: "hi there"
+- My desktop has: "hi dude"
+
+When merging these two docs via fractional indexing, I'll end up interleaving ` there` and ` dude`. Example below.
+
+<RunnableCode code={`
+const jitter = () => Math.random() * 0.0001; // not a _real_ productiom impl of jitter
+const doc = [
+  { c: "h", order: 0 },
+  { c: "i", order: 1 }
+];
+
+const phoneDoc = doc.concat([
+  { c: " ", order: 2 + jitter() },
+  { c: "t", order: 3 + jitter() },
+  { c: "h", order: 4 + jitter() },
+  { c: "e", order: 5 + jitter() },
+  { c: "r", order: 6 + jitter() },
+  { c: "e", order: 7 + jitter() }
+]);
+const desktopDoc = doc.concat([
+  { c: " ", order: 2 + jitter() },
+  { c: "d", order: 3 + jitter() },
+  { c: "u", order: 4 + jitter() },
+  { c: "d", order: 5 + jitter() },
+  { c: "e", order: 6 + jitter() }
+]);
+
+const mergedDoc = Object.values(
+  doc
+    .concat(phoneDoc)
+    .concat(desktopDoc)
+    .reduce((l, r) => {
+      l[r.order] = r;
+      return l;
+    }, {})
+)
+  .sort((l, r) => l.order - r.order)
+  .map((o) => o.c)
+  .join("");
+return mergedDoc;`} />
+
+## Fixing the Gotchas
+
+### Precision & Exponential Index
+
+To prevent exponential growth of your fractional index, insertions at the end should be whole increments and insertions at the beginning should be whole decrements.
+
+I.e.,
+
+```text
+-2 <-- start of list
+-1
+0
+1
+2 <-- end of list
+```
+
+You can also use a variable length encoding for your fractional index to compress away repeating numbers. See https://observablehq.com/@dgreensp/implementing-fractional-indexing
+
+### Collisions
+
+A proposed workaround for collisions is to add random jitter to your index. Jitter, unfortunately, can still lead to a collision and will increase the space of your index.
+
+The other workaround is to allow collisions! 😮
+
+To see how this works, imagine two peers (`P` and `Q`) creating two sets of data:
+
+```text
+Peer P:
+A [1, P]
+B [2, P]
+C [3, P]
+```
+
+```text
+Peer Q:
+X [1, Q]
+Y [2, Q]
+Z [3, Q]
+```
+
+When we merge, everything collides. A and X have the same order, B & Y have the same order and C & Z have that same order. That's ok though. We'll do two things to handle collisions:
+
+1. Put the items from lesser peer (P) first when they collide
+
+```text
+A [1, P]
+X [1, Q]
+B [2, P]
+Y [2, Q]
+C [3, P]
+Z [3, Q]
+```
+
+2. When inserting between items that have collided, we'll open up space. I.e., move the collided items up or down by some fraction to make room between them.
+
+```text
+A [1, P]
+NEW_1 [1.5, P]
+X [1.75, Q]
+B [2, P]
+Y [2, Q]
+C [3, P]
+NEW_2 [3.5, P]
+Z [4, Q]
+```
+
+This keeps all the LWW semantics (order field is treated as a LWW register) and doesn't introduce anything new.
+
+This is implemented in `cr-sqlite` [here](/cr-sqlite/api-methods/crsql_fract_as_ordered).
+
+### Interleaving
+
+To fix interleaving we will part ways with fractional indexing and instead sort based on recursive relationships between rows. You can read about this in [recursive ordering](/articles/recursive-ordering).
+
+<Callout type="info">
+Note that there are approaches to fix interleaving in a fractional index as seen [here](https://mattweidner.com/2022/10/21/basic-list-crdt.html#intro-string-implementation). This approach is based on the recursive relationship idea but encoded into a fractional index.
+</Callout>
+
+
