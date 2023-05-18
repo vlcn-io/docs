@@ -20,6 +20,20 @@ module.exports = withNextra({
         destination: "/articles/intro-to-crdts",
         permanent: true,
       },
+      {
+        source: "/blog/distributed-recursive-ordering",
+        destination: "/articles/distributed-recursive-ordering",
+        permanent: true,
+      },
+      {
+        source: "/blog/recursive-ordering-in-sqlite",
+        destination: "/articles/recursive-ordering-in-sqlite",
+        permanent: true,
+      },
+      {
+        source: "/blog/lww-vs-dag",
+        destination: "/articles/lww-vs-dag",
+      },
     ];
   },
   webpack: (config, { isServer }) => {
