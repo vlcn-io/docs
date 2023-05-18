@@ -71,7 +71,7 @@ stmt.all(
 
 But how well does it perform?
 
-# Benchmarking
+## Benchmarking
 
 Given we can [run SQLite in the browser these days](https://sqlite.org/wasm/doc/trunk/index.md), lets fire it up and try it out.
 
@@ -185,14 +185,14 @@ Each recursive case also took the same amount of time meaning it doesn't matter 
 
 While it is a 2x hit, it is still incredibly quick. On my m1 -- 10ms to return 10k rows in order from a set of 100k.
 
-# Pros
+## Pros
 
 - While slower than a fractional index, it is still very fast / is only a constant factor slower than a regular index.
 - Does not lose precision as a fractional index does. See [articles/fractional-indexing](./fractional-indexing)
 - Does now blow up in storage space as a fractional index can. See [articles/fractional-indexing](./fractional-indexing)
 - Inserting or moving a row only requires updating at most 3 rows. See [articles/recursive-ordering](./recursive-ordering)
 
-# Drawbacks
+## Drawbacks
 
 - The implementation shown here cannot be used in a distributed setting where nodes write without coordination. To solve this, see [articles/distributed-recursive-ordering](./distributed-recursive-ordering).
 

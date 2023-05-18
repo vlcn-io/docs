@@ -33,6 +33,7 @@ module.exports = withNextra({
       {
         source: "/blog/lww-vs-dag",
         destination: "/articles/lww-vs-dag",
+        permanent: true,
       },
     ];
   },
