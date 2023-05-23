@@ -2,12 +2,133 @@ import { Callout } from "nextra-theme-docs";
 
 # Networking 🚧
 
-Native Rust networking layers are still in progress. Until then, JS client and server implementations are available.
+Native Rust networking layers are still in progress. Until then, JS implementations are available.
 
-## Client
+## direct-connect-browser
 
-Document endpoints
+The easiest way to use the sync client, from within the browser, [would be to use the React `DBProvider`](https://github.com/vlcn-io/vite-starter/blob/1c0088a7301ae98054d866d70db4bd654f16ec2d/src/main.tsx#L40-L44). If you'd like to use it directly, however, an example is below.
+
+
+```ts
+import { WorkerInterface } from "@vlcn.io/direct-connect-browser";
+import worker from "@vlcn.io/direct-connect-browser/shared.worker.js?url";
+import wasm from "@vlcn.io/crsqlite-wasm/crsqlite.wasm?url";
+
+const endpoints = {
+  // The REST endpoint to create or migrate a DB
+  createOrMigrate: updatePort(
+    new URL("/sync/create-or-migrate", window.location.origin)
+  ),
+  // The REST endpoint to apply changes to
+  applyChanges: updatePort(new URL("/sync/changes", window.location.origin)),
+  // The REST endpoint to get changes from
+  startOutboundStream: updatePort(
+    new URL("/sync/start-outbound-stream", window.location.origin)
+  ),
+  worker,
+  wasm,
+};
+
+const sqlite = await init(endpoints.wasm);
+const db = await sqlite.open(dbid);
+await db.automigrateTo(schema.name, schema.content);
+const rx = tblrx(db);
+const syncWorker = new WorkerInterface(endpoints.worker);
+syncWorker.startSync(endpoints.wasm, dbid, endpoints, rx);
+```
 
 ## Server
 
-Document endpoints
+`@vlcn.io/direct-connect-nodejs` provides endpoints to create and apply changes to a database. It also provides an event stream to stream changes to a client.
+
+The example server below is taken from [vite-starter](https://github.com/vlcn-io/vite-starter).
+
+```ts
+import express from "express";
+import {
+  SyncService,
+  DBCache,
+  ServiceDB,
+  FSNotify,
+  DefaultConfig,
+} from "@vlcn.io/direct-connect-nodejs";
+import { JsonSerializer } from "@vlcn.io/direct-connect-common";
+import cors from "cors";
+
+const PORT = parseInt(process.env.PORT || "8080");
+
+const app = express();
+app.use(express.json());
+app.use(cors());
+
+// DB that holds metadata about the service
+const svcDb = new ServiceDB(DefaultConfig, true);
+// Cache of user databases
+const dbCache = new DBCache(DefaultConfig, (name, version) => {
+  return svcDb.getSchema("default", name, version);
+});
+// Filesystem watcher to push changes on db change
+const fsNotify = new FSNotify(DefaultConfig, dbCache);
+// Sync service to apply changes to a database or stream changes from a database
+const syncSvc = new SyncService(DefaultConfig, dbCache, svcDb, fsNotify);
+// JSON serializer. Binary formats are also available.
+const serializer = new JsonSerializer();
+
+app.post(
+  "/sync/changes",
+  async (req, res) => {
+    const msg = serializer.decode(req.body);
+    const ret = await syncSvc.applyChanges(msg);
+    res.json(serializer.encode(ret));
+  }
+);
+
+app.post(
+  "/sync/create-or-migrate",
+  async (req, res) => {
+    const msg = serializer.decode(req.body);
+    const ret = await syncSvc.createOrMigrateDatabase(msg);
+    res.json(serializer.encode(ret));
+  }
+);
+
+app.get(
+  "/sync/start-outbound-stream",
+  async (req, res) => {
+    console.log("Start outbound stream");
+    const msg = serializer.decode(
+      JSON.parse(decodeURIComponent(req.query.msg))
+    );
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
+
+    // TODO: just throw on schema mismatch rather than providing a response
+    const [stream, initialResponse] = await syncSvc.startOutboundStream(msg);
+    res.write(
+      `data: ${JSON.stringify(serializer.encode(initialResponse))}\n\n`
+    );
+
+    stream.addListener((changes) => {
+      res.write(
+        `data: ${JSON.stringify(serializer.encode(changes))}\n\n`,
+        (err) => {
+          if (err != null) {
+            console.error(err);
+            stream.close();
+          }
+        }
+      );
+    });
+
+    req.on("close", () => {
+      console.log("Close outbound stream");
+      stream.close();
+    });
+  }
+);
+
+app.listen(PORT, () =>
+  console.log(`Server listening at http://localhost:${PORT}`)
+);
+```

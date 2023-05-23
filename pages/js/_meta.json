@@ -1,10 +1,10 @@
 {
   "first-app": "Your First App",
+  "react": "ReactJS",
   "wasm": "WASM & Browser APIs",
   "persistence": "Browser Persistence",
   "networking": {},
   "reactivity": "Reactivity",
-  "react": "ReactJS",
   "nodejs": "NodeJS",
   "example-apps": {}
 }
