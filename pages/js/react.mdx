@@ -4,10 +4,12 @@ import RunnableCode from "@/components/RunnableCode";
 # React
 
 <Callout type="info">
-We're currently buidling a "create-react-app" for vulcan to quickly scaffold a new project. Till then, you can read the interactive example below and view the [example repository](https://github.com/vlcn-io/live-examples/).
+To get started with React quickly, scaffold a new project with `npm create @vlcn.io your-app-name`.
 </Callout>
 
-The react integration is provided by the [@vlcn.io/react](https://www.npmjs.com/package/@vlcn.io/react) package and centers around a `useQuery` hook that allows you to subscribe to a query and get the data in your component.
+The react integration is provided by the [@vlcn.io/react](https://www.npmjs.com/package/@vlcn.io/react) package and centers around:
+1. A `useQuery` hook that allows you to subscribe to a query and get the data in your component.
+2. A `DBProvider` to provide one or more databases to your component tree and kick off sync.
 
 ## Installation
 

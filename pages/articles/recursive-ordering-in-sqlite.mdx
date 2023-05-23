@@ -76,7 +76,7 @@ But how well does it perform?
 Given we can [run SQLite in the browser these days](https://sqlite.org/wasm/doc/trunk/index.md), lets fire it up and try it out.
 
 <RunnableCode
-code={`const sqlite3Import = await import("https://esm.sh/sqlite-esm@3.41.2-build15");
+code={`const sqlite3Import = await import("https://esm.sh/@sqlite.org/sqlite-wasm@3.41.2");
 sqlite3InitModule = sqlite3Import.default;
 
 const sqlite3 = await sqlite3InitModule();

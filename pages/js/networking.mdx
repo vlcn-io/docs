@@ -2,112 +2,12 @@ import { Callout } from "nextra-theme-docs";
 
 # Networking 🚧
 
-WebSocket client and server implementations are available for those who do not want to write their own network layer.
+Native Rust networking layers are still in progress. Until then, JS client and server implementations are available.
 
-The client & server currently take an opinionated approach to syncing. They sync the entire contents of all client and server CRRs such that both databases will have identical CRRs. This model is fine for single-tenant databases but would not be suitable if you'd like to run a multi-tenant database on the backend.
+## Client
 
-For more on supporting single-tenant vs multi-tenant syncing use cases, refer to the [networking & syncing guide](/networking/background).
+Document endpoints
 
-<Callout type="info">
-An official multi-tenant network layer will be available ~Q3/Q4 2023.
-</Callout>
+## Server
 
-## WebSocket Client
-
-Install the dependencies:
-
-```bash
-npm install @vlcn.io/client-websocket @vlcn.io/rx-tbl
-```
-
-Import the `startSync` function. If you want to run the sync process in a worker, rather than on the UI thread, import the URL to the worker as well.
-
-```javascript
-import startSync from '@vlcn.io/client-websocket';
-import workerUri from "@vlcn.io/client-websocket/worker.js?url";
-import tblrx from "@vlcn.io/rx-tbl";
-```
-
-Now we can wire everything together.
-
-```javascript
-const rx = tblrx(db);
-const sync = startSync(`wss://${window.location.hostname}/sync`, {
-  localDb: db, // the local database to sync
-  remoteDbId: dbid, // the id of the remote database to sync with
-  create: { // create the remote database if it does not exist?
-    schemaName: "myschema.sql", // the name of the schemae to apply to the remote database
-  },
-  rx, // the rx-tbl instance to use See `reactivity`
-  workerUri,
-  worker: true,
-});
-```
-
-## WebSocket Server
-
-Install the dependencies:
-
-```bash
-npm install @vlcn.io/server-websocket
-```
-
-Start the server:
-
-```javascript
-npx vlcn-websocket --dbDir=db_dir --schemaDir=schema_file_dir
-```
-
-The server can also be included as a library and run with your existing Node.js server.
-
-## Client API Docs
-
-### startSync
-
-```typescript
-function startSync(
-  url: string,
-  options: {
-    localDb: DB,
-    remoteDbId: string,
-    create?: {
-      schemaName: string,
-    },
-    rx: TblRx,
-    workerUri?: string,
-    worker?: boolean,
-  },
-): Sync;
-```
-
-**Parameters**
-
-1. `url` - The URL of the WebSocket server to connect to.
-2. `options.localDb` - The local database instance to sync.
-3. `options.remoteDbId` - The id of the remote database to sync with. This must be a uuid string.
-4. `options.create` - If specified then the database will be created if it does not exist.
-5. `options.create.schemaName` - The name of the schema file to apply to the remote database on creation.
-6. `options.rx` - The [rx-tbl](./reactivity) instance to use.
-7. `options.workerUri` - The URL to the worker script.
-8. `options.worker` - Whether or not to run the sync process in a worker. Defaults to true.
-
-### Sync
-
-```typescript
-type Sync = {
-    stop: () => void;
-};
-```
-
-## Server CLI Docs
-
-```javascript
-npx vlcn-websocket --dbDir=db_dir --schemaDir=schema_file_dir --static=static_dir
-```
-
-**Parameters**
-
-1. `--dbDir` - The directory to store the database files in.
-2. `--schemaDir` - The directory to load schema files from when creating new databases.
-3. `--static` - The directory to serve static files from.
-
+Document endpoints
