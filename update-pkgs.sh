@@ -21,11 +21,8 @@ for pkg in "${pkgs[@]}"; do
   IFS=':' read -r NAME VERSION <<< "$pkg"
   
   # replace in package.json
-  # echo "s/\"${parts[0]}\": \".*\"/\"${parts[0]}\": \"${parts[1]}\"/g"
   jq --arg name "$NAME" --arg version "$VERSION" '.dependencies[$name] = $version' package.json > tmp.json && mv tmp.json package.json
-  # replace in all mdx files in pages and contained directories
-  # find ./pages -name "*.mdx" -exec sed -i '' -e "s/${parts[0]}\@.*\"/${parts[0]}\@${parts[1]}\"/g" {} \;
-  # find ./pages -name "*.mdx" -exec sed -i -E "s/${NAME}@[^0-9a-z.]+/${NAME}@${VERSION}/g" {} \;
+
   find ./pages -name '*.mdx' -exec bash -c '
       update_file() {
         local file=$1
