@@ -18,5 +18,7 @@ for pkg in "${pkgs[@]}"; do
   jq --arg name "$NAME" --arg version "$VERSION" '.dependencies[$name] = $version' package.json > tmp.json && mv tmp.json package.json
   # replace in all mdx files in pages and contained directories
   # find ./pages -name "*.mdx" -exec sed -i '' -e "s/${parts[0]}\@.*\"/${parts[0]}\@${parts[1]}\"/g" {} \;
-  find ./pages -name "*.mdx" -exec sed -i -E "s/${NAME}@[^[:space:]]+/${NAME}@${VERSION}/g" {} \;
+  # find ./pages -name "*.mdx" -exec sed -i -E "s/${NAME}@[^[:space:]]+/${NAME}@${VERSION}/g" {} \;
+  find "$DIRECTORY" -name '*.mdx' -exec awk -v name="$NAME" -v version="$VERSION" '{gsub(name "@[^[:space:]]+", name "@" version); print}' {} \; > tmp && mv tmp {}
+
 done
