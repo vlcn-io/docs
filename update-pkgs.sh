@@ -20,8 +20,13 @@ for pkg in "${pkgs[@]}"; do
   
   IFS=':' read -r NAME VERSION <<< "$pkg"
   
-  # replace in package.json
-  jq --arg name "$NAME" --arg version "$VERSION" '.dependencies[$name] = $version' package.json > tmp.json && mv tmp.json package.json
+  PACKAGE_EXISTS=$(jq -r --arg name "$NAME" '.dependencies | has($name)' package.json)
+
+  # If package exists, update version
+  if [ "$PACKAGE_EXISTS" = "true" ]; then
+    # replace in package.json only if there is an entry for that package in the package.json
+    jq --arg name "$NAME" --arg version "$VERSION" '.dependencies[$name] = $version' package.json > tmp.json && mv tmp.json package.json
+  fi
 
   find ./pages -name '*.mdx' -exec bash -c '
       update_file() {
