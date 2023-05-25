@@ -81,8 +81,8 @@ return schema;`}
 Now that we have a data model sketched out we can apply it to a database. Let's import the `crsqlite-wasm` module and open a database in memory. Too learn how to persist data to disk, see [js/persistence](/js/persistence).
 
 <RunnableCode
-  code={`const initWasm = await import('https://esm.sh/@vlcn.io/crsqlite-wasm@0.10.2-next.1');
-const sqlite = await initWasm.default(() => "https://esm.sh/@vlcn.io/crsqlite-wasm@0.10.2-next.1/dist/crsqlite.wasm");
+  code={`const initWasm = await import('https://esm.sh/@vlcn.io/crsqlite-wasm@0.11.0');
+const sqlite = await initWasm.default(() => "https://esm.sh/@vlcn.io/crsqlite-wasm@0.11.0/dist/crsqlite.wasm");
 const db1 = await sqlite.open(":memory:");
 provide sqlite;
 provide db1;`}
