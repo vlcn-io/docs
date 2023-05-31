@@ -1,0 +1,32 @@
+.node {
+  display: flex;
+}
+
+.nodeTable th,
+.nodeTable td {
+  padding: 15px;
+}
+
+.nodeTable {
+  flex: 0 0 50%;
+  overflow-x: scroll;
+}
+
+.nodeTable input {
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  width: 75px;
+}
+
+.nodeTable button {
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  background: #eee;
+  cursor: pointer;
+}
+
+.nodeState {
+  flex-grow: 2;
+}

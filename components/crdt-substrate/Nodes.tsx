@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { getResouce } from "../CodeNode";
-import DAG from "./DAG";
+import DAG, { NodeName } from "./DAG";
+import { Node, NodeState } from "./Node";
+import asTrackedMutations from "./trackMutations";
 
 export default function Nodes() {
   const [mutations, setMutations] = useState<{
@@ -13,19 +15,51 @@ export default function Nodes() {
     rejection?: any;
     version?: number;
   }>({});
-  const nodeStates = useState({
+
+  const trackedMutations = useMemo(() => {
+    if (mutations.resolution) {
+      return asTrackedMutations(mutations.resolution);
+    }
+    return {};
+  }, [mutations]);
+
+  const [nodeStates, setNodeStates] = useState<{
+    [Property in NodeName]: NodeState;
+  }>({
     nodeA: {
       dag: new DAG("nodeA"),
+      state: null,
     },
     nodeB: {
       dag: new DAG("nodeB"),
+      state: null,
     },
     nodeC: {
       dag: new DAG("nodeC"),
+      state: null,
     },
   });
 
-  function resetNodeStates(maybeState?: any) {}
+  function resetNodeStates(maybeInitialState?: any) {
+    const state = maybeInitialState || initialState.resolution;
+    if (state == null) {
+      return;
+    }
+    setNodeStates({
+      nodeA: {
+        dag: new DAG("nodeA"),
+        state: structuredClone(state),
+      },
+      nodeB: {
+        dag: new DAG("nodeB"),
+        state: structuredClone(state),
+      },
+      nodeC: {
+        dag: new DAG("nodeC"),
+        state: structuredClone(state),
+      },
+    });
+  }
 
   useEffect(() => {
     const mutationsResource = getResouce("mutations");
@@ -72,10 +106,18 @@ export default function Nodes() {
     return <div>Loading...</div>;
   }
 
-  const theMutations = mutations.resolution;
-  const theInitialState = initialState.resolution;
-
-  return <div>No nodes yet</div>;
+  return (
+    <div>
+      {Object.entries(nodeStates).map(([nodeName, nodeState]) => (
+        <Node
+          key={nodeName}
+          mutations={trackedMutations}
+          name={nodeName as NodeName}
+          state={nodeState}
+        />
+      ))}
+    </div>
+  );
 }
 
 /*

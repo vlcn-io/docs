@@ -25,13 +25,12 @@ We'll start with some initial state --
 
 provide state;`} />
 
-And then provide an input for you to author _any mutation you want_ against that state. The only rule is that your mutations must be deterministic. Two example mutations have been provided for you.
+And then let you author _any mutation you want_ against that state. The only rule is that your mutations must be deterministic. Two example mutations have been provided for you below.
 
-<Callout type="info">
-  Mutations are just functions that modify the current state. The first arg is `state` and the rest are any args you want to pass in.
-</Callout>
-
-<RunnableCode code={`const mutations = {
+<RunnableCode code={`// Mutations are just functions that modify the current state.
+// The first arg must always be \`state\`.
+// Any additional args are parameters for the mutation.
+const mutations = {
   increment: (state) => {
     state.counter++;
   },
@@ -42,8 +41,13 @@ And then provide an input for you to author _any mutation you want_ against that
 
 provide mutations;`} />
 
-Next, we'll create three independent copies of the state and provide a way to apply the mutations to those copies.
+<Callout type="info">
+After making any changes to the code, press `shift + enter` or the `play` button (top right of the code box) to re-run the code and update the example.
+</Callout>
 
-And below, we'll simulate three different nodes each with an independent copy of the initial state. On each node you can run your mutations. Whenever you desire, merge all the nodes together with the "sync state" button.
+Now lets see your state and mutations in action.
 
+Below are three independent UIs that are driven by three indepent copies of the initial state. On each node you can run your mutations. Whenever you desire, have the nodes merge their state together with the "sync state" button.
+
+<br/>
 <Nodes />
