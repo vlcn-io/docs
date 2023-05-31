@@ -143,7 +143,7 @@ function asTrackedMutations(mutations) {
 
         // link the event into the DAG
         for (const parent of parents) {
-          await tx.execA(`INSERT OR IGNORE INTO event_dag VALUES (?, ?, 0)`, [
+          await tx.execA(`INSERT OR IGNORE INTO event_dag VALUES (?, ?)`, [
             parent[0],
             eventId,
           ]);

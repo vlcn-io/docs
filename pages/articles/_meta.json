@@ -27,5 +27,8 @@
       "typesetting": "article"
     },
     "display": "hidden"
+  },
+  "crdt-substrate": {
+    "display": "hidden"
   }
 }

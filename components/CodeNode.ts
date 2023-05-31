@@ -22,7 +22,7 @@ const pathToResources = new Map<string, Map<string, Resource>>();
 const USE_REG = /^use\s+([A-z]{1}[A-z|0-9]*);$/gm;
 const PROVIDE_REG = /^provide\s+([A-z]{1}[A-z|0-9]*);$/gm;
 
-function getResouce(id: string) {
+export function getResouce(id: string) {
   if (!pathToResources.has(window.location.pathname)) {
     pathToResources.set(window.location.pathname, new Map());
   }
@@ -30,7 +30,7 @@ function getResouce(id: string) {
   if (!resources.has(id)) {
     resources.set(id, new Resource(id));
   }
-  return resources.get(id);
+  return resources.get(id)!;
 }
 
 export function clearResources() {

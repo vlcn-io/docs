@@ -1,0 +1,49 @@
+import RunnableCode from "@/components/RunnableCode";
+import { Callout } from "nextra-theme-docs";
+import Nodes from "@/components/crdt-substrate/Nodes";
+
+# CRDT Substrate
+
+What if I told you anyone can create a new CRDT? That with no special knowledge, you can write a set of mutations that can be applied to a data structure in a way that is guaranteed to converge? That you can do this without any locks, mutexes, or other concurrency primitives? That you can do this without any special knowledge of distributed systems?
+
+<br/>
+
+<center>
+![meme](/blog/crdt-substrate/told-you.jpg)
+</center>
+
+Nobody can be told this truth. They must see it for themselves.
+
+## Seeing is Believing
+
+We'll start with some initial state --
+
+<RunnableCode code={`const state = {
+  counter: 0,
+  items: []
+};
+
+provide state;`} />
+
+And then provide an input for you to author _any mutation you want_ against that state. The only rule is that your mutations must be deterministic. Two example mutations have been provided for you.
+
+<Callout type="info">
+  Mutations are just functions that modify the current state. The first arg is `state` and the rest are any args you want to pass in.
+</Callout>
+
+<RunnableCode code={`const mutations = {
+  increment: (state) => {
+    state.counter++;
+  },
+  addItem: (state, item) => {
+    state.items.push(item);
+  }
+};
+
+provide mutations;`} />
+
+Next, we'll create three independent copies of the state and provide a way to apply the mutations to those copies.
+
+And below, we'll simulate three different nodes each with an independent copy of the initial state. On each node you can run your mutations. Whenever you desire, merge all the nodes together with the "sync state" button.
+
+<Nodes />
