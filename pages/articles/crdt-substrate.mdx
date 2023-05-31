@@ -37,6 +37,8 @@ const mutations = {
   addItem(state, item) {
     state.items.push(item);
   },
+
+  // We'll discuss these two mutations in detail later.
   moveItem(state, fromIndex, toIndex) {
     const arr = state.items;
     if (fromIndex < 0 || toIndex < 0 || fromIndex > arr.length || toIndex > arr.length
@@ -68,3 +70,17 @@ Below are three independent UIs that are driven by three indepent copies of the 
 
 <br/>
 <Nodes />
+
+Pretty cool, right? All of the nodes converge to the same state and you didn't have to write any special code to make this happen. You just wrote some mutations and the substrate took care of the rest.
+
+If you were paying close attention, however, you'll notice that some user intent was not preserved. So while yes, you can create a CRDT without any special knowledge, you can't create a CRDT that preserves user intent without some special knowledge.
+
+
+## Missing Intent
+
+- Fract index & order
+- Counter & race (tx isolation levels)
+- Pop by index? Or pop by item id?
+
+## Preserving Intent
+

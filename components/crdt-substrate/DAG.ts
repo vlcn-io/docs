@@ -83,7 +83,7 @@ export default class DAG {
         const [bNode, bRawSeq] = b.id.split("-");
         const aSeq = parseInt(aRawSeq);
         const bSeq = parseInt(bRawSeq);
-        if (aSeq == bSeq) {
+        if (aSeq === bSeq) {
           return aNode < bNode ? -1 : 1;
         }
         return aSeq - bSeq;
