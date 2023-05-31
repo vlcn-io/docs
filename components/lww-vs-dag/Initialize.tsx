@@ -37,7 +37,7 @@ export default function Initialize({
         setCtxts(newCtxts);
       });
     }
-  }, []);
+  }, [ctxts]);
 
   if (ctxts == null) {
     return <div>Loading...</div>;

@@ -238,7 +238,7 @@ export default function TodoList({
         args: [todo.id, text],
       });
     },
-    [ctx]
+    [ctx, eventHandler]
   );
 
   // if db is null, spinner to indicate loading
@@ -362,7 +362,7 @@ export default function TodoList({
           }
           // style this like a normal button
         >
-          I'm a distributed counter! {counter}
+          I&apos;m a distributed counter! {counter}
         </button>
       </div>
     </>

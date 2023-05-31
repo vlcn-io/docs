@@ -240,7 +240,7 @@ export default function TodoList({
         value: text,
       });
     },
-    [ctx]
+    [ctx, eventHandler]
   );
 
   // if db is null, spinner to indicate loading

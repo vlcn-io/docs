@@ -34,7 +34,7 @@ But it got me thinking, can we bring the Replicache model to CRDTs? Can we give 
 
 ## Bring your own CRDT
 
-Yes we can! For lack of a better term, I'm calling it "CRDT substrate". It is a re-think on my earlier work ([LWW vs DAG](./lww-vs-dag)) to incoroprate named mutations, inspired by Replicache and [another earlier work](https://aphrodite.sh/docs/mutations-and-transactions) of mine.
+Yes we can! For lack of a better term, I'm calling it "CRDT substrate". It is a re-think on my earlier work ([LWW vs DAG](./lww-vs-dag)) to incoroprate named mutations, inspired by Replicache and [another earlier work](https://aphrodite.sh/docs/mutations-and-transactions).
 
 ## Building the Event Log
 
@@ -43,7 +43,7 @@ The basis of the model is an event log. Just like Replicache, we'll model the ev
 The tree is a CRDT given:
 - The tree is inflationary with a partial ordering, forming a semi-lattice
 - Merging trees is idempotent (we toss out duplicate events)
-- Merging trees is commutative and associative
+- Merging trees is commutative and associative (we just bring events over as-is, no reparenting happens on merge)
 
 We'll implement this concept in SQL.
 

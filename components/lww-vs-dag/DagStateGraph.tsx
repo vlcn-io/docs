@@ -127,6 +127,7 @@ export default function DagStateGraph({
       },
     ]);
     setCy(aCy);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [root.current]);
 
   React.useEffect(() => {
