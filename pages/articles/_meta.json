@@ -15,5 +15,16 @@
       "pagination": false,
       "typesetting": "article"
     }
+  },
+  "bring-your-own-crdt": {
+    "theme": {
+      "layout": "full",
+      "breadcrumb": false,
+      "footer": true,
+      "sidebar": false,
+      "toc": false,
+      "pagination": false,
+      "typesetting": "article"
+    }
   }
 }

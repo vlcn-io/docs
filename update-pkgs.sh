@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 
 declare -a pkgs=(
-  "@vlcn.io/direct-connect-nodejs:0.2.0"
   "@vlcn.io/direct-connect-common:0.2.0"
-  "@vlcn.io/sync-p2p:0.9.0"
-  "@vlcn.io/crsqlite-wasm:0.11.0"
+  "@vlcn.io/direct-connect-nodejs:0.2.0"
   "@vlcn.io/react:2.1.0"
   "@vlcn.io/direct-connect-browser:0.1.0"
-  "@vlcn.io/create:0.0.2"
   "@vlcn.io/crsqlite-allinone:0.10.0"
+  "@vlcn.io/crsqlite-wasm:0.11.0"
+  "@vlcn.io/sync-p2p:0.9.0"
+  "@vlcn.io/create:0.0.3"
   "@vlcn.io/rx-tbl:0.10.0"
   "@vlcn.io/wa-sqlite:0.17.0"
   "@vlcn.io/xplat-api:0.10.0"
