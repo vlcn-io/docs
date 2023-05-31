@@ -25,6 +25,7 @@
       "toc": false,
       "pagination": false,
       "typesetting": "article"
-    }
+    },
+    "display": "hidden"
   }
 }
