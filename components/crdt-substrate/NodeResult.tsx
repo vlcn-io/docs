@@ -7,5 +7,11 @@ const palette = {
 };
 
 export default function NodeResult({ state }: { state: NodeState }) {
-  return <ObjectView data={{ "": state.state }} palette={palette} />;
+  return (
+    <ObjectView
+      data={{ "": state.state }}
+      palette={palette}
+      options={{ expandLevel: 2 }}
+    />
+  );
 }

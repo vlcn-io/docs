@@ -12,7 +12,9 @@ export default function Mutation({
   onClick: (fn: (state: NodeState) => NodeState) => void;
 }) {
   const applyMutation = (state: NodeState) => {
-    return fn(state, args);
+    const ret = fn(state, args);
+    setArgs(Array.from({ length: (fn as any).numArgs }));
+    return ret;
   };
 
   const [args, setArgs] = useState<any[]>(

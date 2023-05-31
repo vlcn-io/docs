@@ -19,14 +19,6 @@
   width: 75px;
 }
 
-.nodeTable button {
-  padding: 5px 10px;
-  border: 1px solid #ccc;
-  border-radius: 3px;
-  background: #eee;
-  cursor: pointer;
-}
-
 .nodeState {
   flex-grow: 2;
 }
@@ -39,6 +31,14 @@
 .root h1 {
   margin: 0;
   font-size: 24px;
+  font-weight: 400;
+  text-align: center;
+  padding-bottom: 12px;
+}
+
+.root h2 {
+  margin: 0;
+  font-size: 18px;
   font-weight: 400;
   text-align: center;
   padding-bottom: 12px;

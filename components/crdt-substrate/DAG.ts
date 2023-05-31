@@ -1,11 +1,8 @@
+export type NodeID = "ROOT" | `${NodeName}-${number}`;
+
 export type DAGNode = {
-  parents: Set<DAGNode>;
-  id:
-    | "ROOT"
-    | {
-        seq: number;
-        node: NodeName;
-      };
+  parents: Set<NodeID>;
+  id: NodeID;
   event: Event;
 };
 
@@ -24,7 +21,7 @@ const sequenceNumbers = {
 
 export default class DAG {
   root: DAGNode;
-  nodeRelation: Set<DAGNode> = new Set();
+  nodeRelation: Map<NodeID, DAGNode> = new Map();
 
   constructor(public nodeName: NodeName, root?: DAGNode) {
     if (root) {
@@ -40,26 +37,23 @@ export default class DAG {
       };
     }
 
-    this.nodeRelation.add(this.root);
+    this.nodeRelation.set(this.root.id, this.root);
   }
 
   addEvent(event: Event) {
     const node: DAGNode = {
       parents: this.findLeaves(),
-      id: {
-        seq: sequenceNumbers[this.nodeName]++,
-        node: this.nodeName,
-      },
+      id: `${this.nodeName}-${sequenceNumbers[this.nodeName]++}`,
       event,
     };
-    this.nodeRelation.add(node);
+    this.nodeRelation.set(node.id, node);
 
     return node;
   }
 
-  findLeaves(): Set<DAGNode> {
-    const leaves = new Set<DAGNode>([...this.nodeRelation]);
-    for (const n of this.nodeRelation) {
+  findLeaves(): Set<NodeID> {
+    const leaves = new Set<NodeID>([...this.nodeRelation.keys()]);
+    for (const n of this.nodeRelation.values()) {
       // if p is a parent then it is not a leaf. Remove it from the leaves set.
       for (const p of n.parents) {
         leaves.delete(p);
@@ -70,13 +64,13 @@ export default class DAG {
   }
 
   getEventsInOrder(): DAGNode[] {
-    const graph = new Map<DAGNode, DAGNode[]>();
-    for (const n of this.nodeRelation) {
+    const graph = new Map<NodeID, DAGNode[]>();
+    for (const n of this.nodeRelation.keys()) {
       graph.set(n, []);
     }
 
     // Convert the graph so we have child pointers.
-    for (const n of this.nodeRelation) {
+    for (const n of this.nodeRelation.values()) {
       for (const p of n.parents) {
         graph.get(p)!.push(n);
       }
@@ -85,12 +79,14 @@ export default class DAG {
     // Now sort the children of each node by their id. IDs never collide given node id is encoded into the id.
     for (const children of graph.values()) {
       children.sort((a, b) => {
-        const aId = a.id as { seq: number; node: NodeName };
-        const bId = b.id as { seq: number; node: NodeName };
-        if (aId.seq == bId.seq) {
-          return aId.node < bId.node ? -1 : 1;
+        const [aNode, aRawSeq] = a.id.split("-");
+        const [bNode, bRawSeq] = b.id.split("-");
+        const aSeq = parseInt(aRawSeq);
+        const bSeq = parseInt(bRawSeq);
+        if (aSeq == bSeq) {
+          return aNode < bNode ? -1 : 1;
         }
-        return aId.seq - bId.seq;
+        return aSeq - bSeq;
       });
     }
 
@@ -102,13 +98,29 @@ export default class DAG {
         return;
       }
       visited.add(n);
-      for (const c of graph.get(n)!) {
+      if (n.id != "ROOT") events.push(n);
+      for (const c of graph.get(n.id)!) {
         visit(c);
       }
-      events.push(n);
     };
     visit(this.root);
 
     return events;
+  }
+
+  // Merging trees is trivial. They're already correctly parented so all we need to do is merge the relations.
+  merge(other: DAG): DAG {
+    const ret = new DAG(this.nodeName);
+    ret.nodeRelation = new Map([...this.nodeRelation, ...other.nodeRelation]);
+    return ret;
+  }
+
+  // Note: this mutates the input
+  applyTo(state: any, mutations: any): any {
+    const events = this.getEventsInOrder();
+    for (const e of events) {
+      mutations[e.event.mutationName](state, ...e.event.mutationArgs);
+    }
+    return state;
   }
 }

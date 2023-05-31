@@ -25,17 +25,34 @@ We'll start with some initial state --
 
 provide state;`} />
 
-And then let you author _any mutation you want_ against that state. The only rule is that your mutations must be deterministic. Two example mutations have been provided for you below.
+And then let you author _any mutation you want_ against that state. The only rule is that your mutations must be deterministic. Some example mutations have been provided for you below.
 
 <RunnableCode code={`// Mutations are just functions that modify the current state.
 // The first arg must always be \`state\`.
 // Any additional args are parameters for the mutation.
 const mutations = {
-  increment: (state) => {
+  increment(state) {
     state.counter++;
   },
-  addItem: (state, item) => {
+  addItem(state, item) {
     state.items.push(item);
+  },
+  moveItem(state, fromIndex, toIndex) {
+    const arr = state.items;
+    if (fromIndex < 0 || toIndex < 0 || fromIndex > arr.length || toIndex > arr.length
+    ) {
+      return false;
+    }
+    const element = arr[fromIndex];
+    arr.splice(fromIndex, 1);
+    arr.splice(toIndex, 0, element);
+  },
+  popItem(state) {
+    if (state.items.length > 0) {
+      state.items.pop();
+    } else {
+      return false;
+    }
   }
 };
 
@@ -45,7 +62,7 @@ provide mutations;`} />
 After making any changes to the code, press `shift + enter` or the `play` button (top right of the code box) to re-run the code and update the example.
 </Callout>
 
-Now lets see your state and mutations in action.
+Now lets see this in action.
 
 Below are three independent UIs that are driven by three indepent copies of the initial state. On each node you can run your mutations. Whenever you desire, have the nodes merge their state together with the "sync state" button.
 

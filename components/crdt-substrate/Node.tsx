@@ -20,7 +20,7 @@ export function Node({
   const [theState, setTheState] = useState<NodeState>(state);
 
   function applyMutation(fn: (state: NodeState) => NodeState) {
-    setTheState(fn);
+    setTheState(fn(theState));
   }
 
   // reset from outer component
@@ -42,6 +42,7 @@ export function Node({
       </h1>
       <div className={styles.node}>
         <div className={styles.nodeTable}>
+          <h2>Mutations</h2>
           <table>
             <thead>
               <tr>
@@ -66,6 +67,7 @@ export function Node({
           </table>
         </div>
         <div className={styles.nodeState}>
+          <h2>State</h2>
           <NodeResult state={theState} />
         </div>
       </div>

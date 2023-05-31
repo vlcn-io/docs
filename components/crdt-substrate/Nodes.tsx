@@ -3,6 +3,7 @@ import { getResouce } from "../CodeNode";
 import DAG, { NodeName } from "./DAG";
 import { Node, NodeState } from "./Node";
 import asTrackedMutations from "./trackMutations";
+import styles from "./nodes.module.css";
 
 export default function Nodes() {
   const [mutations, setMutations] = useState<{
@@ -92,7 +93,7 @@ export default function Nodes() {
       offMutationsResource();
       offStateResource();
     };
-  }, []);
+  }, [resetNodeStates, setInitialState, setMutations]);
 
   if (mutations.rejection || initialState.rejection) {
     return (
@@ -106,8 +107,44 @@ export default function Nodes() {
     return <div>Loading...</div>;
   }
 
+  function syncNodes() {
+    // 1. merges all the DAGs together
+    // 2. applies all the mutations to initial state(s)
+    // 3. updates the state of each node to that new state
+    let dagA = nodeStates.nodeA.dag;
+    let dagB = nodeStates.nodeB.dag;
+    let dagC = nodeStates.nodeC.dag;
+
+    dagA = dagA.merge(dagC);
+    dagA = dagA.merge(dagB);
+    dagB = dagB.merge(dagA);
+    dagC = dagC.merge(dagA);
+
+    const initialStateA = structuredClone(initialState.resolution);
+    const initialStateB = structuredClone(initialState.resolution);
+    const initialStateC = structuredClone(initialState.resolution);
+
+    setNodeStates({
+      nodeA: {
+        dag: dagA,
+        state: dagA.applyTo(initialStateA, mutations.resolution),
+      },
+      nodeB: {
+        dag: dagB,
+        state: dagB.applyTo(initialStateB, mutations.resolution),
+      },
+      nodeC: {
+        dag: dagC,
+        state: dagC.applyTo(initialStateC, mutations.resolution),
+      },
+    });
+  }
+
   return (
-    <div>
+    <div className={styles.root}>
+      <button className={styles.syncState} onClick={syncNodes}>
+        Sync nodes!
+      </button>
       {Object.entries(nodeStates).map(([nodeName, nodeState]) => (
         <Node
           key={nodeName}
@@ -116,6 +153,9 @@ export default function Nodes() {
           state={nodeState}
         />
       ))}
+      <button className={styles.syncState} onClick={syncNodes}>
+        Sync nodes!
+      </button>
     </div>
   );
 }

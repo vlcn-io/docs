@@ -10,7 +10,7 @@ export type Mutation = {
 };
 
 export type RawMutations = {
-  [key: string]: (state: any, args: any[]) => void;
+  [key: string]: (state: any, args: any[]) => boolean | undefined;
 };
 
 export default function asTrackedMutations(mutations: RawMutations): Mutations {
@@ -18,7 +18,14 @@ export default function asTrackedMutations(mutations: RawMutations): Mutations {
   for (const [name, fn] of Object.entries(mutations)) {
     ret[name] = (state: NodeState, args: any[]): NodeState => {
       const copy = structuredClone(state.state);
-      fn(copy, args);
+      // @ts-ignore
+      const ret = fn(copy, ...args);
+      if (ret === false) {
+        return {
+          state: copy,
+          dag: state.dag,
+        };
+      }
       state.dag.addEvent({
         mutationName: name,
         mutationArgs: args,
