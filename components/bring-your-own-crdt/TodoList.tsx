@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from "react";
 import { CtxAsync as Ctx, useQuery } from "@vlcn.io/react";
 import { IID_of, newIID as newId } from "./id";
-import { DBAsync } from "@vlcn.io/xplat-api";
+import { DBAsync, firstPick } from "@vlcn.io/xplat-api";
 import styles from "./style.module.css";
 
 export type Mutation =
@@ -14,7 +14,8 @@ export type Mutation =
   | { name: "rename"; args: [IID_of<Todo>, string] }
   | { name: "completeAll"; args: [] }
   | { name: "uncompleteAll"; args: [] }
-  | { name: "clearCompleted"; args: [] };
+  | { name: "clearCompleted"; args: [] }
+  | { name: "increment"; args: [] };
 
 export type EventHandler = (ctx: Ctx, event: Mutation) => void;
 
@@ -265,6 +266,13 @@ export default function TodoList({
     ctx,
     "SELECT * FROM todo ORDER BY id DESC"
   ).data;
+  const counter =
+    useQuery<{ count: number }, number | undefined>(
+      ctx,
+      "SELECT count FROM counter",
+      undefined,
+      firstPick
+    ).data || 0;
   const completeTodos = allTodos.filter((t) => t.completed);
   const activeTodos = allTodos.filter((t) => !t.completed);
 
@@ -328,6 +336,35 @@ export default function TodoList({
           }}
         />
       </section>
+      <div
+        style={{
+          padding: "10px",
+          paddingTop: "40px",
+          width: "100%",
+          background: "#fffff8",
+          fontSize: "20px",
+          textAlign: "center",
+        }}
+      >
+        <button
+          style={{
+            cursor: "pointer",
+            border: "1px solid black",
+            borderRadius: "5px",
+            padding: "5px",
+            background: "#fff888",
+          }}
+          onClick={() =>
+            eventHandler(ctx, {
+              name: "increment",
+              args: [],
+            })
+          }
+          // style this like a normal button
+        >
+          I'm a distributed counter! {counter}
+        </button>
+      </div>
     </>
   );
 }

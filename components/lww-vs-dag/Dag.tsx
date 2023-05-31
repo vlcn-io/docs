@@ -235,7 +235,7 @@ after_node(event_id,level) AS (
    ORDER BY 2,1 DESC
 )
 
-SELECT event.id, event.item_id, event.type, event.value
+SELECT DISTINCT event.id, event.item_id, event.type, event.value
   FROM after_node JOIN event
   ON after_node.event_id = event.id;
 `;

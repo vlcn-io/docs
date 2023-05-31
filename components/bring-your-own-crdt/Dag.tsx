@@ -51,6 +51,7 @@ export default function Dag({ ctxts }: { ctxts: readonly [Ctx, Ctx, Ctx] }) {
       await Promise.all(
         ctxts.map(async (ctx) => {
           await ctx.db.execA("DELETE FROM todo");
+          await ctx.db.execA("UPDATE counter SET count = 0");
           await ctx.db.execA("DELETE FROM event");
           await ctx.db.execA("DELETE FROM event_dag");
           await ctx.db.execA("DELETE FROM event__crsql_clock");
@@ -64,9 +65,6 @@ export default function Dag({ ctxts }: { ctxts: readonly [Ctx, Ctx, Ctx] }) {
 
   return (
     <div>
-      <center>
-        <h2>DAG State Example</h2>
-      </center>
       <div style={{ display: "flex", height: 350, overflowY: "scroll" }}>
         {ctxts.map((ctx, i) => {
           return (
@@ -122,7 +120,10 @@ export default function Dag({ ctxts }: { ctxts: readonly [Ctx, Ctx, Ctx] }) {
 async function processDAG(ctx: Ctx) {
   await ctx.db.tx(async (tx) => {
     const dag = await tx.execA(pullDagQuery);
-    tx.exec(`DELETE FROM todo`);
+    // we're re-processing the entire dag so we have to drop our tables.
+    // in a real system we'd roll back to the closest snapshot and re-process from there.
+    await tx.exec(`DELETE FROM todo`);
+    await tx.exec(`UPDATE counter SET count = 0`);
 
     for (const [_eventId, mutationName, args] of dag) {
       await processEvent(tx, ctx.db.siteid, mutationName, args);
@@ -175,14 +176,13 @@ after_node(event_id,level) AS (
    ORDER BY 2,1 DESC
 )
 
-SELECT event.id, event.mutation_name, event.args
+SELECT DISTINCT event.id, event.mutation_name, event.args
   FROM after_node JOIN event
   ON after_node.event_id = event.id;
 `;
 
 const bareMutations = {
   async add(tx: TXAsync, todoId: IID_of<Todo>, content: string) {
-    console.log("adding...");
     await tx.exec(
       /*sql*/ `INSERT INTO todo (id, content, completed) VALUES (?, ?, ?)`,
       [todoId, content, 0]
@@ -212,6 +212,12 @@ const bareMutations = {
   async clearCompleted(tx: TXAsync) {
     await tx.exec(`DELETE FROM todo WHERE completed = 1`);
   },
+  async increment(tx: TXAsync) {
+    const current = (await tx.execA(`SELECT count FROM counter`))[0]?.[0] || 0;
+    await tx.exec(`INSERT OR REPLACE INTO counter (id, count) VALUES (0, ?)`, [
+      current + 1,
+    ]);
+  },
 } as const;
 
 const trackedMutations = asTrackedMutations(bareMutations);
@@ -233,12 +239,10 @@ function asTrackedMutations(mutations: typeof bareMutations) {
       // process the event
       // @ts-ignore
       await fn(tx, ...args);
-      console.log("ran it");
 
       // compute an id for the event
       // @ts-ignore
       const eventId = newIID(tx.siteid);
-      console.log("new event id");
 
       // write the event
       await tx.exec(
@@ -257,7 +261,6 @@ function asTrackedMutations(mutations: typeof bareMutations) {
           console.log(e);
         }
       }
-      console.log("tied to parents");
     };
   }
   return result as typeof bareMutations;

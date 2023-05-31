@@ -88,5 +88,8 @@ async function createSchema(db: DB) {
     await tx.exec(
       `CREATE TABLE todo (id INTEGER PRIMARY KEY, content TEXT, completed INTEGER);`
     );
+    await tx.exec(
+      `CREATE TABLE counter (id INTEGER PRIMARY KEY CHECK (id = 0), count INTEGER DEFAULT 0)`
+    );
   });
 }
