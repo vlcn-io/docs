@@ -30,3 +30,16 @@
 .nodeState {
   flex-grow: 2;
 }
+
+.root {
+  margin-bottom: 24px;
+  outline: 1px solid #ccc;
+}
+
+.root h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 400;
+  text-align: center;
+  padding-bottom: 12px;
+}

@@ -1,7 +1,9 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import DAG, { NodeName } from "./DAG";
 import styles from "./node.module.css";
 import { Mutations } from "./trackMutations";
+import Mutation from "./Mutation";
+import NodeResult from "./NodeResult";
 
 export type NodeState = { dag: DAG; state: any };
 
@@ -14,44 +16,59 @@ export function Node({
   name: NodeName;
   state: NodeState;
 }) {
+  const [priorState, setPriorState] = useState<NodeState>(state);
+  const [theState, setTheState] = useState<NodeState>(state);
+
+  function applyMutation(fn: (state: NodeState) => NodeState) {
+    setTheState(fn);
+  }
+
+  // reset from outer component
+  if (state != priorState) {
+    setPriorState(state);
+    setTheState(state);
+  }
+
   const maxArgs = useMemo(() => {
     return Object.entries(mutations).reduce((acc, [name, fn]) => {
       return Math.max(acc, (fn as any).numArgs);
     }, 0);
   }, [mutations]);
+
   return (
-    <div className={styles.node}>
-      <div className={styles.nodeTable}>
-        <table>
-          <thead>
-            <tr>
-              <th>mutation</th>
-              <th colSpan={maxArgs + 1} style={{ textAlign: "left" }}>
-                args...
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {Object.entries(mutations).map(([name, fn]) => {
-              return (
-                <tr key={name}>
-                  <td>
-                    <button>{name}</button>
-                  </td>
-                  {new Array((fn as any).numArgs).fill(null).map((_, i) => {
-                    return (
-                      <td key={i}>
-                        <input type="text" />
-                      </td>
-                    );
-                  })}
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+    <div className={styles.root}>
+      <h1>
+        N{name.substring(1, 4)} {name.substring(4)}
+      </h1>
+      <div className={styles.node}>
+        <div className={styles.nodeTable}>
+          <table>
+            <thead>
+              <tr>
+                <th>mutation</th>
+                <th colSpan={maxArgs + 1} style={{ textAlign: "left" }}>
+                  args...
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {Object.entries(mutations).map(([name, fn]) => {
+                return (
+                  <Mutation
+                    fn={fn}
+                    onClick={applyMutation}
+                    key={name}
+                    name={name}
+                  />
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+        <div className={styles.nodeState}>
+          <NodeResult state={theState} />
+        </div>
       </div>
-      <div className={styles.nodeState}>dsdf</div>
     </div>
   );
 }
