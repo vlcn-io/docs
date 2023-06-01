@@ -19,7 +19,7 @@ What if I told you anyone can create a new CRDT? That with no special knowledge,
 
 Nobody can be told this truth. They must see it for themselves.
 
-## Taking the Red Pill
+## Diving In
 
 We'll start with some initial state --
 
@@ -30,12 +30,15 @@ We'll start with some initial state --
 
 provide state;`} />
 
-And then let you author _any mutation you want_ against that state. The only rule is that your mutations must be deterministic and if the mutation is a no-op it should return false. Some example mutations have been provided for you below.
+And then let you author _any mutation you want_. The only rules are:
+1. Your mutations must be deterministic. No generating random data inside of them although you can pass random data as an input.
+2. If the mutation is a no-op it should return false.
+3. The first argument to the mutation is always `state`
+4. Additional arguments for the mutation come after `state`
 
-<RunnableCode code={`// Mutations are just functions that modify the current state.
-// The first arg must always be \`state\`.
-// Any additional args are parameters for the mutation.
-const mutations = {
+Some example mutations have been provided for you below.
+
+<RunnableCode code={`const mutations = {
   increment(state) {
     state.counter++;
   },
@@ -47,25 +50,25 @@ const mutations = {
 provide mutations;`} />
 
 <Callout type="info">
-After making any changes to the code, press `shift + enter` or the `play` button (top right of the code box) to re-run the code and update the example.
+After making any changes to the code, press `shift + enter` or the `play` button (top right of the box) to re-run the code and update the example.
 </Callout>
 
-Now lets see this in action.
+Lets see this in action.
 
-Below are three independent UIs that are driven by three indepent copies of the initial state. On each node you can run your mutations. Whenever you desire, have the nodes merge their state together with the "sync state" button.
+Below are three independent UIs that are driven by three indepent copies of the initial state. On each one you can run your mutations. Whenever you desire, have the UIs merge their state together by pressing the "sync nodes" button.
 
 <br/>
 <Nodes />
 
-Pretty cool, right? All of the nodes converge to the same state and you didn't have to write any special code to make this happen. You just wrote some mutations and the substrate took care of the rest.
+Pretty cool, right? All of the nodes converge to the same state on merge and you didn't have to write any special code to make this happen. You just wrote some mutations and the substrate took care of the rest.
 
 Before we get into how this works, let's talk about intent. While CRDTs and other structures may meet the mathematical definition of convergence it is likely that they will not meet the user's expectations of convergence.
 
-Depending on what examples you ended up writing for yourself, you may have already noticed this intent problem.
+Depending on what examples you ended up writing for yourself, you may have already noticed the intent problem.
 
-## User Intent
+## Intent
 
-How do we preseve user intent and how does the mathematical definition of convergence deviate from pratical expectations?
+How do we preseve the user's intent and how does the mathematical definition of convergence deviate from pratical expectations?
 
 To understand this better, we'll look at a delete operation that is based on array index.
 
@@ -175,7 +178,7 @@ There could still be a problem here, however. What if another user concurrently 
 
 Relative positioning would break down in this case. If you want to insert next to `b1` but `b1` no longer exists after a merge then your position no longer exists.
 
-You could fix this with invariants (do not allow deletion of these sorts of things) or soft deletion & tombstoning. Tombstoning an item would drop its content but retain its id and position so position information always exists.
+You could fix this with invariants (do not allow deletion of these sorts of things) or soft deletion & tombstoning. Tombstoning an item would drop its content but retain its id and position so position information always exists. In addition to the problems outlined for sequences, we can run into issues when moving structures around that have pointers to one another. E.g., moving folders inside a file tree. Concurrent edits of this tree can create cycles such as a folder that contains itself.
 
 While the substrate idea is powerful (we got relatively far with 0 knowledge of CRDTs) certain cases can begin to explode in complexity.
 
