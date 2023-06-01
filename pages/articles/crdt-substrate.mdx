@@ -79,12 +79,12 @@ A few ways it can fail to preserve user intent:
 
 The above cases are illustrated below.
 
-<video src="/blog/crdt-substrate/two-remove.webm" controls autoPlay muted style={{border: "1px solid red"}} />
-> *Both users attempt to delete the letter `b` concurrently. Since the mutation uses array indices, `b` and `c` are both removed on merge rather than just `b`.*
+<video src="/blog/crdt-substrate/two-remove.webm" controls autoPlay muted loop style={{border: "1px solid red"}} />
+> Fig 1: Both users attempt to delete the letter `b` concurrently. Since the mutation uses array indices, `b` and `c` are both removed on merge rather than just `b`.
 <br/><br/>
 
-<video src="/blog/crdt-substrate/delete-item.webm" controls autoPlay muted style={{border: "1px solid red"}} />
-> *Both users concurrently create a list of items. User 1 then removes `c` from their list (index 2). Post merge, `b` ends up being removed!*
+<video src="/blog/crdt-substrate/delete-item.webm" controls autoPlay muted loop style={{border: "1px solid red"}} />
+> Fig 2: Both users concurrently create a list of items. User 1 then removes `c` from their list (index 2). Post merge, `b` ends up being removed!
 
 The problem with both examples is that we're using an alias for the identity of a thing. We're using array index to indirectly reference what we are actually talking about.
 
@@ -92,19 +92,7 @@ The problem with both examples is that we're using an alias for the identity of 
 
 While yes, you can create a CRDT without any special knowledge you can't create a CRDT that preserves user intent without some  knowledge.
 
-One way to preserve user intent is to reach for an existing CRDT algorithm that has the intention preserving properties you'd like. This is pretty hard today as there are few libraries out there that let you declarative compose the CRDTs you want. This is what we're solving at Vulcan. The end goal being a declarative extension to the SQL Schema Definition Language to get you the behavior you need:
-
-**Notional example:**
-```sql
-CREATE TABLE post (
- id INTEGER PRIMARY KEY,
- views COUNTER,
- content PERITEXT,
- owner_id LWW INTEGER
-) AS CausalLengthSet;
-```
-
-The other way is to discover a set of rules or principles to adhere to when defining a mutation against the "crdt substrate." Maybe we'll fully explore this space at Vulcan in the future but, until then, you can continue reading to see what we've come up with so far.
+Many types of intent (delete, move to, insert at) can be preserved by observing a few principles in mutations written atop the "crdt substrate."
 
 ## Intent Preserving Principles
 
@@ -135,40 +123,243 @@ deleteItem(state, id) {
   state.items.splice(index, 1);
 }
 ```
+> Fig 3: The updated mutations. Note that the item id must be _passed in_ to the mutation. Genearting a random uuid _wihin the mutation_
+would make the mutation non-deterministic.
+
+
+Go ahead and try those mutations yourself or watch the example --
+<video src="/blog/crdt-substrate/fix-two-remove.webm" controls autoPlay muted loop style={{border: "1px solid red"}} />
+> Fig 4: Both users concurrently remove `A_2` or item `b`. After merging, that is still what both users see in contrast to the array index based removal.
+
 
 ### Position is Relative
 
-> If you need to prevent interleaving of collections, use relative positions.
+> If you need to prevent interleaving of sequences, use relative positions.
 
+This is similar to the array index idea. Our `addItem` mutation is implicitly using array index as the sort order for items. This is fine for many use cases but other use cases, such as text insertion, this is problem. The reason is that concurrent edits in the same location will end up interleaving characters.
 
-Other things that might not preserve user intent:
-- Move
-- Copy items
-- Invariants?
-- Any use of indirect identity. Array index is an indirect reference to what you're _actually_ changing.
+E.g., if Node A writes "girl" and Node B concurrently writes "boy" the result post-merge will be `gbioryl`.
 
+We can fix this by making the notion of position relative. That is, the position an item was inserted at is identified by what is to the left or right of that item.
 
-
-since the _identity of what to delete_ is given by an index rather than being a property of the elements.
-
- If two users delete the same item at the same time, _two__ items will be deleted rather than the single item. This is because the index of the item is not stable. If the item is deleted on one node, the index of the item on the other node will change.
-
-If you were paying close attention, however, you'll notice that some user intent was not preserved. So while yes, you can create a CRDT without any special knowledge, you can't create a CRDT that preserves user intent without some special knowledge.
-
-
-## Missing Intent
-
-- Fract index & order
-- Counter & race (tx isolation levels)
-- Pop by index? Or pop by item id?
-
-```
-  copyItems(state) {
-    state.items = state.items.map((i) => Array.from({length: state.counter + 1}, () => i).join(''))
+```js
+addItem(state, id, rightOf, item) {
+  if (state.items.find((i) => i.id === id)) {
+    return false;
   }
+
+  let index = state.items.findIndex((e) => e.id === rightOf);
+  if (index < 0) {
+    index = state.items.length;
+  }
+
+  state.items.splice(index + 1, 0, {
+    id,
+    item
+  });
+}
 ```
 
-## Preserving Intent
+Give it a whirl in the live example or see the video beloew --
+<video src="/blog/crdt-substrate/girl-boy.webm" controls autoPlay muted loop style={{border: "1px solid red"}} />
+> Fig 5: using "right of" to relatively position new insertions. No interleaving!
+
+There could still be a problem here, however. What if another user concurrently deleted something you were inserting next to?
+
+Relative positioning would break down in this case. If you want to insert next to `b1` but `b1` no longer exists then your position no longer exists.
+
+You could fix this with invariants (do not allow deletion of these sorts of things) or soft deletion / tombstoning. Tombstoning an item would drop its content but retain its id and position so concurrent edits can't clear required positions.
+
+While the substrate idea is powerful (we got relatively far with 0 knowledge of CRDTs) certain cases can begin to explode in complexity.
+
+## Other Options for Intent
+
+A different approach to preserving intent is to reach for an existing [CRDT](https://en.wikipedia.org/wiki/Conflict-free_replicated_data_type) that has the intention preserving properties you'd like. This where we're headed at Vulcan. The end goal being a declarative extension to the SQL Schema Definition Language to allow you to easily combine the behavior you need:
+
+```sql
+CREATE TABLE post (
+ id INTEGER PRIMARY KEY,
+ views COUNTER,
+ content PERITEXT,
+ owner_id LWW INTEGER
+) AS CausalLengthSet;
+```
+> Fig 6: The north star syntax of cr-sqlite.
+
+At some point we might ship the "crdt substrate" idea to lower the barrier to entry, and provide an escape hatch to, author custom convergent data types.
+
+
+<Callout>
+If any of this sounds interesting to you, [schedule some time with me](https://calendly.com/matt-wonlaw/30min) to discuss:
+- CRDTs
+- Contributing to cr-sqlite
+- Integration into your product, sponsorship, investment, contract work, design partnerships, etc.
+</Callout>
+
+Even though there are drawbacks the substrate seems pretty magical. For many cases you can just write normal business logic and the state you mutated will converge as expected. So how does this work?
 
 ## Substrate - Implementation
+
+The substrate is split into two parts:
+1. A log of mutations
+2. Machinery to apply the log to the application's state
+
+### Mutation Log
+
+Every time one of the named mutations is run, we log it. The log looks like:
+
+```ts
+type MutationLog = [EventID, ParentIDs[], MutationName, Args[]][];
+```
+
+In a system that isn't distributed the log would be linear. In our case, however, we need to account for concurrent edits happening in other processes. This is where `ParentIDs` comes in. `ParentIDs` refers to all the mutations that happened immediately before the current mutation.
+
+Thus the log, rather than being linear, is a DAG. The relationships in the DAG capture the passage of time.
+- Branches represent concurrent modifications.
+- Branches that converge into a node represent events that happened before the node being converged into.
+- Linear runs represents events that happen one after the other
+
+![time is a dag](/blog/crdt-substrate/dag.png)
+> Fig 7: 3 processes incrementing a distributed counter. 
+> - (A) Two processes increment the counter twice at the same time a third process increments it once.
+> - (B) All processes sync their changes (arrows converging)
+> - (C) A single process increments the counter twice more.
+
+In this setup, each process can locally write to its log without coordinating with others. All it needs to do when writing is create a new event whose parents are the leaves of its current copy of the log.
+
+```ts
+class DAG {
+  root: DAGNode;
+  nodeRelation: Map<NodeID, DAGNode> = new Map();
+  seq: number = 0;
+
+  ...
+
+  addEvent(event: Event) {
+    const node: DAGNode = {
+      parents: this.findLeaves(),
+      id: `${this.nodeName}-${this.seq++}`,
+      event,
+    };
+    this.nodeRelation.set(node.id, node);
+
+    return node;
+  }
+
+  findLeaves(): Set<NodeID> {
+    const leaves = new Set<NodeID>([...this.nodeRelation.keys()]);
+    for (const n of this.nodeRelation.values()) {
+      // if p is a parent then it is not a leaf. Remove it from the leaves set.
+      for (const p of n.parents) {
+        leaves.delete(p);
+      }
+    }
+
+    return leaves;
+  }
+}
+```
+
+Syncing state between processes is a matter of merging these logs together. Merging the DAGs is trivial. Since each event is completely unique and immutable, all we have to do is union all sets of nodes from all processes. This unioning can happen in any order and is idempotent meaning convergence does not rely on the order the DAGs are merged and duplicate sync messages are not a problem.
+
+```ts
+class DAG {
+
+  ...
+
+  merge(other: DAG): DAG {
+    const ret = new DAG(this.nodeName);
+    ret.nodeRelation = new Map([...this.nodeRelation, ...other.nodeRelation]);
+    ret.seq = Math.max(this.seq, other.seq) + 1;
+    return ret;
+  }
+}
+```
+
+The last trick is updating the current application state based on the merged DAG.
+
+### Updating State
+
+Updating application state after a merge is a matter of:
+
+1. re-winding to a certain snapshot of state (or all the way back to initial state)
+2. re-playing the mutation log against that state
+
+But how do you re-play a log that is not linear? You make it linear. Each process does a deterministic breadth first traversal of the DAG to create a single sequence of events. This interpretation of events is what is applied to the state snapshot.
+
+A non-optimized version of this based on our DAG structure:
+
+```ts
+export type NodeID = "ROOT" | `${NodeName}-${number}`;
+
+export type DAGNode = {
+  parents: Set<NodeID>;
+  id: NodeID;
+  event: Event;
+};
+
+class DAG {
+  ...
+
+  getEventsInOrder(): DAGNode[] {
+    const graph = new Map<NodeID, DAGNode[]>();
+    for (const n of this.nodeRelation.keys()) {
+      graph.set(n, []);
+    }
+
+    // Convert the graph so we have child pointers.
+    for (const n of this.nodeRelation.values()) {
+      for (const p of n.parents) {
+        graph.get(p)!.push(n);
+      }
+    }
+
+    // Now sort the children of each node by their id. IDs never collide given node name is encoded into the id.
+    for (const children of graph.values()) {
+      children.sort((a, b) => {
+        const [aNode, aRawSeq] = a.id.split("-");
+        const [bNode, bRawSeq] = b.id.split("-");
+        const aSeq = parseInt(aRawSeq);
+        const bSeq = parseInt(bRawSeq);
+        if (aSeq === bSeq) {
+          return aNode < bNode ? -1 : 1;
+        }
+        return aSeq - bSeq;
+      });
+    }
+
+    const events: DAGNode[] = [];
+
+    // Finally do our breadth first traversal.
+    const visited = new Set<DAGNode>();
+    const toVisit = [this.root];
+    for (const n of toVisit) {
+      if (visited.has(n)) {
+        continue;
+      }
+      visited.add(n);
+      if (n.id !== "ROOT") {
+        events.push(n);
+      }
+      for (const child of graph.get(n.id)!) {
+        toVisit.push(child);
+      }
+    }
+
+    return events;
+  }
+}
+```
+
+While toy versions of all ideas seem to be able to be implemented in JavaScript in ~100 lines, a production grade version that:
+- Scales to hundreds or thousands of transactions per second (no matter how large the transaction logs become) 
+- Shares structure and compresses well
+
+will take some doing.
+
+## Acknowledgements
+
+- [Replicache](https://replicache.dev/) and [@aboodman](https://twitter.com/aboodman) for turning me on to the idea
+- [lfw.dev](https://localfirstweb.dev/) and [@founderYonz](https://twitter.com/founderYonz) for gathering a community together to share these ideas
+- [Braid.org](https://braid.org/) for truly diving deep on CRDTs an exploring them in every possible way
 
