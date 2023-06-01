@@ -25,7 +25,7 @@ We'll start with some initial state --
 
 provide state;`} />
 
-And then let you author _any mutation you want_ against that state. The only rule is that your mutations must be deterministic. Some example mutations have been provided for you below.
+And then let you author _any mutation you want_ against that state. The only rule is that your mutations must be deterministic and if the mutation is a no-op it should return false. Some example mutations have been provided for you below.
 
 <RunnableCode code={`// Mutations are just functions that modify the current state.
 // The first arg must always be \`state\`.
@@ -36,25 +36,6 @@ const mutations = {
   },
   addItem(state, item) {
     state.items.push(item);
-  },
-
-  // We'll discuss these two mutations in detail later.
-  moveItem(state, fromIndex, toIndex) {
-    const arr = state.items;
-    if (fromIndex < 0 || toIndex < 0 || fromIndex > arr.length || toIndex > arr.length
-    ) {
-      return false;
-    }
-    const element = arr[fromIndex];
-    arr.splice(fromIndex, 1);
-    arr.splice(toIndex, 0, element);
-  },
-  popItem(state) {
-    if (state.items.length > 0) {
-      state.items.pop();
-    } else {
-      return false;
-    }
   }
 };
 
@@ -73,6 +54,37 @@ Below are three independent UIs that are driven by three indepent copies of the 
 
 Pretty cool, right? All of the nodes converge to the same state and you didn't have to write any special code to make this happen. You just wrote some mutations and the substrate took care of the rest.
 
+Depending on what examples you ended up writing for yourself, you may have noticed that while everything does converge user intent is not always preserved.
+
+## User Intent
+
+Preserving user intent is about more than all nodes converging to the same state. It's about that final state matching the user's expectations.
+
+To drive this home, we'll look at a delete operation that is based on array index.
+
+```js
+function deleteItem(state, index) {
+  if (index < 0 || index >= state.items.length) {
+    return false;
+  }
+  state.items.splice(index, 1);
+}
+```
+
+This mutation is deterministic and it will converge but it doesn't preserve user intent.
+
+A few ways it can fail to preserve user intent:
+1. Two users trying to delete the same item will result in _two_ items being removed
+2. Say we have a list of letters. Trying to remove "c" could end up removing a completely unrelated letter after merge.
+
+Illustrated:
+
+
+
+since the _identity of what to delete_ is given by an index rather than being a property of the elements.
+
+ If two users delete the same item at the same time, _two__ items will be deleted rather than the single item. This is because the index of the item is not stable. If the item is deleted on one node, the index of the item on the other node will change.
+
 If you were paying close attention, however, you'll notice that some user intent was not preserved. So while yes, you can create a CRDT without any special knowledge, you can't create a CRDT that preserves user intent without some special knowledge.
 
 
@@ -84,3 +96,4 @@ If you were paying close attention, however, you'll notice that some user intent
 
 ## Preserving Intent
 
+## Substrate - Implementation

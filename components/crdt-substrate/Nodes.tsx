@@ -142,9 +142,14 @@ export default function Nodes() {
 
   return (
     <div className={styles.root}>
-      <button className={styles.syncState} onClick={syncNodes}>
-        Sync nodes!
-      </button>
+      <div className={styles.controls}>
+        <button className={styles.syncState} onClick={syncNodes}>
+          Sync nodes!
+        </button>
+        <button className={styles.syncState} onClick={() => resetNodeStates()}>
+          Reset!
+        </button>
+      </div>
       {Object.entries(nodeStates).map(([nodeName, nodeState]) => (
         <Node
           key={nodeName}
@@ -153,9 +158,14 @@ export default function Nodes() {
           state={nodeState}
         />
       ))}
-      <button className={styles.syncState} onClick={syncNodes}>
-        Sync nodes!
-      </button>
+      <div className={styles.controls}>
+        <button className={styles.syncState} onClick={syncNodes}>
+          Sync nodes!
+        </button>
+        <button className={styles.syncState} onClick={() => resetNodeStates()}>
+          Reset!
+        </button>
+      </div>
     </div>
   );
 }

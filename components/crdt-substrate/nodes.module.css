@@ -6,10 +6,14 @@
   cursor: pointer;
 }
 
-.syncState {
+.controls {
   margin-bottom: 24px;
-  display: block;
-  width: 120px;
-  margin-left: auto;
-  margin-right: auto;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.syncState {
+  margin-right: 24px;
+  display: inline;
 }

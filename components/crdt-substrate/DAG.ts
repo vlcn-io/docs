@@ -13,15 +13,10 @@ export type Event = {
 
 export type NodeName = "nodeA" | "nodeB" | "nodeC";
 
-const sequenceNumbers = {
-  nodeA: 0,
-  nodeB: 0,
-  nodeC: 0,
-};
-
 export default class DAG {
   root: DAGNode;
   nodeRelation: Map<NodeID, DAGNode> = new Map();
+  seq: number = 0;
 
   constructor(public nodeName: NodeName, root?: DAGNode) {
     if (root) {
@@ -43,7 +38,7 @@ export default class DAG {
   addEvent(event: Event) {
     const node: DAGNode = {
       parents: this.findLeaves(),
-      id: `${this.nodeName}-${sequenceNumbers[this.nodeName]++}`,
+      id: `${this.nodeName}-${this.seq++}`,
       event,
     };
     this.nodeRelation.set(node.id, node);
@@ -90,20 +85,23 @@ export default class DAG {
       });
     }
 
-    // Finally do our depth first traversal.
     const events: DAGNode[] = [];
+
+    // Finally do our breadth first traversal.
     const visited = new Set<DAGNode>();
-    const visit = (n: DAGNode) => {
+    const toVisit = [this.root];
+    for (const n of toVisit) {
       if (visited.has(n)) {
-        return;
+        continue;
       }
       visited.add(n);
-      if (n.id != "ROOT") events.push(n);
-      for (const c of graph.get(n.id)!) {
-        visit(c);
+      if (n.id !== "ROOT") {
+        events.push(n);
       }
-    };
-    visit(this.root);
+      for (const child of graph.get(n.id)!) {
+        toVisit.push(child);
+      }
+    }
 
     return events;
   }
@@ -112,6 +110,7 @@ export default class DAG {
   merge(other: DAG): DAG {
     const ret = new DAG(this.nodeName);
     ret.nodeRelation = new Map([...this.nodeRelation, ...other.nodeRelation]);
+    ret.seq = Math.max(this.seq, other.seq) + 1;
     return ret;
   }
 
