@@ -24,16 +24,23 @@ export default {
       </span>
     ),
   },
-  head: (
-    <>
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <meta
-        name="keywords"
-        content="software, crdts, crrs, sqlite, conflict-free"
-      />
-      <meta name="copyright" content="© 2022 One Law LLC" />
-    </>
-  ),
+  head: () => {
+    const { frontMatter } = useConfig();
+    return (
+      <>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta
+          name="keywords"
+          content="software, crdts, crrs, sqlite, conflict-free"
+        />
+        <meta
+          name="twitter:image"
+          content={frontMatter.image || "https://vlcn.io/assets/hero.png"}
+        ></meta>
+        <meta name="copyright" content="© 2022 One Law LLC" />
+      </>
+    );
+  },
   useNextSeoProps() {
     const { frontMatter } = useConfig();
     return {

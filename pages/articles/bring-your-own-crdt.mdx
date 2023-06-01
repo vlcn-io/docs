@@ -156,7 +156,7 @@ function asTrackedMutations(mutations) {
 
 ## Traversing the DAG
 
-When events get merged between peers, we need to traverse the DAG to apply all of these events to the application state in-order. This can be done via a recursive common table expression that does a depth-first traversal of the DAG. Don't worry, we will visualize this later.
+When events get merged between peers, we need to traverse the DAG to apply all of these events to the application state in-order. This can be done via a recursive common table expression that does a breadth-first traversal of the DAG. Don't worry, we will visualize this later.
 
 ```sql
 WITH RECURSIVE

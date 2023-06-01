@@ -3,7 +3,6 @@
   "fractional-indexing": {},
   "recursive-ordering": {},
   "recursive-ordering-in-sqlite": {},
-  "distributed-recursive-ordering": {},
   "lww-vs-dag": {
     "title": "LWW vs DAG",
     "theme": {
@@ -16,6 +15,7 @@
       "typesetting": "article"
     }
   },
+  "crdt-substrate": "CRDT Substrate",
   "bring-your-own-crdt": {
     "theme": {
       "layout": "full",
@@ -28,7 +28,5 @@
     },
     "display": "hidden"
   },
-  "crdt-substrate": {
-    "display": "hidden"
-  }
+  "distributed-recursive-ordering": {}
 }
