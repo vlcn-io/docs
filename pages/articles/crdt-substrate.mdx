@@ -63,7 +63,7 @@ Preserving user intent is about more than all nodes converging to the same state
 To drive this home, we'll look at a delete operation that is based on array index.
 
 ```js
-function deleteItem(state, index) {
+deleteItem(state, index) {
   if (index < 0 || index >= state.items.length) {
     return false;
   }
@@ -74,10 +74,78 @@ function deleteItem(state, index) {
 This mutation is deterministic and it will converge but it doesn't preserve user intent.
 
 A few ways it can fail to preserve user intent:
-1. Two users trying to delete the same item will result in _two_ items being removed
+1. Two users trying to delete the same item concurrently will result in _two_ items being removed
 2. Say we have a list of letters. Trying to remove "c" could end up removing a completely unrelated letter after merge.
 
-Illustrated:
+The above cases are illustrated below.
+
+<video src="/blog/crdt-substrate/two-remove.webm" controls autoPlay muted style={{border: "1px solid red"}} />
+> *Both users attempt to delete the letter `b` concurrently. Since the mutation uses array indices, `b` and `c` are both removed on merge rather than just `b`.*
+<br/><br/>
+
+<video src="/blog/crdt-substrate/delete-item.webm" controls autoPlay muted style={{border: "1px solid red"}} />
+> *Both users concurrently create a list of items. User 1 then removes `c` from their list (index 2). Post merge, `b` ends up being removed!*
+
+The problem with both examples is that we're using an alias for the identity of a thing. We're using array index to indirectly reference what we are actually talking about.
+
+## Fixing Intent
+
+While yes, you can create a CRDT without any special knowledge you can't create a CRDT that preserves user intent without some  knowledge.
+
+One way to preserve user intent is to reach for an existing CRDT algorithm that has the intention preserving properties you'd like. This is pretty hard today as there are few libraries out there that let you declarative compose the CRDTs you want. This is what we're solving at Vulcan. The end goal being a declarative extension to the SQL Schema Definition Language to get you the behavior you need:
+
+**Notional example:**
+```sql
+CREATE TABLE post (
+ id INTEGER PRIMARY KEY,
+ views COUNTER,
+ content PERITEXT,
+ owner_id LWW INTEGER
+) AS CausalLengthSet;
+```
+
+The other way is to discover a set of rules or principles to adhere to when defining a mutation against the "crdt substrate." Maybe we'll fully explore this space at Vulcan in the future but, until then, you can continue reading to see what we've come up with so far.
+
+## Intent Preserving Principles
+
+### Refer to items by their identity
+
+> When you're operating on something, you need to refer to that thing _exactly_ rather than using an indirect reference.
+
+This is most clearly illustrated in the mutations that used array indices to talk about what to remove. If, instead, each element had a unique ID and we passed _that_ to mutations when deleting / moving / etc., the user's intent would be preserved.
+
+**Example**
+
+```js
+addItem(state, id, item) {
+  if (state.items.find((i) => i.id === id)) {
+    return false;
+  }
+  state.items.push({
+    id,
+    item,
+  });
+},
+
+deleteItem(state, id) {
+  const index = state.items.findIndex((e) => e.id === id);
+  if (index == -1) {
+    return false;
+  }
+  state.items.splice(index, 1);
+}
+```
+
+### Position is Relative
+
+> If you need to prevent interleaving of collections, use relative positions.
+
+
+Other things that might not preserve user intent:
+- Move
+- Copy items
+- Invariants?
+- Any use of indirect identity. Array index is an indirect reference to what you're _actually_ changing.
 
 
 
@@ -94,6 +162,13 @@ If you were paying close attention, however, you'll notice that some user intent
 - Counter & race (tx isolation levels)
 - Pop by index? Or pop by item id?
 
+```
+  copyItems(state) {
+    state.items = state.items.map((i) => Array.from({length: state.counter + 1}, () => i).join(''))
+  }
+```
+
 ## Preserving Intent
 
 ## Substrate - Implementation
+
