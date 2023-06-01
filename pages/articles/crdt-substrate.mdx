@@ -1,3 +1,8 @@
+---
+image: /blog/crdt-substrate/told-you.jpg
+description: What if I told you anyone can create a new CRDT? That with no special knowledge, you can write a set of mutations that can be applied to a data structure in a way that is guaranteed to converge? That you can do this without any special knowledge of distributed systems?
+---
+
 import RunnableCode from "@/components/RunnableCode";
 import { Callout } from "nextra-theme-docs";
 import Nodes from "@/components/crdt-substrate/Nodes";
@@ -94,7 +99,7 @@ The problem with both examples is that we're using array index (or alias) to ind
 
 While yes, you can create a CRDT without any special knowledge you can't create a CRDT that preserves user intent without _some_  knowledge.
 
-Many types of intent (delete, move to, insert at) can be preserved by knowing a few principles and following them writing mutations.
+Many types of intent (delete, move to, insert at) can be preserved by knowing a few principles and following them when writing mutations.
 
 ## Intent Preserving Principles
 
@@ -216,16 +221,17 @@ type MutationLog = [EventID, ParentIDs[], MutationName, Args[]][];
 
 In a system that isn't distributed the log would be linear. In our case, however, we need to account for concurrent edits happening in other processes. This is where `ParentIDs` comes in. `ParentIDs` refers to all the mutations that happened immediately before the current mutation.
 
-Thus the log, rather than being linear, is a DAG. Processes can update their DAG independently and the relationships in the DAG capture the passage of time.
+Thus the log, rather than being linear, is a DAG. The relationships in the DAG express time.
 - Branches represent concurrent modifications.
 - Branches that converge into a node represent events that happened before the node being converged into.
 - Linear runs represents events that happen one after the other
+- Linear runs in separate branches are concurrent sequences of events.
 
 ![time is a dag](/blog/crdt-substrate/dag.png)
 > Fig 7: 3 processes incrementing a distributed counter. 
-> - (A) Two processes increment the counter twice at the same time a third process increments it once.
+> - (A) Two processes increment the counter twice (concurrent sequences of events) at the same time a third process increments it once (concurrent event).
 > - (B) All processes sync their changes (arrows converging)
-> - (C) A single process increments the counter twice more.
+> - (C) A single process increments the counter twice more after all concurrent events.
 
 In this setup, each process can locally write to its log without coordinating with others. All it needs to do when writing is create a new event whose parents are the leaves of its current copy of the log.
 
@@ -355,7 +361,7 @@ class DAG {
 }
 ```
 
-While toy versions of all ideas seem to be able to be implemented [in JavaScript in ~100 lines](https://github.com/vlcn-io/docs/blob/main/components/crdt-substrate/DAG.ts), a production grade version that:
+While toy versions of all ideas seem to be able to be implemented [in 100 lines of JavaScript](https://github.com/vlcn-io/docs/blob/main/components/crdt-substrate/DAG.ts), a production grade version that:
 - Scales to hundreds or thousands of transactions per second (no matter how large the transaction logs become) 
 - Shares structure and compresses well
 
