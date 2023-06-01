@@ -14,7 +14,7 @@ What if I told you anyone can create a new CRDT? That with no special knowledge,
 
 Nobody can be told this truth. They must see it for themselves.
 
-## Seeing is Believing
+## Taking the Red Pill
 
 We'll start with some initial state --
 
@@ -54,13 +54,15 @@ Below are three independent UIs that are driven by three indepent copies of the 
 
 Pretty cool, right? All of the nodes converge to the same state and you didn't have to write any special code to make this happen. You just wrote some mutations and the substrate took care of the rest.
 
-Depending on what examples you ended up writing for yourself, you may have noticed that while everything does converge user intent is not always preserved.
+Before we get into how this works, let's talk about intent. While CRDTs and other structures may meet the mathematical definition of convergence it is likely that they will not meet the user's expectations of convergence.
+
+Depending on what examples you ended up writing for yourself, you may have already noticed this intent problem.
 
 ## User Intent
 
-Preserving user intent is about more than all nodes converging to the same state. It's about that final state matching the user's expectations.
+How do we preseve user intent and how does the mathematical definition of convergence deviate from pratical expectations?
 
-To drive this home, we'll look at a delete operation that is based on array index.
+To understand this better, we'll look at a delete operation that is based on array index.
 
 ```js
 deleteItem(state, index) {
@@ -71,11 +73,11 @@ deleteItem(state, index) {
 }
 ```
 
-This mutation is deterministic and it will converge but it doesn't preserve user intent.
+This mutation is deterministic and it will converge but it doesn't preserve intent.
 
-A few ways it can fail to preserve user intent:
+A few ways it can fail to preserve intent:
 1. Two users trying to delete the same item concurrently will result in _two_ items being removed
-2. Say we have a list of letters. Trying to remove "c" could end up removing a completely unrelated letter after merge.
+2. Say we have a list of letters. Trying to remove "c", by array index, could end up removing a completely unrelated letter after merge.
 
 The above cases are illustrated below.
 
@@ -86,13 +88,13 @@ The above cases are illustrated below.
 <video src="/blog/crdt-substrate/delete-item.webm" controls autoPlay muted loop style={{border: "1px solid red"}} />
 > Fig 2: Both users concurrently create a list of items. User 1 then removes `c` from their list (index 2). Post merge, `b` ends up being removed!
 
-The problem with both examples is that we're using an alias for the identity of a thing. We're using array index to indirectly reference what we are actually talking about.
+The problem with both examples is that we're using array index (or alias) to indirectly reference what we are actually talking about.
 
 ## Fixing Intent
 
-While yes, you can create a CRDT without any special knowledge you can't create a CRDT that preserves user intent without some  knowledge.
+While yes, you can create a CRDT without any special knowledge you can't create a CRDT that preserves user intent without _some_  knowledge.
 
-Many types of intent (delete, move to, insert at) can be preserved by observing a few principles in mutations written atop the "crdt substrate."
+Many types of intent (delete, move to, insert at) can be preserved by knowing a few principles and following them writing mutations.
 
 ## Intent Preserving Principles
 
@@ -166,15 +168,15 @@ Give it a whirl in the live example or see the video beloew --
 
 There could still be a problem here, however. What if another user concurrently deleted something you were inserting next to?
 
-Relative positioning would break down in this case. If you want to insert next to `b1` but `b1` no longer exists then your position no longer exists.
+Relative positioning would break down in this case. If you want to insert next to `b1` but `b1` no longer exists after a merge then your position no longer exists.
 
-You could fix this with invariants (do not allow deletion of these sorts of things) or soft deletion / tombstoning. Tombstoning an item would drop its content but retain its id and position so concurrent edits can't clear required positions.
+You could fix this with invariants (do not allow deletion of these sorts of things) or soft deletion & tombstoning. Tombstoning an item would drop its content but retain its id and position so position information always exists.
 
 While the substrate idea is powerful (we got relatively far with 0 knowledge of CRDTs) certain cases can begin to explode in complexity.
 
 ## Other Options for Intent
 
-A different approach to preserving intent is to reach for an existing [CRDT](https://en.wikipedia.org/wiki/Conflict-free_replicated_data_type) that has the intention preserving properties you'd like. This where we're headed at Vulcan. The end goal being a declarative extension to the SQL Schema Definition Language to allow you to easily combine the behavior you need:
+A different approach to preserving intent is to reach for an existing [CRDT](https://en.wikipedia.org/wiki/Conflict-free_replicated_data_type) that has the intention preserving properties you'd like. This where we're headed with Vulcan. The end goal being a declarative extension to the SQL Schema Definition Language to allow you to easily combine the behavior you need:
 
 ```sql
 CREATE TABLE post (
@@ -189,8 +191,8 @@ CREATE TABLE post (
 At some point we might ship the "crdt substrate" idea to lower the barrier to entry, and provide an escape hatch to, author custom convergent data types.
 
 
-<Callout>
-If any of this sounds interesting to you, [schedule some time with me](https://calendly.com/matt-wonlaw/30min) to discuss:
+<Callout emoji="👋">
+If any of this sounds interesting to you, [schedule some time with me](https://calendly.com/matt-wonlaw/30min) to discuss it or:
 - CRDTs
 - Contributing to cr-sqlite
 - Integration into your product, sponsorship, investment, contract work, design partnerships, etc.
@@ -198,7 +200,7 @@ If any of this sounds interesting to you, [schedule some time with me](https://c
 
 Even though there are drawbacks the substrate seems pretty magical. For many cases you can just write normal business logic and the state you mutated will converge as expected. So how does this work?
 
-## Substrate - Implementation
+## Implementation
 
 The substrate is split into two parts:
 1. A log of mutations
@@ -214,7 +216,7 @@ type MutationLog = [EventID, ParentIDs[], MutationName, Args[]][];
 
 In a system that isn't distributed the log would be linear. In our case, however, we need to account for concurrent edits happening in other processes. This is where `ParentIDs` comes in. `ParentIDs` refers to all the mutations that happened immediately before the current mutation.
 
-Thus the log, rather than being linear, is a DAG. The relationships in the DAG capture the passage of time.
+Thus the log, rather than being linear, is a DAG. Processes can update their DAG independently and the relationships in the DAG capture the passage of time.
 - Branches represent concurrent modifications.
 - Branches that converge into a node represent events that happened before the node being converged into.
 - Linear runs represents events that happen one after the other
@@ -260,7 +262,7 @@ class DAG {
 }
 ```
 
-Syncing state between processes is a matter of merging these logs together. Merging the DAGs is trivial. Since each event is completely unique and immutable, all we have to do is union all sets of nodes from all processes. This unioning can happen in any order and is idempotent meaning convergence does not rely on the order the DAGs are merged and duplicate sync messages are not a problem.
+Syncing state between processes is a matter of merging these logs together. Merging the DAGs is trivial. Since each node in the dag is completely unique and immutable, all we have to do is union the sets of nodes. This unioning can happen in any order and is idempotent meaning convergence does not rely on the order the DAGs are merged and duplicate sync messages are not a problem.
 
 ```ts
 class DAG {
@@ -275,6 +277,8 @@ class DAG {
   }
 }
 ```
+
+Given all processes share a common ancestor for their DAGs (the sentinel "ROOT" element), the DAG will not be disconnected after a merge.
 
 The last trick is updating the current application state based on the merged DAG.
 
@@ -351,7 +355,7 @@ class DAG {
 }
 ```
 
-While toy versions of all ideas seem to be able to be implemented in JavaScript in ~100 lines, a production grade version that:
+While toy versions of all ideas seem to be able to be implemented [in JavaScript in ~100 lines](https://github.com/vlcn-io/docs/blob/main/components/crdt-substrate/DAG.ts), a production grade version that:
 - Scales to hundreds or thousands of transactions per second (no matter how large the transaction logs become) 
 - Shares structure and compresses well
 
