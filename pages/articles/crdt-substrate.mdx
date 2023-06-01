@@ -1,5 +1,6 @@
 ---
 image: "/blog/crdt-substrate/told-you.jpg"
+title: "CRDT Substrate: Creating Convergence Without Specialized Knowledge"
 description: "What if I told you anyone can create a new CRDT? That you can do this without any special knowledge of distributed systems?"
 ---
 
@@ -208,7 +209,7 @@ If any of this sounds interesting to you, [schedule some time with me](https://c
 
 Even though there are drawbacks the substrate seems pretty magical. For many cases you can just write normal business logic and the state you mutated will converge as expected. So how does this work?
 
-## Implementation
+## Substrate Implementation
 
 The substrate is split into two parts:
 1. A log of mutations
@@ -236,9 +237,14 @@ Thus the log, rather than being linear, is a DAG. The relationships in the DAG e
 > - (B) All processes sync their changes (arrows converging)
 > - (C) A single process increments the counter twice more after all concurrent events.
 
-In this setup, each process can locally write to it's log without coordinating with others. All it needs to do when writing is create a new event whose parents are the leaves of it's current copy of the log.
+In this setup, each process can locally write to it's log without coordinating with others. All it needs to do when writing is create a new event whose parents are the leaves of it's current copy of the log. In our interactive example, each mutation you defined is decorated such that it calls `addEvent` when being invoked.
 
 ```ts
+export type Event = {
+  mutationName: string;
+  mutationArgs: any[];
+};
+
 class DAG {
   root: DAGNode;
   nodeRelation: Map<NodeID, DAGNode> = new Map();
@@ -378,6 +384,20 @@ While toy versions of all ideas seem to be able to be implemented [in 100 lines 
 - Shares structure and compresses well
 
 will take some doing.
+
+## Questions
+
+**Given this model is driven by a bunch of operations, is it really a CRDT?**
+
+I think so. All CRDTs have a merge operation. In our case, that merge operation is the merging of the DAG + replaying of the transaction log. Running the merge operation generates the application state.
+
+One could argue that the CRDT is only the DAG + Defined Mutations and that application state is merely a side-effect of the merge operation of that CRDT. In either case, it [fulfills the properties of a CRDT](https://en.wikipedia.org/wiki/Conflict-free_replicated_data_type#State-based_CRDTs):
+
+- The merge function is:
+  - Commutative
+  - Associative
+  - Idempotent
+- Mutations form a [semilattice](https://en.wikipedia.org/wiki/Semilattice) by writing events to the DAG.
 
 ## Acknowledgements
 
