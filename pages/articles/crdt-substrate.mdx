@@ -1,6 +1,6 @@
 ---
 image: "/blog/crdt-substrate/told-you.jpg"
-title: "A Framework for Convergence: Creating Convergence Without Specialized Knowledge"
+title: "A Framework for Convergence: Creating CRDTs Without Specialized Knowledge"
 description: "What if I told you anyone can create a new CRDT? That you can do this without any special knowledge of distributed systems?"
 ---
 
@@ -56,7 +56,7 @@ After making any changes to the code, press `shift + enter` or the `play` button
 
 Let's see this in action.
 
-Below are three independent UIs, representing nodes or processes, that are driven by three indepent copies of state. On each one you can run your mutations, updating the state for that specific node. Whenever you desire, have the nodes merge their state together by pressing the "sync nodes!" button.
+Below are three independent UIs, representing nodes or processes, that are driven by three independent copies of state. On each one you can run your mutations, updating the state for that specific node. Whenever you desire, have the nodes merge their state together by pressing the "sync nodes!" button.
 
 <br/>
 <Nodes />
@@ -69,7 +69,7 @@ Depending on what examples you ended up writing for yourself, you may have alrea
 
 ## Intent
 
-How do we preseve the user's intent and how does the mathematical definition of convergence deviate from pratical expectations?
+How do we preserve the user's intent and how does the mathematical definition of convergence deviate from practical expectations?
 
 To understand this better, we'll look at a delete operation that is based on array index.
 
@@ -140,7 +140,7 @@ deleteItem(state, id) {
   state.items.splice(index, 1);
 }
 ```
-> Fig 3: The updated mutations. Note that the item id must be _passed in_ to the mutation. Genearting a random uuid _wihin the mutation_
+> Fig 3: The updated mutations. Note that the item id must be _passed in_ to the mutation. Generating a random uuid _within the mutation_
 would make the mutation non-deterministic.
 
 
@@ -156,9 +156,9 @@ Go ahead and try those mutations yourself or watch the example --
 
 > If you need to prevent interleaving of sequences, use relative positions.
 
-This is similar to the array index idea. Our `addItem` mutation is implicitly using array index as the sort order for items. This is fine for many use cases but other use cases, such as text insertion, this is problem. The reason is that concurrent edits in the same location will end up interleaving characters.
+This is similar to the array index idea. Our `addItem` mutation is implicitly using array index as the sort order for items. This is fine for many use cases but for other use cases, such as text insertion, this is problem. The reason is that concurrent edits in the same location will end up interleaving characters.
 
-E.g., if Node A writes "girl" and Node B concurrently writes "boy" the result post-merge will be `gbioryl`.
+E.g., if Node A writes "girl" and Node B concurrently writes "boy" the result post-merge will be "`gbioryl`".
 
 We can fix this by making the notion of position relative. That is, the position an item was inserted at is identified by what is to the left or right of that item.
 
@@ -180,7 +180,7 @@ addItem(state, id, rightOf, item) {
 }
 ```
 
-Give it a whirl in the live example or see the video beloew --
+Give it a whirl in the live example or see the video below --
 <video controls autoPlay muted loop style={{border: "1px solid red"}}>
   <source src="/blog/crdt-substrate/girl-boy.webm" type="video/webm" />
   <source src="/blog/crdt-substrate/girl-boy.mp4" type="video/mp4" />
@@ -249,7 +249,7 @@ Thus the log, rather than being linear, is a DAG. The relationships in the DAG e
 > - (B) All processes sync their changes (arrows converging)
 > - (C) A single process increments the counter twice more after all concurrent events.
 
-In this setup, each process can locally write to it's log without coordinating with others. All it needs to do when writing is create a new event whose parents are the leaves of it's current copy of the log. In our interactive example, each mutation you define is decorated such that it calls `addEvent` when being invoked.
+In this setup, each process can locally write to its log without coordinating with others. All it needs to do when writing is create a new event whose parents are the leaves of it's current copy of the log. In our interactive example, each mutation you define is decorated such that it calls `addEvent` when being invoked.
 
 ```ts
 export type Event = {
@@ -400,25 +400,12 @@ will take some doing. Although you could certainly scale the toy to specific use
 - A data structure [that can rewind to arbitrary versions easily](https://en.wikipedia.org/wiki/Persistent_data_structure)
 - A way to calculate the deltas between DAGs on different nodes so as not to require sending the entire dag on sync
 - Something to prevent mistakes such as mutations being non-deterministic
-- A way to compress the transaction log while still supporting random access to it
-
-## Questions
-
-**Given this model is driven by a bunch of operations, is it really a CRDT?**
-
-I think so. All CRDTs have a merge operation. In our case, that merge operation is the merging of the DAG + replaying of the transaction log. Running the merge operation generates the application state.
-
-One could argue that the CRDT is only the DAG + Defined Mutations and that application state is merely a side-effect of the merge operation of that CRDT. In either case, it [fulfills the properties of a CRDT](https://en.wikipedia.org/wiki/Conflict-free_replicated_data_type#State-based_CRDTs):
-
-- The merge function is:
-  - Commutative
-  - Associative
-  - Idempotent
-- Mutations form a [semilattice](https://en.wikipedia.org/wiki/Semilattice) by writing events to the DAG.
+- A way to compress the log while still supporting random access to it
+- A way to know when it is safe to prune events out of the log
 
 ## Acknowledgements
 
-- [Replicache](https://replicache.dev/) and [@aboodman](https://twitter.com/aboodman) for turning me on to the idea
+- [Replicache](https://replicache.dev/) and [@aboodman](https://twitter.com/aboodman) for turning me on to the idea with his presentation @ lfw.dev which [you can view here](https://www.youtube.com/watch?v=7Bb0KRLL8FI&t=1892s)
 - [lfw.dev](https://localfirstweb.dev/) and [@founderYonz](https://twitter.com/founderYonz) for gathering a community together to share these ideas
 - [Braid.org](https://braid.org/) for being open, welcoming and truly diving deep on CRDTs, exploring them in every possible way
 
