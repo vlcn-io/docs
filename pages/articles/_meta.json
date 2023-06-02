@@ -15,7 +15,7 @@
       "typesetting": "article"
     }
   },
-  "crdt-substrate": "CRDT Substrate",
+  "crdt-substrate": "A Framework for Convergence",
   "bring-your-own-crdt": {
     "theme": {
       "layout": "full",
