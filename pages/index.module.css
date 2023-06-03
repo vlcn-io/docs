@@ -1,0 +1,48 @@
+@import url("https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;700;900&display=swap");
+
+.root {
+  --hero-bg: #b9e2f5;
+  /* --hero-bg: black; */
+  /* --color: white; */
+  --color: black;
+  --hero-leftpad: 12vw;
+  --hero-rightpad: 4vw;
+  --hero-copy-w: 30vw;
+  --hero-img-w: 48vw;
+  --hero-h1: 4vw;
+  --hero-h3: 1.2vw;
+  --hero-subtext: 1vw;
+  --hero-subtext-lh: 1.25vw;
+  --logo-w: 6vw;
+  --black: #111111;
+
+  --waitlist-fs: 1vw;
+  --social-fs: 2vw;
+}
+
+.html,
+.body {
+  margin: 0;
+  padding: 0;
+  font-family: "Raleway", sans-serif;
+  /* color: var(--black); */
+  color: var(--color);
+  background: #fcfcfc;
+}
+
+.header {
+  background: var(--hero-bg);
+  padding-left: var(--hero-leftpad);
+  padding-top: 30px;
+}
+
+.logoImg {
+  width: var(--logo-w);
+  height: calc(0.417 * var(--logo-w));
+  position: relative;
+}
+
+.hero {
+  background: var(--hero-bg);
+  position: relative;
+}
