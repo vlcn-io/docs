@@ -131,3 +131,47 @@
   margin-right: 40px;
   color: var(--color);
 }
+
+.main {
+  margin-top: 80px;
+  margin-left: var(--hero-leftpad);
+  margin-right: var(--hero-leftpad);
+}
+
+.isoCard {
+  box-shadow: 0px 20px 50px rgba(0, 0, 0, 0.02);
+  display: flex;
+  padding: 40px;
+  border-radius: 30px;
+  background: white;
+  color: var(--black);
+  align-items: center;
+}
+
+.isoCard h1 {
+  font-weight: 900;
+  font-size: 32px;
+}
+
+.isoCard img,
+.isoImg {
+  height: 180px;
+}
+
+.isoCard img.replicated {
+  width: 160px;
+  height: auto;
+}
+
+.isoCard img.reactive {
+  width: 160px;
+  height: auto;
+}
+
+.isoCard p {
+  line-height: 24px;
+}
+
+.isoCard .sep {
+  min-width: 80px;
+}

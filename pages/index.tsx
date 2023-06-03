@@ -19,9 +19,9 @@ const data = {
     "Develop distributed & collaborative applications that sync & react to changing state.",
   heroSubtext: (
     <>
-      VLCN augments <a href="https://www.sqlite.org/">SQLite</a>, giving it the
-      power of eventual consistency and multi-writer replication. It's like Git,
-      for your data.
+      Vulcan augments <a href="https://www.sqlite.org/">SQLite</a>, giving it
+      the power of eventual consistency and multi-writer replication. It's like
+      Git, for your data.
     </>
   ),
 };
@@ -93,6 +93,7 @@ export default function Index() {
           <FontAwesomeIcon icon={faTwitter} />
         </a>
       </section>
+      <main className={style.main}></main>
     </div>
   );
 }
