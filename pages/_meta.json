@@ -12,17 +12,13 @@
       "pagination": false
     }
   },
-  "background": {},
-  "getting-started": {},
-  "cr-sqlite": "CR-SQLite",
-  "networking": "Networking & Syncing",
-  "js": {
-    "title": "JavaScript"
+  "docs": {
+    "type": "page",
+    "title": "Documentation"
   },
-  "appendix": "Appendix",
   "blog": {
     "title": "Blog",
-    "display": "hidden",
+    "type": "page",
     "theme": {
       "layout": "full",
       "sidebar": false,

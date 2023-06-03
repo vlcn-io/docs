@@ -58,7 +58,7 @@ export default function Index() {
               Join The Beta
             </a>
             <Link
-              href="/background"
+              href="/docs"
               className={style.actionBtn + " " + style.docsBtn}
             >
               Read the Docs
