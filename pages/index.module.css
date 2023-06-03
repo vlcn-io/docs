@@ -46,3 +46,74 @@
   background: var(--hero-bg);
   position: relative;
 }
+
+.heroInner {
+  padding-left: var(--hero-leftpad);
+  padding-right: var(--hero-rightpad);
+  display: flex;
+  padding-bottom: 30px;
+}
+
+.heroCopy {
+  width: var(--hero-copy-w);
+  margin-top: 5vw;
+}
+
+.hero h1 {
+  text-transform: uppercase;
+  font-weight: 900;
+  font-size: var(--hero-h1);
+  margin-block-start: 0;
+  margin-block-end: 0;
+}
+
+.hero h3 {
+  font-weight: 700;
+  font-size: var(--hero-h3);
+  margin-block-start: 0.5em;
+  margin-block-end: 0;
+}
+
+.hero .subtext {
+  font-weight: 300;
+  font-size: var(--hero-subtext);
+  line-height: var(--hero-subtext-lh);
+  margin-top: 2em;
+}
+
+.actionBtn {
+  text-decoration: none;
+  color: var(--black);
+  font-weight: 700;
+  border-radius: 1.5vw;
+  font-size: var(--waitlist-fs);
+  padding: 1vw 2vw;
+  display: inline-block;
+  margin-top: 4vw;
+}
+
+.waitlistBtn {
+  background: white;
+}
+
+.docsBtn {
+  background: black;
+  margin-left: 14px;
+  color: white;
+}
+
+.sep {
+  flex-grow: 1;
+}
+
+.heroImgContainer,
+.heroImg {
+  width: var(--hero-img-w);
+}
+
+.social {
+  background: var(--hero-bg);
+  padding-left: var(--hero-leftpad);
+  font-size: var(--social-fs);
+  padding-bottom: 2vw;
+}
