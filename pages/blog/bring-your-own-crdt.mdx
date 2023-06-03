@@ -1,0 +1,193 @@
+---
+draft: true
+---
+
+import { Callout } from "nextra-theme-docs";
+import Dag from '/components/bring-your-own-crdt/Dag';
+import I from '/components/bring-your-own-crdt/Initialize';
+
+# CRDT Substrate
+
+I recently watched [@aboodman](https://twitter.com/aboodman) give a talk about [Replicache](https://replicache.dev/). I loved seeing the Replicache model and the talk gave me a bit of envy. Envious of how simply new multiplayer semantics can be built out without having any understanding of distributed systems and CRDTs.
+
+So I was wondering, can we bring the same developer experience to CRDTs?
+
+## Background
+
+Replicache has a model where developers create named mutations.
+
+E.g.,
+
+```js
+export const mutations {
+  increment(tx, amount) {
+    const current = tx.get('count');
+    const next = current + amount;
+    tx.put('count', next);
+  }
+}
+```
+
+These named mutations exist both on the client and server. The client can optimistically apply mutations to its local state as often as it likes. In the background, these mutations are shipped off to the server as a tuple of `[mutation_name, ...args]`. The server then merges changes from all clients by coming up with a total ordering of mutations and applying them. There are a few more details but that's the gist of the Replicache model.
+
+This model is great. Developers can write arbitrary logic in their mutations and still end up with convergent state. This lets devs work with what they're familiar with (normal code) rather than having to reach for and learn about the correct CRDT to use to model their data.
+
+One trade-off of the Replicache approach, however, is that all changes must go through a central server. It can't work in a P2P setting.
+
+But it got me thinking, can we bring the Replicache model to CRDTs? Can we give developers a way to write arbitrary logic and still guarantee convergence of their state in both client-server and P2P settings?
+
+## Bring your own CRDT
+
+Yes we can! For lack of a better term, I'm calling it "CRDT substrate". It is a re-think on my earlier work ([LWW vs DAG](./lww-vs-dag)) to incoroprate named mutations, inspired by Replicache and [another earlier work](https://aphrodite.sh/docs/mutations-and-transactions).
+
+## Building the Event Log
+
+The basis of the model is an event log. Just like Replicache, we'll model the event log as `[mutation_name, ...args]` tuples. One thing we'll add to each event, however, is a pointer back to the event which preceeded it. This pointer will allow us to build a tree of events where forks represent concurrent edits. A traversal of this tree will create a total ordering of events and allow us to converge on a single state.
+
+The tree is a CRDT given:
+- The tree is inflationary with a partial ordering, forming a semi-lattice
+- Merging trees is idempotent (we toss out duplicate events)
+- Merging trees is commutative and associative (we just bring events over as-is, no reparenting happens on merge)
+
+We'll implement this concept in SQL.
+
+To do so, we'll need some tables to represent out event log.
+
+```sql
+CREATE TABLE event (
+  id INTEGER PRIMARY KEY,
+  mutation_name TEXT,
+  args ANY
+) STRICT;
+
+CREATE TABLE event_dag (
+  parent_id ANY, -- the event that came before this one
+  event_id INTEGER, -- the id of the event
+  PRIMARY KEY (parent_id, event_id)
+) STRICT;
+
+CREATE INDEX event_dag_event ON event_dag (event_id);
+```
+
+And then table(s) to represent the application which, for this example, is a basic todo app.
+
+```sql
+CREATE TABLE todo (id INTEGER PRIMARY KEY, content TEXT, completed BOOLEAN);
+-- and a counter just for a bit of fun
+CREATE TABLE counter (id INTEGER PRIMARY KEY CHECK (id = 0), count INTEGER DEFAULT 0);
+```
+
+## Declaring Mutations
+
+Next, we need to declare the mutations used by our application. These mutations must exist on all peers. Mutations must be deterministic but they need not be idempotent as we will guarantee that the effects of a mutation on local state will only be observed once.
+
+<Callout type="info">
+  Can't the user shoot themselves in the foot if their mutation changes some globals? Yes but I think this is an acceptable risk. If it is not, we define mutations in [AssemblyScript](https://www.assemblyscript.org/). This allows us to completely sandbox the mutation code and _only_ give it access to what is safe to read and write. `AssemblyScript` is another super power given we can compile it to WASM and run this WASM code in the database itself rather than requiring the user to spin up a separate backend.
+</Callout>
+
+```js
+const bareMutations = {
+  async addTodo(tx, todoId, value) {
+    await tx.exec(/*sql*/`INSERT INTO todo (id, content, completed) VALUES (?, ?, ?)`, [todoId, value, 0]);
+  },
+  async removeTodo(tx, todoId) {
+    await tx.exec(`DELETE FROM todo WHERE id = ?`, [todoId]);
+  },
+  async completeTodo(tx, todoId, complete) {
+    await tx.exec(`UPDATE todo SET completed = ? WHERE id = ?`, [complete, todoId]);
+  },
+  async renameTodo(tx, todoId, content) {
+    await tx.exec(`UPDATE todo SET content = ? WHERE id = ?`, [content, todoId]);
+  },
+  async completeAllTodos(tx) {
+    await tx.exec(`UPDATE todo SET completed = 1 WHERE completed = 0`);
+  },
+  async uncompleteAllTodos(tx) {
+    await tx.exec(`UPDATE todo SET completed = 0 WHERE completed = 1`);
+  },
+  async clearCompletedTodos(tx) {
+    await tx.exec(`DELETE FROM todo WHERE completed = 1`);
+  },
+  // and lets do a counter just to show that we can
+  async increment(tx) {
+    const current = (await tx.execA(`SELECT count FROM counter`))[0] || 0;
+    await tx.exec(`UPDATE counter SET count = ?`, [current + 1]);
+  }
+};
+```
+
+## Generating Events
+
+Next, we need to generate an event log entry whenever someone invokes a mutation. We do this by wrapping the declared mutations (`bareMutations`) in something that does all the bookkeeping for us.
+
+```js
+const trackedMutations = asTrackedMutations(bareMutations);
+
+function asTrackedMutations(mutations) {
+  const result = {};
+  for (const [name, fn] of Object.entries(mutations)) {
+    result[name] = async function(tx, ...args) {
+
+        // get the leave(s) that will be parents of new event
+        // TODO: this is an index scan.
+        // We should optimize.
+        let parents = await tx.execA(`SELECT l.event_id FROM event_dag as l WHERE NOT EXISTS (SELECT NULL FROM event_dag as r WHERE r.parent_id = l.event_id)`);
+        if (parents.length == 0) {
+          parents = [["ROOT"]];
+        }
+
+        // process the event
+        await fn(tx, ...args);
+
+        // compute an id for the event
+        const eventId = newIID(tx.siteid);
+
+        // write the event
+        await tx.exec(`INSERT INTO event (id, mutation_name, args) VALUES (?, ?, ?)`, [event.id, name, JSON.stringify(args)]);
+
+        // link the event into the DAG
+        for (const parent of parents) {
+          await tx.execA(`INSERT OR IGNORE INTO event_dag VALUES (?, ?)`, [
+            parent[0],
+            eventId,
+          ]);
+        }
+    }
+  }
+  return result;
+}
+```
+
+## Traversing the DAG
+
+When events get merged between peers, we need to traverse the DAG to apply all of these events to the application state in-order. This can be done via a recursive common table expression that does a breadth-first traversal of the DAG. Don't worry, we will visualize this later.
+
+```sql
+WITH RECURSIVE
+after_node(event_id,level) AS (
+  VALUES('ROOT',0)
+  UNION ALL
+  SELECT event_dag.event_id, after_node.level+1
+    FROM event_dag JOIN after_node ON event_dag.parent_id=after_node.event_id
+   ORDER BY 2,1 DESC
+)
+
+SELECT DISTINCT event.id, event.mutation_name, event.args
+  FROM after_node JOIN event
+  ON after_node.event_id = event.id;
+
+-- Notes to self:
+-- We're recomputing the full dag every time but we can do an incremental process:
+-- We can:
+-- 1. go thru each received event in a merge or local write
+-- 2. grab parent ids and add to [seen set], [have parent set]
+-- 3. when adding in step (2), if parent id already in seen set, remove from [have parent set]
+-- 4. find LCP of [have parent set]
+-- 5. traverse DAG from that point forward
+```
+
+## Putting it all Together
+
+Now that we have all the pieces, let's put it all together into a running application that syncs!
+
+<I Comp={Dag} />

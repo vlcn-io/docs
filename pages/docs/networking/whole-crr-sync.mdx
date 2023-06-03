@@ -1,0 +1,299 @@
+import RunnableCode from "@/components/RunnableCode";
+import DocGlobals from "@/components/DocGlobals";
+import { Callout } from "nextra-theme-docs";
+
+<DocGlobals />
+
+# Whole CRR Sync
+
+Whole CRR ([conflict free replicated relation](/appendix/crr)) sync means that we want all of the CRRs on different databases to be identical after they merge.
+
+What follows is an example of how to implement whole CRR sync to merge two databases together.
+
+The base primitives around which everything is built are tables and crrs.
+
+- Tables are just regular `sqlite` tables.
+- `crrs` are `sqlite` tables which can be merged with other tables on other devices
+
+You can have local-only data (regular tables) as well as synced data (crrs) in the same database. Anything that is not a `crr` will not be synced.
+
+For the rest of this guide we'll assume that you're making a collaborative presentation editor like Google Slides, Keynote or Powerpoint. This application will have completely local data (like selection state) and shared data (like decks, slides and slide contents).
+
+<Callout type="info">
+  Note: the `use` and `provide` keywords are just part of the documentation
+  framework to allow code cells to communicate by exporting and importing
+  variables from one another.
+</Callout>
+
+## Write the Schema
+
+We can start by defining the base data model as normal `sqlite` tables.
+
+<RunnableCode
+  code={`const baseSchema = [
+  \`CREATE TABLE IF NOT EXISTS "deck" (
+    "id" primary key,
+    "name"
+  );\`,
+  \`CREATE TABLE IF NOT EXISTS "slide" (
+    "id" primary key,
+    "deck_id",
+    "order"
+  );\`,
+  \`CREATE TABLE IF NOT EXISTS "component" (
+    "id" primary key,
+    "slide_id",
+    "type",
+    "content",
+    "x",
+    "y",
+    "w",
+    "h",
+    "rotation"
+  );\`,
+  \`CREATE TABLE IF NOT EXISTS "selected_slide" (
+    "deck_id", "slide_id", primary key ("deck_id", "slide_id")
+  );\`,
+  \`CREATE TABLE IF NOT EXISTS "selected_component" (
+    "slide_id", "component_id", primary key ("slide_id", "component_id")
+  );\`
+];
+provide baseSchema;
+return baseSchema;`}
+/>
+
+And then decide which of those should be synced and thus `crrs`. We'll want to replicate the `deck`, `slide` and `component` tables given those states should be shared across all devices and users. We won't replicate the tables which represent local-only state like `selected_slide` and `selected_component`.
+
+<RunnableCode
+  code={`use baseSchema;
+const schema = [
+  ...baseSchema,
+  \`SELECT crsql_as_crr('deck');\`,
+  \`SELECT crsql_as_crr('slide');\`,
+  \`SELECT crsql_as_crr('component');\`,
+];
+provide schema;
+return schema;`}
+/>
+
+## Apply the Schema to the DB
+
+Now that we have a data model sketched out we can apply it to a database. Let's import the `crsqlite-wasm` module and open a database in memory. Too learn how to persist data to disk, see [js/persistence](/js/persistence).
+
+<RunnableCode
+  code={`const initWasm = await import('https://esm.sh/@vlcn.io/crsqlite-wasm@0.11.0');
+const sqlite = await initWasm.default(() => "https://esm.sh/@vlcn.io/crsqlite-wasm@0.11.0/dist/crsqlite.wasm");
+const db1 = await sqlite.open(":memory:");
+provide sqlite;
+provide db1;`}
+/>
+
+Then apply the schema we defined earlier to the database.
+
+<RunnableCode
+  code={`use db1;
+use schema;
+const schemaApplied = await db1.execMany(schema);
+provide schemaApplied;`}
+/>
+
+Great! Let's run a few commands to make sure that worked.
+
+<RunnableCode
+  code={`use schemaApplied;
+return (await db1.execA(\`SELECT name FROM sqlite_master WHERE type = 'table'\`)).join("\\n");`}
+/>
+
+As you can see, all the tables were created as expected. There are a few internal tables as well which are used by crsqlite to track merge state.
+
+<Callout type="info">
+  You can modify the code above and press `shift + enter` to re-run the cell.
+</Callout>
+
+## Writing Data
+
+Now that we have a database with a data model we can start writing data to it. Let's start by creating a deck along with a few slides and components.
+
+<RunnableCode
+  code={`use db1;
+const deckid = nanoid();
+const slideid1 = nanoid();
+const slideid2 = nanoid();
+await db1.execMany([
+  \`INSERT INTO "deck" ("id", "name") VALUES ('\${deckid}', 'First Presentation');\`,
+  \`INSERT INTO "slide" ("id", "deck_id", "order") VALUES ('\${slideid1}', '\${deckid}', 0);\`,
+  \`INSERT INTO "slide" ("id", deck_id, "order") VALUES ('\${slideid2}', '\${deckid}', 1);\`,
+  \`INSERT INTO component ("id", "slide_id", "type", "content", x, y, w, h, "rotation") VALUES ('\${nanoid()}', '\${slideid1}', 'text', 'Some Title', 0, 0, 600, 100, 0);\`,
+  \`INSERT INTO component ("id", "slide_id", "type", "content", x, y, w, h, "rotation") VALUES ('\${nanoid()}', '\${slideid1}', 'text', 'Some subtext', 500, 150, 400, 100, 0);\`,
+]);
+provide deckid;
+return 'data written';`}
+/>
+
+And to check on things --
+
+<RunnableCode
+  code={`use deckid;
+const decks = await db1.execO(\`SELECT * FROM deck\`);
+const slides = await db1.execO(\`SELECT * FROM slide\`);
+const components = await db1.execO(\`SELECT * FROM component\`);
+return {
+  decks,
+  slides,
+  components,
+};`}
+/>
+
+But what if we need to collaborate between multiple devices? We need to be able to replicate the data between devices. Let's see how that works.
+
+## Syncing, Merging, Replicating
+
+The main primitive for this is [crsql_changes](/docs/cr-sqlite/api-methods/crsql_changes) which allows you to:
+
+1. pull changes since a given time
+2. apply changes from another db
+
+While you can select _all_ changes in the database, you can also narrow down to specific logical clock ranges, tables, primary keys and more.
+
+Let us see what some of the changes in our DB looks like.
+
+<RunnableCode
+  code={`use deckid;
+return await db1.execA(
+\`SELECT
+  "table",
+  "pk",
+  "cid",
+  "val",
+  "col_version",
+  "db_version",
+  quote("site_id")
+FROM "crsql_changes"\`);`}
+/>
+
+A bunch of stuff. The details don't really matter for now, just know that:
+
+1. The output of a select from `crsql_changes` can be directly fed back into an insert into `crsql_changes` on another database
+2. That a list of changes compresses well -- so don't worry about the repeated values
+
+<Callout type="info">
+  To understand everything in a chageset, see
+  [crsql_changes](/docs/cr-sqlite/api-methods/crsql_changes).
+</Callout>
+
+Let's see what happens when we apply a changeset to a new database.
+
+### Syncing to a new DB
+
+Spin up a new DB that has no data in it.
+
+<RunnableCode
+  code={`use sqlite;
+const db2 = await sqlite.open(":memory:");
+provide db2;`}
+/>
+
+One constraint is that databases must have the same set of CRRs in order to sync between them. So let's apply the schema to the new database.
+
+<RunnableCode
+  code={`use db2;
+db2.execMany(schema);
+return 'schema written';`}
+/>
+
+Confirm that db2 is in fact empty.
+
+<RunnableCode
+  code={`use db2;
+return db2.execO(\`SELECT * FROM deck, slide, component\`);`}
+/>
+
+And finally apply all changes from the first database to the second.
+
+<RunnableCode
+  code={`use db2;
+use deckid;
+// example of selecting changes after a db_version and only made locally
+const changes = await db1.execA(\`SELECT * FROM crsql_changes WHERE db_version > 0 AND site_id IS NULL\`);
+const db2_synced = await db2.tx(async (tx) => {
+  for (const change of changes) {
+    await tx.exec(
+      \`INSERT INTO crsql_changes VALUES (?, ?, ?, ?, ?, ?, ?)\`,
+      change,
+    );
+  }
+});
+provide db2_synced;`}
+/>
+
+Now checking the contents of db2 post sync --
+
+<RunnableCode code={`use db2_synced;
+const decks = await db2.execO(\`SELECT * FROM deck\`);
+const slides = await db2.execO(\`SELECT * FROM slide\`);
+const components = await db2.execO(\`SELECT * FROM component\`);
+
+return {
+decks,
+slides,
+components,
+};`} />
+
+We can also perform concurrent edits on each DB and then merge them together. 
+
+### Delta State
+
+In order to ensure we only sync what has changed since the last time we synced, we'll need to track the latest `db_version` we've seen from our peers.
+
+`crsqlite` provides a [crsql_tracked_peers](/docs/cr-sqlite/api-methods/crsql_tracked_peers) table that networking layers can use to track the `db_version` of each peer. Networking layers are of course allowed to create their own tables to track this information as well.
+
+### Using Tracked Peers
+
+The `crsql_tracked_peers` table is essentially acting as a mechanism to store cursors that represent the last point in time that we synced with another peer or site. We use these values to only pull or push changes since the last time we pulled or pushed when talking with a peer.
+
+If `db2` wants all changes from `db1` that it has not yet seen, `db2` can ask `db1` for changes where the `db_version` is greater than the value it has stored for `db1`.
+
+example --
+
+<RunnableCode
+  code={`use deckid;
+return await db1.execA(\`SELECT * FROM crsql_changes WHERE db_version > ? AND site_id IS NULL\`, [4]);`}
+/>
+
+You can experiment with the `db_version` to see how it affects the changes that are returned.
+
+## Wrap Up
+
+You've seen how you can compose:
+
+- [crsql_as_crr](/docs/cr-sqlite/api-methods/crsql_as_crr)
+- [crsql_siteid](/docs/cr-sqlite/api-methods/crsql_siteid)
+- [crsql_changes](/docs/cr-sqlite/api-methods/crsql_changes)
+- [crsql_tracked_peers](/docs/cr-sqlite/api-methods/crsql_tracked_peers)
+
+to build a sync layer for your application.
+
+The basic ideas:
+
+1. Convert tables to conflict free replicated relations with `crsql_as_crr`
+2. Discover the unique id of each database with `crsql_siteid`
+3. Pull and apply changes to/from databases with `crsql_changes`
+4. Keep track of what you've synced with `crsql_tracked_peers`
+
+Another example implementation of the above: https://observablehq.com/@tantaman/cr-sqlite-basic-setup
+
+## Future
+
+Reference implementations of:
+
+- A REST sync server
+- P2P sync over a lossy pub-sub channel
+
+are in progress.
+
+Reference implementations of:
+
+- [A Websocket sync server & client](/js/networking)
+- [Simple P2P sync over WebRTC](https://github.com/vlcn-io/cr-sqlite/tree/main/js/packages/p2p)
+
+already exist.

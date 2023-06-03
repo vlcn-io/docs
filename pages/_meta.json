@@ -1,15 +1,30 @@
 {
-  "background": {},
-  "getting-started": {},
-  "cr-sqlite": "CR-SQLite",
-  "networking": "Networking & Syncing",
-  "js": {
-    "title": "JavaScript"
+  "index": {
+    "display": "hidden",
+    "type": "page",
+    "theme": {
+      "layout": "raw",
+      "breadcrumb": false,
+      "footer": false,
+      "navbar": false,
+      "sidebar": false,
+      "toc": true,
+      "pagination": false
+    }
   },
-  "articles": "Articles",
-  "appendix": "Appendix",
+  "docs": {
+    "type": "page",
+    "title": "Docs"
+  },
+  "examples": {
+    "type": "page"
+  },
   "blog": {
     "title": "Blog",
+    "type": "page"
+  },
+  "about": {
+    "type": "page",
     "display": "hidden"
   }
 }

@@ -1,0 +1,29 @@
+# Background
+
+We want applications:
+
+1. That don't break on network hiccups
+2. That can sync across devices
+3. Allow users to collaborate
+4. Allow users to view and edit their data while offline
+5. Have instant interactions
+
+Vulcan is [a database extension](/docs/cr-sqlite/intro) and [set of platform SDKs](/docs/js/wasm) to allow you to create these kinds of applications without being a distributed systems expert.
+
+While Vulcan can be run in a traditional client-server setup, it also supports P2P replication and syncing. In other words, a truly serverless setup. One where each device on the network is a peer and there is no server to serve as a central point of failure.
+
+## How it Works
+
+The base of everything is [cr-sqlite](/docs/cr-sqlite/intro). An extension to SQLite to enable it to merge in changes from other databases and automatically resolve merge conflicts.
+
+This means that users can write to their local database and merge those changes with other users or devices who may have also made independent changes to their local database. Merging can happen in real time or lazily as network conditions allow.
+
+**In technical terms:** cr-sqlite adds [multi-master replication](https://en.wikipedia.org/wiki/Multi-master_replication) and [partition tolerance](https://en.wikipedia.org/wiki/Network_partition) to SQLite via [conflict free replicated data types](https://en.wikipedia.org/wiki/Conflict-free_replicated_data_type) (CRDTs).
+
+> It's like git, for your data.
+
+This capability is the foundation of the 5 features listed above as all of these involve a "merging of edits" problem.
+
+For those that want a better understanding of the theory behind Vulcan & cr-sqlite, see
+the [deep dive section](./appendix/causal-consistency). Otherwise, continue
+to the getting started section.

@@ -1,0 +1,70 @@
+---
+draft: true
+---
+
+# Distributed Recrusive Ordering - Draft!
+
+[Centralized Recursive Ordering](./recursive-ordering) was covered earlier. From that and [[blog/recursive-ordering-in-sqlite]] we saw:
+
+1. You can order items in a table based on a recursive relationship
+2. Ordering on recursive relationship can be an indexed operation and fast
+
+But how can we updating our recursive ordering to be a [CRDT](https://crdt.tech/)? I.e., how can we update recursive ordering to allow many peers to modify the order of items without coordinating with one another and to guarantee that they all converge to the same state after exchanging their state changes?
+
+The problem with the current solution is that two peers could create a cycle in the ordering.
+
+Take the follwing list:
+```
+A -> B -> C
+```
+
+Peer 2 could move A before C at time 0.
+
+Peer 2 @ time 0:
+```
+B -> A -> C
+```
+
+Peer 1 could move C before A at time 1
+
+Peer 1 @ time 1:
+```
+C -> A -> B
+```
+
+Peer 2 could insert D after A @ time 2:
+
+Peer 2 @ time 2:
+```
+B -> A -> D -> C
+```
+
+Peer 2 sends its state to Peer 1.
+
+- The `B -> A` update from Peer 2 is lost since it occurred before the `B -> NULL` update from Peer 1.
+- The `A -> C` update from Peer 2 is lost since it is overridden by the `A -> D` update @ time 2 on Peer 2.
+- The `A -> D, D -> C` updates from Peer 2 are taken since they occur after all updates on Peer 1.
+
+After merging Peer 2 into Peer 1 we now have:
+```
+C -> A -> D -> C
+```
+
+creating a cycle and losing our reference to B.
+
+How can we fix this?
+
+# Constrain It - Only Add and Remove
+
+The first option is to constrain the allowed set of operations to only allow `Add` and `Remove` operations. To "move" something would require deleting that thing and creating a new thing in the new spot.
+
+This can work well for something like a text document. Whenever you insert a character you give it a unique id. When "moving" character (e.g., copy-pasting) you delete them from their original location and add those same characters, but with new ids, in the new location.
+
+Deletion of items must all record a tombstones for those items. If deleted items were actually removed then we would not know where to put something that as inserted after a deleted node by a peer.
+
+Given that adding and removing still modifies pointers, how do we make sure that those modifications converge and don't misbehave?
+
+We need to make sure that pointers only ever move to higher values when being set.
+
+On new object creation this is easy -- the object never existed so any value is greater than nothing.
+On insertion this is also easy -- every new id must be greater than the last generated id

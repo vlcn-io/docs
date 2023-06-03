@@ -1,0 +1,41 @@
+{
+  "*": {
+    "display": "hidden",
+    "theme": {
+      "toc": false,
+      "sidebar": false,
+      "pagination": false,
+      "typesetting": "article"
+    }
+  },
+  "crdt-substrate": "A Framework for Convergence",
+  "intro-to-crdts": {},
+  "lww-vs-dag": {
+    "title": "LWW vs DAG",
+    "theme": {
+      "layout": "full",
+      "breadcrumb": false,
+      "footer": true,
+      "sidebar": false,
+      "toc": false,
+      "pagination": false,
+      "typesetting": "article"
+    }
+  },
+  "fractional-indexing": {},
+  "recursive-ordering": {},
+  "recursive-ordering-in-sqlite": {},
+  "bring-your-own-crdt": {
+    "theme": {
+      "layout": "full",
+      "breadcrumb": false,
+      "footer": true,
+      "sidebar": false,
+      "toc": false,
+      "pagination": false,
+      "typesetting": "article"
+    },
+    "display": "hidden"
+  },
+  "distributed-recursive-ordering": {}
+}

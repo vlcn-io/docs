@@ -1,0 +1,25 @@
+# crr
+
+CRR stands for [Conflict Free Replicated Relation](https://hal.inria.fr/hal-02983557/document). In the context of vlcn & cr-sqlite, a CRR is a table that has had the [crsql_as_crr](/docs/cr-sqlite/api-methods/crsql_as_crr) operation applied to it.
+
+E.g.,
+```sql
+CREATE TABLE items (
+  id INTEGER PRIMARY KEY,
+  content TEXT,
+  age INTEGER
+);
+
+SELECT crsql_as_crr('items');
+```
+
+CRRs can be synced and merged between different databases. Regular tables (non-crrs) are just plain SQLite tables and cannot be synced or merged. They exist completely locally.
+
+## Related Methods
+
+- [crsql_as_crr](/docs/cr-sqlite/api-methods/crsql_as_crr)
+- [crsql_changes](/docs/cr-sqlite/api-methods/crsql_changes)
+
+## Related Guides
+
+- [merging databases](/docs/networking/whole-crr-sync)

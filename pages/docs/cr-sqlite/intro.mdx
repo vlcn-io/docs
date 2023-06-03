@@ -1,0 +1,19 @@
+import { Callout } from "nextra-theme-docs";
+
+# Intro
+
+> ### "It's like Git, for your data."
+
+CR-SQLite is a [run-time loadable extension](https://www.sqlite.org/loadext.html) for [SQLite](https://www.sqlite.org/index.html) and [libSQL](https://github.com/libsql/libsql). It allows merging different SQLite databases together that have taken independent writes.
+
+In other words, you can write to your SQLite database while offline. I can write to mine while offline. We can then both come online and merge our databases together, without conflict.
+
+**In technical terms:** cr-sqlite adds multi-master replication and partition tolerance to SQLite via conflict free replicated data types ([CRDTs](https://en.wikipedia.org/wiki/Conflict-free_replicated_data_type)) and/or causally ordered event logs.
+
+<Callout type="info">
+  For those that want a deep dive into the consistency model and how conflicts
+  are resolved, see the [deep dive section](/docs/appendix/causal-consistency).
+  Otherwise, continue to the getting started section. Otherwise head to the
+  [quickstart](./quickstart).
+</Callout>
+

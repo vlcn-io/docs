@@ -1,0 +1,148 @@
+---
+date: February 17, 2023
+description: "Event sourcing is a fairly common design pattern for deriving application state from a history of events. But is it possible to turn an event log into a CRDT? To allow nodes to append events to the log, without coordinating with other nodes? Can we merge all these copies of the log, proces them, and arrive at the same application state across all nodes?"
+---
+
+import Lww from '/components/lww-vs-dag/Lww';
+import Dag from '/components/lww-vs-dag/Dag';
+import I from '/components/lww-vs-dag/Initialize';
+
+# LWW vs P2P Event Log
+
+Event sourcing is a fairly common design pattern for deriving application state from a history of events. But is it possible to turn an event log into a CRDT? To allow nodes to append events to the log, without coordinating with other nodes? Can we merge all these copies of the log, proces them, and arrive at the same application state across all nodes?
+
+This is possible. What's even better is that it is more powerful than other approaches, such as last write wins, to solving the problem of distributing application state. We'll do a brief review of how we can distribute state with last write wins registers, cover how that is a less powerful version of an event log and then build an distributed event log.
+
+## LWW vs Event Logs
+
+A common approach to distributing application state is to use last write wins registers. Last write wins (LWW), however, is just one interpretation of the events in the system. This interpretation discards all the information that was used to derive it. A distributed event log on the other hand:
+
+1. Retains all information about how we got to a certain state
+2. Can be interpreted as LWW in addition to other ways
+
+Unpacking that a bit. Say I have an TODO list application. I can save just the current state of each todo or I can save all of the events that have transpired and build the state later.
+
+Saving just the current state is what `LWW` does and, for a todo app, this looks like:
+
+**todos**
+| id | content | list | complete |
+| -- | ------- | ---- | -------- |
+| 1 | cook | home | false |
+| 2 | clean | home | false |
+| 3 | write | work | true |
+
+Saving all events that have transpired is what an event log does and, for a todo app, this looks like:
+
+**todo_events**
+| id | todo*id | type | value |
+| -- | ------- | ---- | ----- |
+| 1 | **1** | create | NULL |
+| 2 | **1** | set_content | make pasta |
+| 3 | **1** | add_to_list | home |
+| 4 | **1** | complete | true |
+| 5 | **1** | set_content | cook |
+| 6 | **1** | complete | false |
+| 7 | *2* | create | NULL |
+| 8 | *2* | set_content | clean |
+| 9 | *2* | add_to_list | home |
+| 10 | **3** | create | NULL |
+| 11 | **3** | set_content | write |
+| 12 | **3** | add_to_list | work |
+| 13 | **3** | complete | true |
+
+The event based approach gives you a set of facts about the system that never change.
+
+The "list of facts" approach gives us:
+
+1. An audit trail
+2. The ability to change our interpretation of facts/events as requirements change
+3. Freedom to pick how to resolve conflicts
+
+On (1), note that in the `todo_events` we can see that `todo id 1` used to be `make pasta` and `complete` and was later changed to `cook` and no longer `complete`. This is lost in the `lww` approach.
+
+On (2), we could add a feature in the future that un-completing a todo should create a "task churn" record for users to review. We can retroactively build this churn list for users given we have the history of all events.
+
+On (3), this is similar to (2). We can process the event log in a way where the last write to a field always wins or we can do something more sophisticated. More sophisticated options being something like preventing a TODO from being un-completed after being completed.
+
+We know that a grow only set of LWW registers is a CRDT from the [last article](/blog/gentle-intro-to-crdts) but how do we turn an event log into a CRDT? And how do we process it consistently so every node arrives at the same state after processing the log?
+
+## Interactive Examples
+
+To get an intuitive sense of how all this can work, we're going to set up two different examples. One for LWW and one for a P2P event log. Each example will have three todo lists that are running on different peers. You'll be able to add data to each list, merge those lists and view how the underlying state of each changes.
+
+<I Comp={Lww} />
+
+Go ahead an play with the example above. Add todos, modify the text of a todo (by double clicking it), toggle it's completion state. You can view the internal state of the node and it's LWW registers in the table under the todo list. Click "sync nodes" to merge all the nodes together.
+
+The LWW state is pretty straightforward.
+
+1. Every column has an associated version or clock
+2. Modifications of a column move its clock forward by one
+3. Upon merge, we compare clocks and take the latest one. On ties, we take the bigger value
+4. If nodes are routinely syncing then their column clocks are always matching
+5. When nodes disconnect for a prolonged period of time the clocks begin to diverge, coming back together again on the next sync
+
+While it is straightforward, a drawback is that we're locked into this specific way of resolving conflicts and we don't have a history of how we got into a given state. We'll try to remedy that in the next example.
+
+> Note that the `clock` columns could be a variety of options. Here we've done an independent lamport timestamp per column.
+
+<I Comp={Dag} />
+
+> the DAG example is notional and thoroughly un-optimized. We currently re-pull and re-apply the entire DAG on sync rather than doing incremental updates. We also sync the entire DAG between nodes rather than delta states. How to incrementally process the DAG is a separate topic.
+
+# TODO
+
+Cover:
+
+- DAG view when syncing on every event
+- What branches mean
+- When branches converge
+- Event schema
+- DAG schema
+- Causal order traversal of a DAG
+- Move over the prose from https://observablehq.com/d/dc2bbfad6d64fb5e
+
+Event Schema:
+
+```sql
+CREATE TABLE event (id INTEGER PRIMARY KEY, item_id INTEGER, type TEXT, value ANY);
+CREATE INDEX event_item ON event (item_id);
+```
+
+DAG Schema:
+
+```sql
+CREATE TABLE event_dag (
+      parent_id ANY, -- the event that came before this one
+      event_id INTEGER, -- the id of the event
+      PRIMARY KEY (parent_id, event_id)
+    ) STRICT;
+CREATE INDEX event_dag_event ON event_dag (event_id);
+```
+
+Causal order traversal of a DAG:
+
+```sql
+WITH RECURSIVE
+after_node(event_id,level) AS (
+  VALUES('ROOT',0)
+  UNION ALL
+  SELECT event_dag.event_id, after_node.level+1
+    FROM event_dag JOIN after_node ON event_dag.parent_id=after_node.event_id
+   ORDER BY 2,1 DESC
+)
+
+SELECT DISTINCT event.id, event.item_id, event.type, event.value
+  FROM after_node JOIN event
+  ON after_node.event_id = event.id;
+```
+
+DAG Leaves:
+
+```sql
+SELECT l.event_id
+  FROM event_dag as l
+  WHERE NOT EXISTS (SELECT NULL FROM event_dag as r WHERE r.parent_id = l.event_id)
+```
+
+nit: that's an index scan :/
