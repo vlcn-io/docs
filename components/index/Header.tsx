@@ -21,7 +21,7 @@ export default function Header() {
           <Link href="/docs">Docs</Link>
         </span>
         <span>
-          <Link href="/example">Examples</Link>
+          <Link href="/examples">Examples</Link>
         </span>
         <span>
           <Link href="/blog">Blog</Link>
