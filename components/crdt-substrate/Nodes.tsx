@@ -93,7 +93,13 @@ export default function Nodes() {
       offMutationsResource();
       offStateResource();
     };
-  }, [resetNodeStates, setInitialState, setMutations]);
+  }, [
+    resetNodeStates,
+    setInitialState,
+    setMutations,
+    initialState.version,
+    mutations.version,
+  ]);
 
   if (mutations.rejection || initialState.rejection) {
     return (
