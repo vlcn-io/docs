@@ -1,0 +1,40 @@
+.root header {
+  text-align: center;
+}
+
+.root h1 {
+  font-weight: 700;
+  font-size: 3.25rem;
+  color: #192830;
+}
+
+.root h2 {
+  font-weight: 600;
+  font-size: 1.875rem;
+  color: #192830;
+}
+
+.description {
+  margin-top: 12px;
+  color: #2f4853;
+}
+
+.root hr {
+  margin-bottom: 12px;
+  margin-top: 24px;
+}
+
+.readMore {
+  display: inline-block;
+  margin-top: 8px;
+  color: #e8a665;
+}
+
+.date {
+  color: #e8a665;
+}
+
+.root > header > p {
+  color: #e8a665;
+  font-weight: bold;
+}
