@@ -22,7 +22,10 @@
   "appendix": "Appendix",
   "blog": {
     "title": "Blog",
+    "display": "hidden",
     "theme": {
+      "layout": "full",
+      "sidebar": false,
       "typesetting": "article"
     }
   }
