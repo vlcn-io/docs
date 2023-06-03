@@ -41,7 +41,24 @@
 .header {
   background: var(--hero-bg);
   padding-left: var(--hero-leftpad);
+  padding-right: var(--hero-rightpad);
   padding-top: 30px;
+  display: flex;
+}
+
+.headerNav {
+  padding-top: 17px;
+  height: 48px;
+  background: white;
+  border-radius: 10px;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+.headerNav > span {
+  margin-right: 12px;
+  margin-left: 12px;
+  font-weight: bold;
 }
 
 .logoImg {
@@ -174,4 +191,103 @@
 
 .isoCard .sep {
   min-width: 80px;
+}
+
+@media (max-width: 1600px) {
+  .root {
+    --hero-leftpad: 4vw;
+    --hero-rightpad: 1vw;
+    --hero-copy-w: 38vw;
+    --hero-img-w: 51vw;
+    --hero-h1: 5vw;
+    --hero-h3: 2vw;
+    --hero-subtext: 1.25vw;
+    --hero-subtext-lh: 1.5vw;
+    --logo-w: 12vw;
+    --waitlist-fs: 2vw;
+  }
+
+  /* .hero .subtext {
+    display: none;
+  } */
+}
+
+@media (max-width: 1200px) {
+  .root {
+    --hero-leftpad: 5vw;
+    --hero-rightpad: 5vw;
+    --hero-h1: 6vw;
+    --hero-h3: 2vw;
+    --hero-subtext: 2vw;
+    --hero-subtext-lh: 2.25vw;
+    --hero-copy-w: 90vw;
+  }
+
+  .hero .sep {
+    display: none;
+  }
+
+  .heroImgContainer {
+    position: absolute;
+    top: -80px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url("/hero.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+    width: 100%;
+    filter: opacity(0.3) blur(5px);
+  }
+
+  .main {
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  }
+
+  .heroImg {
+    display: none;
+  }
+
+  .heroCopy {
+    text-align: center;
+    z-index: 1;
+    /* mix-blend-mode: darken, lighten; */
+  }
+}
+
+@media (max-width: 800px) {
+  .root {
+    --logo-w: 20vw;
+    --hero-h1: 8vw;
+    --hero-h3: 3vw;
+    --hero-subtext: 3vw;
+    --hero-subtext-lh: 3.25vw;
+    --waitlist-fs: 3vw;
+    --social-fs: 4vw;
+  }
+
+  .main {
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 40px;
+    margin-top: 40px;
+  }
+
+  .heroImgContainer {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .root {
+    --logo-w: 20vw;
+    --hero-h1: 12vw;
+    --hero-h3: 4vw;
+    --hero-subtext: 3.4vw;
+    --hero-subtext-lh: 3.55vw;
+    --waitlist-fs: 4vw;
+  }
+
+  .heroImgContainer {
+    display: none;
+  }
 }
