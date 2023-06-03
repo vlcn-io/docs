@@ -1,5 +1,5 @@
 import Image from "next/image";
-import style from "./index.module.css";
+import style from "./landing.module.css";
 import { useEffect } from "react";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -9,9 +9,9 @@ import {
   faTwitter,
 } from "@fortawesome/free-brands-svg-icons";
 
-export async function getStaticProps() {
-  return { props: { bodyClass: style.body, htmlClass: style.html } };
-}
+// export async function getStaticProps() {
+//   return { props: { bodyClass: style.body, htmlClass: style.html } };
+// }
 
 const data = {
   heroHead: "Distributed State, Simplified",

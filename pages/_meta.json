@@ -1,4 +1,17 @@
 {
+  "index": {
+    "display": "hidden",
+    "type": "page",
+    "theme": {
+      "layout": "raw",
+      "breadcrumb": false,
+      "footer": false,
+      "navbar": false,
+      "sidebar": false,
+      "toc": true,
+      "pagination": false
+    }
+  },
   "background": {},
   "getting-started": {},
   "cr-sqlite": "CR-SQLite",
