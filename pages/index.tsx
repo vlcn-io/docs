@@ -1,6 +1,13 @@
 import Image from "next/image";
 import style from "./index.module.css";
 import { useEffect } from "react";
+import Link from "next/link";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faGithubAlt,
+  faDiscord,
+  faTwitter,
+} from "@fortawesome/free-brands-svg-icons";
 
 export async function getStaticProps() {
   return { props: { bodyClass: style.body, htmlClass: style.html } };
@@ -54,12 +61,12 @@ export default function Index() {
             >
               Join The Beta
             </a>
-            <a
+            <Link
               href="/background"
               className={style.actionBtn + " " + style.docsBtn}
             >
               Read the Docs
-            </a>
+            </Link>
           </div>
           <div className={style.sep}></div>
           <div className={style.heroImgContainer}>
@@ -77,13 +84,13 @@ export default function Index() {
       </section>
       <section className={style.social}>
         <a href="https://github.com/vlcn-io">
-          <i className="fa-brands fa-github-alt"></i>
+          <FontAwesomeIcon icon={faGithubAlt} />
         </a>
         <a href="https://discord.gg/AtdVY6zDW3">
-          <i className="fa-brands fa-discord"></i>
+          <FontAwesomeIcon icon={faDiscord} />
         </a>
         <a href="https://twitter.com/vlcnio">
-          <i className="fa-brands fa-twitter"></i>
+          <FontAwesomeIcon icon={faTwitter} />
         </a>
       </section>
     </div>
