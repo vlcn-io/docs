@@ -1,4 +1,13 @@
 {
+  "*": {
+    "display": "hidden",
+    "theme": {
+      "toc": false,
+      "sidebar": false,
+      "pagination": false,
+      "typesetting": "article"
+    }
+  },
   "intro-to-crdts": {},
   "fractional-indexing": {},
   "recursive-ordering": {},

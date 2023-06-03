@@ -19,10 +19,11 @@
   "js": {
     "title": "JavaScript"
   },
-  "articles": "Articles",
   "appendix": "Appendix",
   "blog": {
     "title": "Blog",
-    "display": "hidden"
+    "theme": {
+      "typesetting": "article"
+    }
   }
 }

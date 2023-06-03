@@ -9,10 +9,6 @@ import {
   faTwitter,
 } from "@fortawesome/free-brands-svg-icons";
 
-// export async function getStaticProps() {
-//   return { props: { bodyClass: style.body, htmlClass: style.html } };
-// }
-
 const data = {
   heroHead: "Distributed State, Simplified",
   heroSubhead:
