@@ -191,11 +191,11 @@ Z [4, Q]
 
 This keeps all the LWW semantics (order field is treated as a LWW register) and doesn't introduce anything new.
 
-This is implemented in `cr-sqlite` [here](/cr-sqlite/api-methods/crsql_fract_as_ordered).
+This is implemented in `cr-sqlite` [here](/docs/cr-sqlite/api-methods/crsql_fract_as_ordered).
 
 ### Interleaving
 
-To fix interleaving we will part ways with fractional indexing and instead sort based on recursive relationships between rows. You can read about this in [recursive ordering](/articles/recursive-ordering).
+To fix interleaving we will part ways with fractional indexing and instead sort based on recursive relationships between rows. You can read about this in [recursive ordering](/blog/recursive-ordering).
 
 <Callout type="info">
 Note that there are approaches to fix interleaving in a fractional index as seen [here](https://mattweidner.com/2022/10/21/basic-list-crdt.html#intro-string-implementation). This approach is based on the recursive relationship idea but encoded into a fractional index.

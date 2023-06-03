@@ -148,7 +148,7 @@ But what if we need to collaborate between multiple devices? We need to be able 
 
 ## Syncing, Merging, Replicating
 
-The main primitive for this is [crsql_changes](/cr-sqlite/api-methods/crsql_changes) which allows you to:
+The main primitive for this is [crsql_changes](/docs/cr-sqlite/api-methods/crsql_changes) which allows you to:
 
 1. pull changes since a given time
 2. apply changes from another db
@@ -178,7 +178,7 @@ A bunch of stuff. The details don't really matter for now, just know that:
 
 <Callout type="info">
   To understand everything in a chageset, see
-  [crsql_changes](/cr-sqlite/api-methods/crsql_changes).
+  [crsql_changes](/docs/cr-sqlite/api-methods/crsql_changes).
 </Callout>
 
 Let's see what happens when we apply a changeset to a new database.
@@ -245,7 +245,7 @@ We can also perform concurrent edits on each DB and then merge them together.
 
 In order to ensure we only sync what has changed since the last time we synced, we'll need to track the latest `db_version` we've seen from our peers.
 
-`crsqlite` provides a [crsql_tracked_peers](/cr-sqlite/api-methods/crsql_tracked_peers) table that networking layers can use to track the `db_version` of each peer. Networking layers are of course allowed to create their own tables to track this information as well.
+`crsqlite` provides a [crsql_tracked_peers](/docs/cr-sqlite/api-methods/crsql_tracked_peers) table that networking layers can use to track the `db_version` of each peer. Networking layers are of course allowed to create their own tables to track this information as well.
 
 ### Using Tracked Peers
 
@@ -266,10 +266,10 @@ You can experiment with the `db_version` to see how it affects the changes that 
 
 You've seen how you can compose:
 
-- [crsql_as_crr](/cr-sqlite/api-methods/crsql_as_crr)
-- [crsql_siteid](/cr-sqlite/api-methods/crsql_siteid)
-- [crsql_changes](/cr-sqlite/api-methods/crsql_changes)
-- [crsql_tracked_peers](/cr-sqlite/api-methods/crsql_tracked_peers)
+- [crsql_as_crr](/docs/cr-sqlite/api-methods/crsql_as_crr)
+- [crsql_siteid](/docs/cr-sqlite/api-methods/crsql_siteid)
+- [crsql_changes](/docs/cr-sqlite/api-methods/crsql_changes)
+- [crsql_tracked_peers](/docs/cr-sqlite/api-methods/crsql_tracked_peers)
 
 to build a sync layer for your application.
 
