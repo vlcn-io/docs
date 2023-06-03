@@ -106,8 +106,8 @@
   flex-grow: 1;
 }
 
-.heroImgContainer,
-.heroImg {
+.heroImgContainer {
+  position: relative;
   width: var(--hero-img-w);
 }
 

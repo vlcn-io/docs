@@ -63,7 +63,15 @@ export default function Index() {
           </div>
           <div className={style.sep}></div>
           <div className={style.heroImgContainer}>
-            <img src="/hero.png" className={style.heroImg}></img>
+            <Image
+              alt="astronaut, student, professor collaborating in real time"
+              src="/hero.png"
+              fill
+              priority
+              style={{ objectFit: "contain" }}
+              className={style.heroImg}
+              sizes="48vw"
+            />
           </div>
         </div>
       </section>
