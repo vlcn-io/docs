@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { getResouce } from "../CodeNode";
 import DAG, { NodeName } from "./DAG";
 import { Node, NodeState } from "./Node";
@@ -41,26 +41,29 @@ export default function Nodes() {
     },
   });
 
-  function resetNodeStates(maybeInitialState?: any) {
-    const state = maybeInitialState || initialState.resolution;
-    if (state == null) {
-      return;
-    }
-    setNodeStates({
-      nodeA: {
-        dag: new DAG("nodeA"),
-        state: structuredClone(state),
-      },
-      nodeB: {
-        dag: new DAG("nodeB"),
-        state: structuredClone(state),
-      },
-      nodeC: {
-        dag: new DAG("nodeC"),
-        state: structuredClone(state),
-      },
-    });
-  }
+  const resetNodeStates = useCallback(
+    (maybeInitialState?: any) => {
+      const state = maybeInitialState || initialState.resolution;
+      if (state == null) {
+        return;
+      }
+      setNodeStates({
+        nodeA: {
+          dag: new DAG("nodeA"),
+          state: structuredClone(state),
+        },
+        nodeB: {
+          dag: new DAG("nodeB"),
+          state: structuredClone(state),
+        },
+        nodeC: {
+          dag: new DAG("nodeC"),
+          state: structuredClone(state),
+        },
+      });
+    },
+    [initialState.resolution]
+  );
 
   useEffect(() => {
     const mutationsResource = getResouce("mutations");
@@ -93,13 +96,7 @@ export default function Nodes() {
       offMutationsResource();
       offStateResource();
     };
-  }, [
-    resetNodeStates,
-    setInitialState,
-    setMutations,
-    initialState.version,
-    mutations.version,
-  ]);
+  }, [resetNodeStates, initialState.version, mutations.version]);
 
   if (mutations.rejection || initialState.rejection) {
     return (
