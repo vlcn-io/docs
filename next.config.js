@@ -26,6 +26,11 @@ module.exports = withNextra({
         destination: "/blog/:path*",
         permanent: true,
       },
+      {
+        source: "/background",
+        destination: "/docs",
+        permanent: true,
+      },
     ];
   },
   webpack: (config, { isServer }) => {

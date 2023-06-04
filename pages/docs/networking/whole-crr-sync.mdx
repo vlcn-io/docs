@@ -6,7 +6,7 @@ import { Callout } from "nextra-theme-docs";
 
 # Whole CRR Sync
 
-Whole CRR ([conflict free replicated relation](/appendix/crr)) sync means that we want all of the CRRs on different databases to be identical after they merge.
+Whole CRR ([conflict free replicated relation](/docs/appendix/crr)) sync means that we want all of the CRRs on different databases to be identical after they merge.
 
 What follows is an example of how to implement whole CRR sync to merge two databases together.
 
@@ -78,7 +78,7 @@ return schema;`}
 
 ## Apply the Schema to the DB
 
-Now that we have a data model sketched out we can apply it to a database. Let's import the `crsqlite-wasm` module and open a database in memory. Too learn how to persist data to disk, see [js/persistence](/js/persistence).
+Now that we have a data model sketched out we can apply it to a database. Let's import the `crsqlite-wasm` module and open a database in memory. Too learn how to persist data to disk, see [/docs/js/persistence](/docs/js/persistence).
 
 <RunnableCode
   code={`const initWasm = await import('https://esm.sh/@vlcn.io/crsqlite-wasm@0.11.0');
@@ -293,7 +293,7 @@ are in progress.
 
 Reference implementations of:
 
-- [A Websocket sync server & client](/js/networking)
+- [A Websocket sync server & client](/docs/js/networking)
 - [Simple P2P sync over WebRTC](https://github.com/vlcn-io/cr-sqlite/tree/main/js/packages/p2p)
 
 already exist.

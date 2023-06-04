@@ -2,13 +2,13 @@ import { Callout } from "nextra-theme-docs";
 
 # Background
 
-[cr-sqlite](/docs/cr-sqlite/intro) is network agnostic. You can use [crsql_changes](/docs/cr-sqlite/api-methods/crsql_changes) to pull changes from one database, ship them over any protocol you like, then use [crsql_changes](/docs/cr-sqlite/api-methods/crsql_changes) on the other end to apply the changes. In any case, a WebSocket implementation is provided for convenience [here](/js/networking) and an overview of writing your own network code [here](./whole-crr-sync).
+[cr-sqlite](/docs/cr-sqlite/intro) is network agnostic. You can use [crsql_changes](/docs/cr-sqlite/api-methods/crsql_changes) to pull changes from one database, ship them over any protocol you like, then use [crsql_changes](/docs/cr-sqlite/api-methods/crsql_changes) on the other end to apply the changes. In any case, a WebSocket implementation is provided for convenience [here](/docs/js/networking) and an overview of writing your own network code [here](./whole-crr-sync).
 
-Only changes made to [CRRs](/appendix/crr) are returned by [crsql_changes](/docs/cr-sqlite/api-methods/crsql_changes). This allows you to have data which should be completely local (regular tables) and data which is intended to be synced with other databases (CRRs).
+Only changes made to [CRRs](/docs/appendix/crr) are returned by [crsql_changes](/docs/cr-sqlite/api-methods/crsql_changes). This allows you to have data which should be completely local (regular tables) and data which is intended to be synced with other databases (CRRs).
 
 ## Single-Tenancy (Whole CRR Sync)
 
-In this model, [CRRs](/appendix/crr) in databases that are being synced with one another are intended to be identical. All data from one should exist in the other and vice-versa.
+In this model, [CRRs](/docs/appendix/crr) in databases that are being synced with one another are intended to be identical. All data from one should exist in the other and vice-versa.
 
 This is the simplest model and works for use cases where who can see what is determined at the table / crr level. A user sharing private data with themselves or [SQLite as an application file format](https://www.sqlite.org/appfileformat.html) both fit this model.
 

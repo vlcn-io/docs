@@ -64,7 +64,7 @@ On (2), we could add a feature in the future that un-completing a todo should cr
 
 On (3), this is similar to (2). We can process the event log in a way where the last write to a field always wins or we can do something more sophisticated. More sophisticated options being something like preventing a TODO from being un-completed after being completed.
 
-We know that a grow only set of LWW registers is a CRDT from the [last article](/blog/gentle-intro-to-crdts) but how do we turn an event log into a CRDT? And how do we process it consistently so every node arrives at the same state after processing the log?
+We know that a grow only set of LWW registers is a CRDT from the [last article](/blog/intro-to-crdts) but how do we turn an event log into a CRDT? And how do we process it consistently so every node arrives at the same state after processing the log?
 
 ## Interactive Examples
 
