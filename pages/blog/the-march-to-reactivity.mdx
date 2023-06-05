@@ -86,6 +86,7 @@ Re-running every query against a table any time a piece of data changes in that 
 
 1. Parse the SQL in Live Queries
 2. Convert Live Queries to [Differential Data Flow](https://github.com/TimelyDataflow/differential-dataflow) pipelines
+   1. This is doable as seen from [another project of mine](https://tantaman.com/2022-05-26-query-planning.html) that converts the other direction (map/filter/union/intersect to SQL)
 3. Map Live Queries to tables used
 4. Run insert/update/delete statements through the relevant differential data flow pipelines to quickly and synchronously produce the updated result(s) for their corresponding queries
 
