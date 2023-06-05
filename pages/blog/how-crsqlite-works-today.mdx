@@ -1,0 +1,554 @@
+# How CR-SQLite Works Today
+
+## Background
+
+SQLite being a small, fast and reliable DB finds itself in nearly every device (phones, tvs, laptops, tablets, desktops, servers, etc) and many applications (iOS and Android both default to SQLite for storage in their core data APIs).
+
+  
+
+Application developers are also discovering (re-discovering?) that centralizing your data access around a database vastly simplifies application architecture. Something we’ve known on the backend for decades.
+
+- [https://engineering.fb.com/2020/03/02/data-infrastructure/messenger/](https://engineering.fb.com/2020/03/02/data-infrastructure/messenger/)
+    
+- [https://softwareengineeringdaily.com/2020/03/31/facebook-messenger-engineering-with-mohsen-agsen/](https://softwareengineeringdaily.com/2020/03/31/facebook-messenger-engineering-with-mohsen-agsen/) (from 21 minutes on, touches Outlook and other apps as well)
+    
+- [https://riffle.systems/essays/prelude/](https://riffle.systems/essays/prelude/)
+    
+
+  
+
+SQLite coming to WASM and the browser brings this architectural option to front end web developers. An audience that never had this option (without incurring network round trips to a server) previously. SQLite coming to the browser also reduces product line complexity by allowing the same data layer (SQLite) to be used for both web, mobile, desktop, and server versions of an application.
+
+## The Problem
+
+Consumers have many devices (phone, laptop, tablet, desktop, etc.) and expect to be able to sync their data across those devices. Thanks to apps like Figma and GoogleDocs, real time collaboration is also becoming table stakes.
+
+
+There is no database, available on all devices and platforms, that supports sync and real time collaboration.
+
+  
+
+App devs are left having to do one or more of:
+
+1. Hand roll a sync solution
+    
+2. Make their apps synchronize every state change through a server
+    
+3. Treat the data on device only as a cache
+    
+
+  
+
+1. is [often buggy (even in the simplest case)](https://vlcn.io/blog/gentle-intro-to-crdts.html#last-write---what-can-go-wrong) as distributed state problems are some of the hardest in computer scicene.
+    
+2. creates slow applications (always roundtripping to the server) and requires an always available network and servers
+    
+3. & (2) means that offline editing doesn’t exist in the application
+    
+
+  
+
+A further problem is that as apps develop richer and richer experiences, they become more sensitive to network hiccups. This problem is not specifically related to CRDTs (the scope of this doc) but is a problem that can be solved via a similar manner to what is outlined below.
+
+## The Opportunity
+
+Given:
+
+- The ubiquity and availability of SQLite across all devices and platforms
+    
+- The simplicity of application architecture when centralizing around a database
+    
+- The proven nature of the relational model
+    
+
+  
+
+SQLite is well positioned to provide a solution to the problem of sync and real time collaboration across all devices and platforms.
+
+  
+
+Relational DBs solved a hairy problem once before – that of making indices, transactions, constraints, caching, queries and relations declarative. A developer need only to define their schema rather than know how to build and maintain an index, check constraints, compile a query plan and so on.
+
+  
+
+Why not bring the same declarative approach to the eventually consistent data structures required for sync and collaboration?
+
+  
+
+In other words, a developer should only have to define their table and the merge strategy without having to understand or implement the backing algorithms. Similar to defining a table and declaring an associated index.
+
+  
+A further opportunity (solving the [“further problem”](https://docs.google.com/document/d/1jGa-GbdJyJ6Mna_YgXfIdhlCGfx_CkgBWChit-NeabA/edit#bookmark=id.d4jqajbzvx1a)) is to bring the same declarative approach to caching and optimistically updating data from a remote, but authoritative, source.
+
+## The Solution
+
+Sync and real time collab are both the same problem: the problem of merging multiple copies of state together that have diverged from one another.
+
+The solution is to extend SQLite to give developers declarative access to eventually consistent data structures which can be used to merge SQLite databases (in whole or in part) together.
+
+## Two Paths
+
+Solving the problem requires data structures which can be concurrently modified on many nodes, without coordination, then merged together.
+
+
+
+There are two main ways to tackle this (see this draft for more details: [lww vs dag](https://vlcn.io/pages/lww-vs-dag/)):
+
+1. [CRDTs](https://en.wikipedia.org/wiki/Conflict-free_replicated_data_type) which already have an interpretation of conflict resolution built in
+    
+2. A causally ordered event log
+    
+
+  
+
+cr-sqlite has thus far only implemented path (1) although there is much interest in path (2) and path (2) may prove to be an easier, more generic and potentially better solution (of course there are some drawbacks…).
+
+  
+
+Path (1) will be referred to as “Conflict Free Replication Relations”, or CRRs, for the remainder of this doc. CRR being coined here: [https://hal.inria.fr/hal-02983557/document](https://hal.inria.fr/hal-02983557/document)
+
+  
+
+The “[further problem](https://docs.google.com/document/d/1jGa-GbdJyJ6Mna_YgXfIdhlCGfx_CkgBWChit-NeabA/edit#bookmark=id.d4jqajbzvx1a)” could be modeled as a variation on a theme of CRDTs where the “merge rule” is just that “the authoritative node always wins”
+
+## CRRs
+
+CRDTs come in many flavors and can be combined to form higher level data structures. This combining of CRDTs is what allows us to build CRRs. To see how this is possible we need to briefly review some primitive CRDTs.
+
+  
+
+1. Grow Only Set (G-Set): a set that can only grow. This is a CRDT given sets can always be unioned without conflict and set unions always converge.
+    
+2. Observed Remove Set (OR-Set): a set where removals from the set are recorded in a delete set. When unioning sets, items in the delete set are not allowed to exist in the main set.
+    
+3. Set With Causal Length (CL-Set): similar to OR-Set but supports “un-delete” via a counter that is bumped for each delete and un-delete ([https://dl.acm.org/doi/pdf/10.1145/3380787.3393678](https://dl.acm.org/doi/pdf/10.1145/3380787.3393678)).
+    
+4. Last Write Wins Register (LWW-R): a register accompanied by a logical clock. Modifications of the register move the logical clock forward. Merging two registers takes the value of the register with the largest clock or via some tie-breaker when clock values are identical.
+    
+5. Multi-Value Register (MVR): similar to a LWW-R but all values for concurrent modifications are retained.
+    
+6. Counter: a register where values are added together on merge. Variants of counters, that also allow decrementing, also exist.
+    
+7. Causal Tree variants: these CRDTs generally encode text and work by each node referring to the node that “comes before” it. [RGA, Yata, Logoot, WOOT, etc](https://hal.inria.fr/inria-00629503/document). are all examples of these.
+    
+8. Distributed Fractional Index: this is not something I’ve ever seen mentioned in literature and might be an innovation unique to cr-sqlite. CR-SQLite provides the ability for user-defined orderings of rows via a convergent fractional index.
+    
+
+  
+
+The primitives above can be combined to form a CRR. I.e., to form a table in a database which can be merged with copies of that table from other databases.
+
+  
+
+- A table can be modeled as a G-Set, OR-Set or CL-Set where each member of the set is a row identified by its primary key.
+    
+- A row in a table can be modeled as a map of CRDTs. The column names being the keys and the column values being a specific CRDT. E.g., a LWW-R, MVR, Counter or blob encoded causal tree.
+    
+
+  
+
+This is the approach that CR-SQLite takes. Currently CR-SQLite supports:
+
+- Tables as Observed Remove Sets
+    
+- Tables as Grow Only Sets
+    
+- Columns as Last Write Wins Registers
+    
+- End user defined orderings (think of dragging around items in a list) via tagging a column as a distributed fractional index
+    
+
+  
+
+With RGA, and other tree variants, prototyped. Causal length / CL-Set is trivially implemented in user space by adding an isDeleted column to the table.
+
+## Delta State CRRs
+
+Delta-state CRRs enable two databases to only exchange the deltas to their state, rather than their entire contents, in order to merge.
+
+  
+
+There are a few ways to handle this for CRRs.
+
+1. Record a logical clock value on each row modification
+    
+2. Record a logical clock value on each cell modification
+    
+
+  
+
+Keeping a clock value per row allows us to only sync the rows in a table that have changed since we last synced with a peer. Keeping a clock value per cell gets even more granular, allowing us to only sync modified cells.
+
+  
+
+One results in less bookkeeping, the other results in less data to sync.
+
+  
+
+CR-SQLite currently chooses cell based delta-state CRRs. To enable one DB to only get deltas from another DB, each database records the latest clock value it has seen from other databases it has synced with. This is a single 64-bit integer per database. More information: [https://vlcn.io/docs/crsql_tracked_peers](https://vlcn.io/docs/crsql_tracked_peers), [https://vlcn.io/docs/guide-sync](https://vlcn.io/docs/guide-sync), [https://vlcn.io/docs/crsql_changes](https://vlcn.io/docs/crsql_changes) 
+
+## Referential Integrity, Transactions & Constraints
+
+We can’t continue without mentioning what we’ve traded off with the given approach. Specifically, what is the impact of this modeling of tables and sync on referential integrity, transactions, constraints.
+
+  
+
+Each decision made wrt to how to implement CRRs must be balanced against these concerns, guided by the [design principles](https://docs.google.com/document/d/1jGa-GbdJyJ6Mna_YgXfIdhlCGfx_CkgBWChit-NeabA/edit#bookmark=id.8tcrhtgpqw8c).
+
+### Referential Integrity
+
+Referential integrity depends on the model chosen to represent tables (data model) and how we package up chunks of state to sync (sync).
+
+  
+
+From a data modeling perspective, there are four (so far known to me) ways to preserve referential integrity:
+
+  
+
+1. All tables are grow-only or only support [soft deletion](https://docs.google.com/document/d/1jGa-GbdJyJ6Mna_YgXfIdhlCGfx_CkgBWChit-NeabA/edit#bookmark=id.jg5xp1arg7zn).
+    
+2. All tables are “add-wins” sets and all modifications of a foreign key also incur a modification of the row at the other end of the relation
+    
+3. Cascade delete is enabled, insertions that are missing the other end of their relation are rejected
+    
+4. State updates that violate a constraint are rolled back via another operation (!!!!!)
+    
+
+  
+
+(1) is rather trivial and soft-deletion seems to provide the best developer experience with regard to eventual sync. Imagine you are creating a presentation creation app (Keynote, Powerpoint). If one user deletes the slide that another user is working on, you will most likely want some UI affordance for this state rather than it disappearing completely on sync.
+
+  
+
+(2) is extra implementation complexity that isn’t worth exploring until there’s real need from users.
+
+  
+
+(3) falls into the same camp as (2).
+
+  
+
+(4) seems dubious that it’d converge and violates the design principle of forbidding convergence to require extra message passing.
+
+  
+
+From a sync perspective, cells must be replicated in the order they were created or modified.
+
+  
+
+The sync or state layer would need to track the first creation of a row (given this gives us the primary key values which must be sent over before a later modification references them) but only the most recent modification of any cell. Modification of a primary key cell results in a “create” given we’ve created a new identity through that modification.
+
+  
+
+Considering the [design principles](https://docs.google.com/document/d/1jGa-GbdJyJ6Mna_YgXfIdhlCGfx_CkgBWChit-NeabA/edit#bookmark=kix.dhj9smjxr7b3) and an eventual need for [row level security](https://docs.google.com/document/d/1jGa-GbdJyJ6Mna_YgXfIdhlCGfx_CkgBWChit-NeabA/edit#bookmark=id.gq677umn2i5s), CR-SQLite currently forbids foreign key constraints to exist on CRRs. Once row level security is in the picture, it is unclear how to preserve any form of referential integrity given that someone may not have permission to receive a certain row. If we eventually allow people to mix data models it becomes more complicated again. Throw regulatory compliance around deletes into the mix and it could get even more fuzzy.
+
+### Transactions
+
+Developers may perform transactional writes against their local dataset. These will work as expected. On sync, however, the semantics of your transaction may be violated.
+
+  
+
+This is the case since the CRR model only keeps the current state and no past states of your relation. The issue comes in when syncing two transactions that partially intersect, touching some but not all of the same rows.
+
+  
+
+On sync, you’ll be syncing some mashup of transaction 1 and 2 then some remainder of transaction 2 rather than all of the data from 1 then all of the data from 2. The reason being that the original values of transaction (1) were lost when transaction (2) clobbered them.
+
+  
+
+![transaction depiction and venn diagram where first tx is missing all overlap with the second](/blog/how-it-works-today/tx-sync.png)
+
+  
+
+It is unclear how problematic this may or may not be under the CRR approach.
+
+  
+
+Transactions can be solved with approach 2 (causal event logs) or by adding immutable b-trees to SQLite (to be covered in "How CR-SQLite Works Tomorrow").
+
+### Constraints
+
+- Primary Key - supported. Primary keys represent the identity of a row for set membership.
+    
+- Check - supported so long as we only allow sync between nodes with compatible schemas and the check constraint only operates against data in the current row.
+    
+- Foreign Key - currently not supported as discussed in [Referential Integrity](https://docs.google.com/document/d/1jGa-GbdJyJ6Mna_YgXfIdhlCGfx_CkgBWChit-NeabA/edit#bookmark=id.2h0hy23qr3d). There is a path to supporting them if needed.
+    
+- Unique - unique indices, other than the primary key(s), are not supported. Extra unique indices would create two identities for the same row. One, or more, of these identities could conflict with other rows on other nodes on sync resulting in divergence. Pending research problem.
+    
+
+## Sync & Migrations
+
+Schemas will evolve and not all nodes will have the same schema at the same time. In alignment with “doing the simplest possible thing that can work”, syncing between nodes with incompatible schemas is forbidden.
+
+  
+
+Maybe something can be done with semantic versioning of schemas, replicating the schema on behalf of the user, datomic style data models, crazy things like [https://www.inkandswitch.com/cambria/](https://www.inkandswitch.com/cambria/). These are all out of scope, however, given the benefit seems minimal and effort very high. 
+
+## Current CR-SQLite API
+
+cr-sqlite is built as a runtime loadable extension for SQLite. Thus the API is bound by the constraints of what was possible in that context.
+
+  
+
+The API looks something like:
+
+Creating CRRs:
+
+- create table foo (id primary key, x, y);
+    
+- select crsql_as_crr(‘foo’); -- upgrade foo to a CRR
+    
+
+  
+
+Getting and applying changesets:
+
+- select * from crsql_changes WHERE db_version > ? -- select changesets since
+    
+- insert into crsql_changes VALUES (...) -- apply changesets from another db
+    
+
+  
+
+Where all other operations are normal SQLite operations. crsql_as_crr defaults to an OR-Set where rows are maps of LWW registers.
+
+  
+
+Actual docs for more info:
+
+- [Create a CRR](https://vlcn.io/docs/crsql_as_crr)
+    
+- [Pull all changes since X from a database](https://vlcn.io/docs/crsql_changes#pulling-changesets)
+    
+- [Apply changes from on DB to another](https://vlcn.io/docs/crsql_changes#applying-changesets)
+    
+- Creating a fractional index (todo: document)
+    
+
+## Current Implementation
+
+The implementation is as a run-time loadable extension divided between “user space” and “extension space.” User space are items created with constructs directly available to users via the SQL interface. Extension space items are constructs created through interfaces only available to extensions.
+
+### User Space
+
+### Top Level Tables
+
+Similar to how sqlite has a sqlite_master table that keep schema information, cr-sqlite has two top level tables:
+
+1. __crsqlite_siteid - persists the ID of the database
+    
+2. crsql_tracked_peers - persists “last_seen” versions of other sites for networking layers
+    
+
+  
+
+Two other, currently unused, tables exists: __crsql_master and __crsql_master_prop. These were added in anticipation of needing extra schema information for other CRDT types.
+
+  
+
+sqlite> .tables
+
+__crsql_master       __crsql_siteid
+
+__crsql_master_prop  crsql_tracked_peers
+
+### CRR Level Tables
+
+When upgrading a table to a crr, a bookkeeping table is created which exists in user space.
+
+  
+
+sqlite> CREATE TABLE todo (id primary key, content, complete);
+
+sqlite> .tables
+
+__crsql_master       __crsql_siteid       todo
+
+__crsql_master_prop  crsql_tracked_peers
+
+sqlite> SELECT crsql_as_crr('todo');
+
+sqlite> .tables
+
+__crsql_master       __crsql_siteid       todo
+
+__crsql_master_prop  crsql_tracked_peers  todo__crsql_clock
+
+  
+
+This table tracks clock values for cells which are used at merge time. 
+
+  
+
+sqlite> PRAGMA table_info('todo__crsql_clock');
+
+cid  name                 type  notnull  dflt_value  pk
+
+---  -------------------  ----  -------  ----------  --
+
+0    id                         0                    1
+
+1    __crsql_col_name           1                    2
+
+2    __crsql_col_version        1                    0
+
+3    __crsql_db_version         1                    0
+
+4    __crsql_site_id            0                    0
+
+  
+
+Note: we could likely condense this table. Throw out site_id (is an optimization for networking layers), map col_name to an integer.
+
+  
+
+clock table columns:
+
+1. id - the primary key column from the base table. There is one of these columns for each primary key column in the base table. Identifies the created/updated/deleted row.
+    
+2. __crsql_col_name - the name of the impacted column. This + id indicates a cell.
+    
+3. __crsql_col_version - the clock value for that column. Used at merge time.
+    
+4. __crsql_db_version - the db version at the time of write. Used for delta state computation.
+    
+5. __crsql_site_id - this is the id of the database that wrote the item or null if it was a local write. This column can be removed with the cost of 1 extra sync message between any pair of nodes in certain network topologies. Could also be condensed by being an int that points to a table with full site ids.
+    
+
+### CRR Level Triggers
+
+Maintenance of the bookkeeping table on local writes is done via a set of triggers. When inserting a row a corresponding set of rows must be written to the corresponding __crsql_clock table. When updating or deleting a row, the corresponding rows in the clock table must also be updated.
+
+  
+
+Merging remote changes from peers is handled through a virtual table (crsql_changes) and does not cause the triggers to run.
+
+  
+
+sqlite> select name from sqlite_master where type = 'trigger';
+
+name
+
+-----------------
+
+todo__crsql_itrig
+
+todo__crsql_utrig
+
+todo__crsql_dtrig
+
+  
+
+1. x__crsql_itrig - bookkeep on insert. Creates rows for the inserted row, initializes clocks for cells
+    
+2. x__crsql_utrig - bookkeep on update. Increments clocks for updated cells.
+    
+3. x__crsql_dtrig – bookkeep on delete. Observes the delete for OR-Set tables.
+    
+
+### User Space Thoughts
+
+Ideally we could hide these “user space” triggers and tables or make them completely internal to libsql. Crazier ideas to explore in the future may be to encode clock values directly into the column type rather than keeping them in a separate table.
+
+### Extension Space
+
+Extension space provides:
+
+1. Application defined functions
+    
+
+1. crsql_siteid
+    
+2. crsql_dbversion
+    
+3. crsql_nextdbversion
+    
+4. crsql_as_crr
+    
+5. See “API Methods” for more details: [https://vlcn.io/docs/background-concepts](https://vlcn.io/docs/background-concepts) 
+    
+
+3. Changes virtual table
+    
+
+1. crsql_changes - A single virtual eponymous virtual table which users can query to get all changesets for the database since a given db_version. See: [https://vlcn.io/docs/crsql_changes](https://vlcn.io/docs/crsql_changes) 
+    
+
+## Perf
+
+We aim for 0 perf regressions on read for CRRs and no more than 2-3x perf hit on write and for the perf hit to only ever be a constant multiplier and not grow with dataset size.
+
+  
+
+Current perf numbers: [https://github.com/vlcn-io/cr-sqlite/blob/main/py/perf/perf.ipynb](https://github.com/vlcn-io/cr-sqlite/blob/main/py/perf/perf.ipynb)
+
+  
+
+NB: we also need to gather perf for batch insert, concurrent insert, merge and changeset computation.
+
+## Rust
+
+The bulk of cr-sqlite is written in c with all new code written in Rust.
+  
+
+The rust \<-\> sqlite interface is done through some custom, very much WIP, bindings. Why custom? Because we need Rust bindings that can run in a no_std environment for the WASM build.
+
+> Note: these bindings are faithful to the base SQLite C-API as much as possible for minimum rust\<-\>c overhead. This, however, means that the bindings are not entirely safe. E.g., the SQLite statement object will clear returned values out from under you if you step or finalize it while those references exist in your Rust program.
+
+## Current Dragons
+
+Blemishes on the implementation, in order of severity.
+
+### Quote Concat
+
+This is the biggest problem in the current implementation. When pulling changesets from crsql_changes the primary keys of a table are “quoted and concatenated” together – returned as a string.
+
+  
+
+E.g.,
+
+  
+
+SELECT quote(pk_one) || quote(pk_two) FROM some_table;
+
+  
+
+This string is shipped across the wire, parsed, then directly included in the SQL text for insertion into the database. The parsing does check that no escape sequences are present but if we keep the string format, we need to fuzz the parsing and add property based tests to ensure no SQL injection can ever happen.
+
+  
+
+Another option is to switch to a binary format and include the PK values via bind args on insert.
+
+### Commit Hook
+
+The cr-sqlite extension caches the database version in a user space struct such that insertions within the same transaction can use the cached value rather than look it up from the clock table(s).
+
+  
+
+This cache is cleared on commit via the [sqlite3_commit_hook](https://www.sqlite.org/c3ref/commit_hook.html). This hook can only be registered once so if a calling application also uses it, cr-sqlite will break.
+
+### Connection Close
+
+SQLite doesn’t provide a mechanism to finalize prepared statements created by an extension when the database connection closes (see: [https://github.com/libsql/libsql/issues/62](https://github.com/libsql/libsql/issues/62)). This makes a somewhat awkward API for the user where they must call select crsql_finalize() before closing the DB connection.**
+
+
+# CR-SQLite Design Principles
+
+1. Complexity:
+   1. Start with the simplest possible thing that can work  
+   2. A sync message will never modify any rows outside its payload  
+   3. A sync message will never require sending another sync message after being received  
+   4. Final state shall never depend on the order in which peers merge  
+2. Developer experience:   
+   1. The single node behavior of SQLite will never change when using CRRs  
+   2. Reframing of the above: local operations will always work as expected  
+   3. If a row is inserted locally it will not be reverted due to the workings of the sync process. Later events (e.g., user initiated delete) can of course revert the write.
+3. Declaration of CRRs must always be done in a declarative way   
+4. Perf:
+   1. Perf relationship is always a constant, never a function of dataset size 
+   2. There will never be a perf hit to reads
+5. Prioritization
+   1. Merge and changeset computation perf is currently low pri  
+   2. New features must have a use case  
+   3. Feature with workarounds in user space are deprioritized
