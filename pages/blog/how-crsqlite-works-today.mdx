@@ -5,8 +5,30 @@ date: December 20, 2022
 
 # How CR-SQLite Works Today
 
-- Simple, reuse as much of SQLite as possible
-- No read hit
-- Minimal write hit
-- Can reason about storage requirements
-- No endless growth of storage
+cr-sqlite started with a few foundational decisions:
+
+1. Re-use as much of SQLite as possible. No custom trees or VFSs.
+2. Have 0 impact on read performance.
+3. Writes to CRRs should be no slower than 3x a write to a normal SQLite table.
+4. The amount of storage required should be a constant factor of the size of the base data, no matter how long a peer is offline. I.e., if your SQLite DB would be Xmb without CRR support, it should be C*Xmb with CRR support even if a peer is offline indefinitely. Note: there is a caveat here around deletions.
+5. Deltas between two databases can be computed by only exchanging Lamport timestamps.
+
+The most influential decision is (4). This means that we _only_ keep current state around. We do not retain the history of modifications that have occurred on the database nor do we keep an event log.
+
+The practical impacts of this are:
+
+1. On syncing transactions.
+2. The first CRDT types made available
+
+## Syncing Transactions
+
+Every commit to the database gets a `db_version` associated with it. So this certainly sounds like that when you ask `crsql_changes` for all changes with a given `db_version` it'll return all changes that were made in that commit.
+
+This is true up to a point. Since `cr-sqlite`, in today's form, only retains the current state of the DB this can fail to hold true in the following scenario.
+
+
+
+So while you can commit atomic transactions locally, when syncing a transaction _might be_ split up across two db_versions. We're testing different options to resolve this while still keeping a tiny storage footprint which you can read about in [how-crsqlite-works-tomorrow](./how-crsqlite-works-tomorrow).
+
+## Available CRDTs
+
