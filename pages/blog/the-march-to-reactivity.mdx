@@ -1,0 +1,137 @@
+---
+date: "June 5, 2023"
+description: "The request-response pattern isn't optimal for the types of applications we'd like to build today. If you want your application to update as soon as information is available, it is much easier for that information to be pushed to you incrementally than for you to have to go request it."
+---
+
+import { Callout } from "nextra-theme-docs";
+
+
+# The March to Reactivity
+
+The request-response pattern isn't optimal for the types of applications we'd like to build today. If you want your application to update as soon as information is available, it is much easier for that information to be pushed to you incrementally than for you to have to go request it.
+
+Even if you're not sold on a push model and would rather pull, you still have two problems:
+
+1. Knowing when the data you care about, or any data it depends on, has changed
+2. Making that re-pull cheap and/or limiting what you pull to just the updated data
+
+To make this a bit more concrete, think of something like an event planning app that allows multiple users to collaboratively plan an event.
+
+The details of an event page might be fetched with a query like:
+
+```sql
+SELECT
+  "event"."name",
+  "event"."description",
+  "event"."date",
+  "place"."address",
+  "place"."name",
+  json_group_array("invitee"."name") as "invitees",
+  json_group_array("planner"."name") as "planners"
+FROM "event"
+  JOIN "event_invitee" ON "event_invitees"."event_id" = "event"."id" 
+  JOIN "user" as "invitee" ON "event_invitee"."user_id" = "invitee"."id"
+  JOIN "place" ON "event"."place_id" = "place"."id"
+  JOIN "event_planner" ON "event_planner"."event_id" = "event"."id"
+  JOIN "user" as "planner" ON "event_planner"."planner_id" = "planner"."id"
+WHERE "event"."id" = :event_id
+```
+
+If:
+
+- An invitee is added to an event
+- An invitee is removed from an event
+- Another planner is modifying event name, description, date or place
+- New planners are added or removed
+
+The dashboard should reflect that in real time.
+
+How do we solve reactivity in Vulcan?
+
+## Today: Naively via update_hook
+
+Today, implement reactivity somewhat naively.
+
+1. Developers tell us which queries should be "live" or "reactive"
+2. We use SQLite's `tables_used` method to understand the transitive set of all tables used by a query
+3. We register an `update_hook` with SQLite to be notified whenever a row is inserted/updated/deleted
+
+When the `update_hook` tells us tables impact by a write, we map that back to the live queries registered by the developer. Those queries are proactively re-run and the results passed back.
+
+This is obviously rather naive. Someone could alter rows that have no impact on the query, resulting in re-running queries that do not need to be run.
+
+This has worked ok but requires developers to do workarounds for extremely interactive code paths. The most common workaround is to build a standard domain model atop SQL. E.g., building Event, Planner, User classes that load data from the DB and create objects that reside in memory. The domain model, residing in-memory, is realtime reactive to user events happening locally. The SQL layer only updates the domain model when new data has been synced over the network.
+
+<Callout type="info">
+For the JS world [TinyBase](https://tinybase.org/), and [ReactQuery](https://tanstack.com/query/v3/) integrations could go a long way to solving the highly interactive paths until they're solve in Vulcan itself.
+
+- For TinyBase, we could hydrate from cr-sqlite and lazily persist to cr-sqlite
+- ReactQuery allows fine-grained manual invalidations at the query level. So while a lot of manual tracking, you'd only re-run the exact queries you specify.
+</Callout>
+
+## Tomorrow: Smarter via Differential Data Flow
+
+<Callout type="warning">
+This is a live document. It will be updated as this problem is further explored and solved. Things not yet covered:
+- Materializing joins
+- Sub-queries and aggregations
+</Callout>
+
+The reactive end goal is being able to allow users to:
+
+1. Update their data at 120 FPS
+2. Have all queries, no matter how complex, that rely on updated data refresh within the same frame
+
+Re-running every query against a table any time a piece of data changes in that table is obviously not going to cut it. What we can do, however, is:
+
+1. Parse the SQL in Live Queries
+2. Convert Live Queries to [Differential Data Flow](https://github.com/TimelyDataflow/differential-dataflow) pipelines
+3. Map Live Queries to tables used
+4. Run insert/update/delete statements through the relevant differential data flow pipelines to quickly and synchronously produce the updated result(s) for their corresponding queries
+
+This is _much_ faster than the naive approach as live queries only need to be incrementally updated based on the content of a write rather than fully recomputed.
+
+It still isn't _the best we can do_ since we'll still run pipelines that we could reasonable exclude. I.e., if a write comes in against the `user` table, we'll still run all pipelines that used the `user` table. These pipelines will be fast for sure but, for server side applications, with potentially tens of thousands of unrelated writes for a given subscription this isn't going to cut it.
+
+For that we'd need an "inverted database."
+
+Prior art related to this phase:
+- [Noria](https://github.com/mit-pdos/noria)
+- [Materialize](https://materialize.com/)
+- [ReadySet](https://readyset.io/)
+- [Relic](https://github.com/wotbrew/relic)
+- [Differential Data Flow](https://github.com/TimelyDataflow/differential-dataflow)
+
+## Tomorrow++: Even Smarter with an Inverted Database
+
+"Inverted Database" is not a technical term but it describes the problem well. Rather than indexing data we want to index the ranges used by live queries.
+
+E.g.,
+
+```sql
+SELECT * FROM foo WHERE x > 1 AND y < 10;
+```
+
+We should create a range for `x > 1` and a range for `y < 10`. This way when data comes in
+
+```sql
+INSERT INTO foo (id, x, y) VALUES (1, 5, 3);
+```
+
+We can use our inverted database to tell us exactly which queries that write impacts.
+
+Deletes are similar.
+
+
+```sql
+DELETE FROM foo WHERE id = 1
+```
+
+except that we'll need to check if the row is already in-memory. If so, then see if the values in that row intersect any ranges (or points) specified by a live query. If so, update that query.
+
+Updates are similar to deletes in that we need to load the cached value (i.e., the value previously returned by a live query) to see if the mutation of a column would remove it from the live query's results. If the row was never cached (never returned by the live query) we can just see if the update would have made it applicable to the live query.
+
+This last case of course has some gotchas. E.g., maybe there are some extra columns we need from disk to make this final determination.
+
+Prior art in this area:
+- [tuple-database](https://github.com/ccorcos/tuple-database)

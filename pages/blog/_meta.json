@@ -8,6 +8,9 @@
       "typesetting": "article"
     }
   },
+  "the-march-to-reactivity": {},
+  "how-crsqlite-works-today": "How CR-SQLite Works Today",
+  "how-crsqlite-works-tomorrow": "How CR-SQLite Works Tomorrow",
   "crdt-substrate": "A Framework for Convergence",
   "intro-to-crdts": {},
   "lww-vs-dag": {

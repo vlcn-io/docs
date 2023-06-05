@@ -129,7 +129,7 @@ export default function Index() {
             <h1>Real-time</h1>
             <p>
               Break the speed of light by reading and writing data locally;
-              don't wait for network round-trips.
+              don&apos;t wait for network round-trips.
             </p>
           </div>
         </div>

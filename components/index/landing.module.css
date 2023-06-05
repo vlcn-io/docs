@@ -175,27 +175,13 @@
   margin-bottom: 8px;
 }
 
-.isoCard img,
-.isoImg {
-  height: 180px;
-}
-
-.isoCard img.replicated {
-  width: 160px;
-  height: auto;
-}
-
-.isoCard img.reactive {
-  width: 160px;
-  height: auto;
-}
-
 .isoCard p {
   line-height: 24px;
 }
 
 .isoCard .sep {
   min-width: 80px;
+  min-height: 80px;
 }
 
 .footer {
@@ -310,6 +296,10 @@
 
   .heroImgContainer {
     display: none;
+  }
+
+  .isoCard {
+    flex-direction: column;
   }
 }
 
