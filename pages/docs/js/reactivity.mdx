@@ -124,9 +124,9 @@ function dispose(): void;
 
 Import the WASM, create the DB, install a schema.
 
-<RunnableCode code={`const initWasm = await import('https://esm.sh/@vlcn.io/crsqlite-wasm@0.11.0');
+<RunnableCode code={`const initWasm = await import('https://esm.sh/@vlcn.io/crsqlite-wasm@0.12.0-next.0');
 const sqlite = await initWasm.default(
-  () => "https://esm.sh/@vlcn.io/crsqlite-wasm@0.11.0/dist/crsqlite.wasm"
+  () => "https://esm.sh/@vlcn.io/crsqlite-wasm@0.12.0-next.0/dist/crsqlite.wasm"
 );
 
 const nanoid=(t=21)=>crypto.getRandomValues(new Uint8Array(t)).reduce(((t,e)=>t+=(e&=63)<36?e.toString(36):e<62?(e-26).toString(36).toUpperCase():e>62?"-":"_"),"");
@@ -139,7 +139,7 @@ provide db;`} />
 Now set up rx-tbl.
 
 <RunnableCode code={`use db;
-const tblrx = await import('https://esm.sh/@vlcn.io/rx-tbl@0.10.0');
+const tblrx = await import('https://esm.sh/@vlcn.io/rx-tbl@0.11.0-next.0');
 const rx = tblrx.default(db);
 provide rx;`} />
 
