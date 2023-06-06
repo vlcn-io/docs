@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "links": "blc http://localhost:3000/ -ro"
+    "links": "blc http://localhost:3000/ -ro",
+    "test": "vitest run"
   },
   "dependencies": {
     "@codemirror/commands": "^6.2.4",
