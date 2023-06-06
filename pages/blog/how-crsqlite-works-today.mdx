@@ -1,6 +1,6 @@
 ---
 description: An overview of the design decisions for the current implementation of cr-sqlite
-date: December 20, 2022
+date: June 6, 2023
 ---
 
 # How CR-SQLite Works Today
@@ -15,20 +15,36 @@ cr-sqlite started with a few foundational decisions:
 
 The most influential decision is (4). This means that we _only_ keep current state around. We do not retain the history of modifications that have occurred on the database nor do we keep an event log.
 
-The practical impacts of this are:
-
-1. On syncing transactions.
-2. The first CRDT types made available
+This has some practical impacts on syncing transaction.
 
 ## Syncing Transactions
 
-Every commit to the database gets a `db_version` associated with it. So this certainly sounds like that when you ask `crsql_changes` for all changes with a given `db_version` it'll return all changes that were made in that commit.
+Every commit to the database gets a unique `db_version` associated with it. When asking `crsql_changes` for all changes with a given `db_version` you will get all updates committed in that transaction with one exception.
 
-This is true up to a point. Since `cr-sqlite`, in today's form, only retains the current state of the DB this can fail to hold true in the following scenario.
+The exception comes from the fact that cr-sqlite only stores the latest state (decision 4).
+
+Given this, later transactions can overwrite values from earlier transactions. What this means is that when asking for all changes with a given db_version, you will be missing any values for that transaction that were overwritten by a later transaction.
+
+Visually this looks like: ![transaction depiction and venn diagram where first tx is missing all overlap with the second](/blog/how-it-works-today/tx-sync.png)
+
+You can deal with this in a few ways:
+
+1. Handle it in your application by understanding this limitation
+2. In your network layer, sync after every commit
+3. In your network layer, sync all changes from N to current db_version in a single transaction
+4. In your network layer, keep a log of changeset batches to sync. Like 3 but split into chunks on transaction boundaries.
+5. Wait for v2 of cr-sqlite (we'll be publishing the design decisions behind v2 shortly)
+
+So while you can commit atomic transactions locally, when syncing a transaction _might be_ split up across two db_versions unless you've written a custom networking layer. 
 
 
+## Delta State
 
-So while you can commit atomic transactions locally, when syncing a transaction _might be_ split up across two db_versions. We're testing different options to resolve this while still keeping a tiny storage footprint which you can read about in [how-crsqlite-works-tomorrow](./how-crsqlite-works-tomorrow).
+Regarding decision (5), each cell that is written also has the db_version recorded along side it. This allows us to find all cells that were create/updated after a given db_version and simply compute the delta between that last version seen from a database and the current version (or some other upper  bound).
 
-## Available CRDTs
+## Merging
 
+Merging is done cell-wise. Each cell contains a logical clock that is incremented on mutation of that cell. When merging cells, we take the cell with the highest logical clock. If the two tie, we take the cell with the greater value.
+
+
+For more details on the inner-workings of the current version, see [this](./libsql-gdoc).
