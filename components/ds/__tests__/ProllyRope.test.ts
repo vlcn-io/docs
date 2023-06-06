@@ -1,6 +1,6 @@
 import { test, expect } from "vitest";
 
-import { hash, rollingHash } from "../ProllyRope";
+import { hash, roll } from "../ProllyRope";
 
 // test("rolling hash", () => {
 //   const str =
@@ -28,5 +28,14 @@ import { hash, rollingHash } from "../ProllyRope";
 // });
 
 test("bra", () => {
-  console.log(hash("bra"));
+  let h = hash("bra");
+  console.log(h);
+
+  h = roll("b".charCodeAt(0), "b".charCodeAt(0), 3, h);
+  console.log(h);
+  h = roll("r".charCodeAt(0), "r".charCodeAt(0), 3, h);
+  console.log(h);
+  h = roll("a".charCodeAt(0), "a".charCodeAt(0), 3, h);
+
+  console.log(h);
 });

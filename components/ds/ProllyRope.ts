@@ -16,8 +16,24 @@ export function hash(s: string): number {
   return h % n;
 }
 
-// rolling hash:
-export function rollingHash(incoming: number, outgoing: number, hash: number) {
-  const temp = (hash - (outgoing & 0xff)) / 31;
-  return 31 * temp + (incoming & 0xff);
+// Incoming is expected to be appended to the end of the buffer
+// Outgoing is expected to be dropped from the start
+export function roll(
+  incoming: number,
+  outgoing: number,
+  windowLength: number,
+  hash: number
+) {
+  // remove first term
+  let exp = 1;
+  for (let i = 0; i < windowLength - 1; ++i) {
+    exp = (exp * a) % n;
+  }
+  hash = hash - ((outgoing * exp) % n);
+
+  // shift all terms left
+  hash = (hash * a) % n;
+
+  // add the incoming term
+  return (hash + incoming) % n;
 }
