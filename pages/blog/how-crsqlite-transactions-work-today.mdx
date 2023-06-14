@@ -1,9 +1,9 @@
 ---
-description: An overview of the design decisions for the current implementation of cr-sqlite
+description: An overview of the design decisions for the current implementation of cr-sqlite and their impact on transaction guarantees
 date: June 6, 2023
 ---
 
-# How CR-SQLite Works Today
+# How CR-SQLite Transactions Work Today
 
 cr-sqlite started with a few foundational decisions:
 
@@ -38,13 +38,12 @@ You can deal with this in a few ways:
 So while you can commit atomic transactions locally, when syncing a transaction _might be_ split up across two db_versions unless you've written a custom networking layer. 
 
 
+To see how we'll better support transactional guarantees in the future, see [How CR-SQLite Transactions Work Tomorrow](./how-crsqlite-transactions-work-tomorrow)
+
 ## Delta State
 
-Regarding decision (5), each cell that is written also has the db_version recorded along side it. This allows us to find all cells that were create/updated after a given db_version and simply compute the delta between that last version seen from a database and the current version (or some other upper  bound).
+Regarding decision (5), each cell that is written also has the `db_version` recorded along side it. This allows us to find all cells that were create/updated after a given `db_version`.
 
 ## Merging
 
 Merging is done cell-wise. Each cell contains a logical clock that is incremented on mutation of that cell. When merging cells, we take the cell with the highest logical clock. If the two tie, we take the cell with the greater value.
-
-
-For more details on the inner-workings of the current version, see [this](./libsql-gdoc).

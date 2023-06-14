@@ -1,3 +1,4 @@
+// https://dl.acm.org/doi/10.1145/2858949.2784739
 type RopeNode = {
   left: RopeNode | null;
   right: RopeNode | null;

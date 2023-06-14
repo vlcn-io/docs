@@ -1,0 +1,12 @@
+---
+description: Future improvements for transactional guarantees
+date: June 14, 2023
+---
+
+# How CR-SQLite Transactions Work Tomorrow
+
+This is a follow on from [How CR-SQLite Transactions Work Today](./how-crsqlite-transactions-work-today). The prior post described some potentially unexpected behavior when syncing transactions between two peers and the origins of that behavior. Namely that cr-sqlite only keeps the current state of the database around which can lead to "holes" in past transactions.
+
+In future version of cr-sqlite, this will no longer be the case. cr-sqlite will give you the option to use an [immutable data structure with structural sharing](https://en.wikipedia.org/wiki/Persistent_data_structure) to back your CRRs.
+
+This means that cr-sqlite will be able to re-wind the state of the databases to any given version, allowing it to fully and faithfully sync transactions.
