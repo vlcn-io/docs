@@ -113,7 +113,7 @@ const users = await db.execO<{ id: bigint, name: string }>("SELECT * FROM users"
 The same as `execO` but returns the results as arrays rather than objects.
 
 ```ts
-function execO<T extends any[]>sql: string, bind?: SQLiteCompatibleType[]): Promise<T[]>;
+function execA<T extends any[]>(sql: string, bind?: SQLiteCompatibleType[]): Promise<T[]>;
 ```
 
 **Example:**
