@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 
 declare -a pkgs=(
-  "@vlcn.io/crsqlite-allinone:0.11.0"
-  "@vlcn.io/react:2.2.0"
-  "@vlcn.io/direct-connect-browser:0.2.0"
-  "@vlcn.io/direct-connect-common:0.3.0"
-  "@vlcn.io/sync-p2p:0.10.0"
-  "@vlcn.io/crsqlite-wasm:0.12.0"
-  "@vlcn.io/direct-connect-nodejs:0.3.0"
+  "@vlcn.io/direct-connect-browser:0.3.0"
+  "@vlcn.io/react:2.3.0"
+  "@vlcn.io/direct-connect-common:0.4.0"
+  "@vlcn.io/crsqlite-wasm:0.13.0"
+  "@vlcn.io/crsqlite-allinone:0.12.0"
   "@vlcn.io/create:0.0.3"
-  "@vlcn.io/rx-tbl:0.11.0"
-  "@vlcn.io/xplat-api:0.11.0"
-  "@vlcn.io/wa-sqlite:0.18.0"
+  "@vlcn.io/direct-connect-nodejs:0.4.0"
+  "@vlcn.io/xplat-api:0.12.0"
+  "@vlcn.io/rx-tbl:0.12.0"
+  "@vlcn.io/sync-p2p:0.11.0"
+  "@vlcn.io/wa-sqlite:0.19.0"
 )
 
 # pkgs=("$@")

@@ -32,17 +32,17 @@ dependencies:
     specifier: 18.2.4
     version: 18.2.4
   '@vlcn.io/crsqlite-wasm':
+    specifier: 0.13.0
+    version: 0.13.0
+  '@vlcn.io/react':
+    specifier: 2.3.0
+    version: 2.3.0(react@18.2.0)
+  '@vlcn.io/rx-tbl':
     specifier: 0.12.0
     version: 0.12.0
-  '@vlcn.io/react':
-    specifier: 2.2.0
-    version: 2.2.0(react@18.2.0)
-  '@vlcn.io/rx-tbl':
-    specifier: 0.11.0
-    version: 0.11.0
   '@vlcn.io/xplat-api':
-    specifier: 0.11.0
-    version: 0.11.0
+    specifier: 0.12.0
+    version: 0.12.0
   better-sqlite3:
     specifier: ^8.4.0
     version: 8.4.0
@@ -1038,53 +1038,53 @@ packages:
       pretty-format: 27.5.1
     dev: true
 
-  /@vlcn.io/crsqlite-wasm@0.12.0:
-    resolution: {integrity: sha512-biY5vnw01O4h712UsOsFgwALl1qxTT1BpwzO+Tw+UzILrCpmiRtgQ/DmkrjWYEy0iBLeA44nfAtgXFjDzTIBiA==}
+  /@vlcn.io/crsqlite-wasm@0.13.0:
+    resolution: {integrity: sha512-Hnm6bewwAP4gcm4nCYZFLvqb+I2FjljpiNZAlDoBFLpV32MTLk5v67Vwf13YD0HsvzqLJswAs1JPg3WuSxTofg==}
     dependencies:
-      '@vlcn.io/wa-sqlite': 0.18.0
-      '@vlcn.io/xplat-api': 0.11.0
+      '@vlcn.io/wa-sqlite': 0.19.0
+      '@vlcn.io/xplat-api': 0.12.0
       async-mutex: 0.4.0
     dev: false
 
-  /@vlcn.io/direct-connect-browser@0.2.0:
-    resolution: {integrity: sha512-hiArypXrMFEkLcqL3zLaMuZKBlhU9yMo0PMZRdhLBTJCNiKw2IjIKw27gg5x3epwAyZym6a0mSWVbFykkEmgWA==}
+  /@vlcn.io/direct-connect-browser@0.3.0:
+    resolution: {integrity: sha512-rYCsfxJnfwrGknVe3zbs5WIh2zpqVBTQ36jzdxCTXO+fWbTEcq0gV4P/z1J2tKsRH5F0shS+boExg0zdRcCE6g==}
     dependencies:
-      '@vlcn.io/crsqlite-wasm': 0.12.0
-      '@vlcn.io/direct-connect-common': 0.3.0
-      '@vlcn.io/rx-tbl': 0.11.0
-      '@vlcn.io/xplat-api': 0.11.0
+      '@vlcn.io/crsqlite-wasm': 0.13.0
+      '@vlcn.io/direct-connect-common': 0.4.0
+      '@vlcn.io/rx-tbl': 0.12.0
+      '@vlcn.io/xplat-api': 0.12.0
     dev: false
 
-  /@vlcn.io/direct-connect-common@0.3.0:
-    resolution: {integrity: sha512-ZmVvZdy/GCJoc6Xhi08hkbOXHX6/l6f/aAduKCLChgjfEkga3vgv2gy3RDkB/SWFWWozBzj/yJHKmpMIFOW2Vw==}
+  /@vlcn.io/direct-connect-common@0.4.0:
+    resolution: {integrity: sha512-e4hMxc4d0UMLnSNYOc+MeOmm/5YNl5jSlRXBMox6+1sbtwfMApGhiezDKHX+ymyHmASTHLb8DNWw8kM0aQT0/g==}
     dependencies:
       lib0: 0.2.78
     dev: false
 
-  /@vlcn.io/react@2.2.0(react@18.2.0):
-    resolution: {integrity: sha512-bvAqII9zq1tyC/19zkd2rhvfP0bVyroT6XdDo0O6/vPCTzo/+LfqZgCHajRbYbV6zyoCy5qE315cPFuOd85RoA==}
+  /@vlcn.io/react@2.3.0(react@18.2.0):
+    resolution: {integrity: sha512-hJioo/uBwbVjbuRtkgmeBoaP+5j1YxfQpR7t91cQTaRnYn0ycOGxxuREySjWeV755dT+IOSEinCc2sb13t18TQ==}
     peerDependencies:
       react: ^18
     dependencies:
-      '@vlcn.io/crsqlite-wasm': 0.12.0
-      '@vlcn.io/direct-connect-browser': 0.2.0
-      '@vlcn.io/rx-tbl': 0.11.0
-      '@vlcn.io/xplat-api': 0.11.0
+      '@vlcn.io/crsqlite-wasm': 0.13.0
+      '@vlcn.io/direct-connect-browser': 0.3.0
+      '@vlcn.io/rx-tbl': 0.12.0
+      '@vlcn.io/xplat-api': 0.12.0
       react: 18.2.0
     dev: false
 
-  /@vlcn.io/rx-tbl@0.11.0:
-    resolution: {integrity: sha512-k9lbIHp/E2PzSPOGln44/tO3Q8V94q+UF/YFQKoVfe73pJUJND+xraRN0yUOPIA6ePrH0NPmauoN4VFnPCnspg==}
+  /@vlcn.io/rx-tbl@0.12.0:
+    resolution: {integrity: sha512-2hXrBt+q2G61wiT02OV7PlPNsBd75xGqD6gpWOyJeqjF3SgjfwmQUr3AodkrYusN5kUZ2BuICw/PV7R3LfsKhQ==}
     dependencies:
-      '@vlcn.io/xplat-api': 0.11.0
+      '@vlcn.io/xplat-api': 0.12.0
     dev: false
 
-  /@vlcn.io/wa-sqlite@0.18.0:
-    resolution: {integrity: sha512-0BkblUrb67FbSR21vuluoe1oM4Va/xViwB1HebHlbAXp8sTjejIezXWKSsiEssRYeJgt90aWuyw4xEzddqu/Yw==}
+  /@vlcn.io/wa-sqlite@0.19.0:
+    resolution: {integrity: sha512-Rzu4d1zdnfjVkMMXV0YE7aiMRz2ro6eJ1SM94Fpt7NLDGOt69U7t50lBxaEogSDwMvGG1PpPcd4wapGnA6zKIA==}
     dev: false
 
-  /@vlcn.io/xplat-api@0.11.0:
-    resolution: {integrity: sha512-ZcJZcu8Z8KdORAbqM6rfc8OGMF+9nTNYysXrzd36FsWFNNuN7+mwWyK2zmDcilxaqqm+FyK9+B1O8q3oRGXm9w==}
+  /@vlcn.io/xplat-api@0.12.0:
+    resolution: {integrity: sha512-6MKe6RWSDXeql2iZ2fskske/dVHiqFmBciNv4s8czcGSmyvVNfP4Fz1r5lzCxHjCslP0lVSu3DAtWfD+2YKuoA==}
     dependencies:
       comlink: 4.4.1
     dev: false
