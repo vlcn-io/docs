@@ -9,8 +9,8 @@ cr-sqlite started with a few foundational decisions:
 
 1. Re-use as much of SQLite as possible. No custom trees or VFSs.
 2. Have 0 impact on read performance.
-3. Writes to CRRs should be no slower than 3x a write to a normal SQLite table.
-4. The amount of storage required should be a constant factor of the size of the base data, no matter how long a peer is offline. I.e., if your SQLite DB would be Xmb without CRR support, it should be C*Xmb with CRR support even if a peer is offline indefinitely. Note: there is a caveat here around deletions.
+3. Writes to CRRs should be no slower than 2.5x a write to a normal SQLite table.
+4. The amount of storage required should be a constant factor of the size of the base data, no matter how long a peer is offline.
 5. Deltas between two databases can be computed by only exchanging Lamport timestamps.
 
 The most influential decision is (4). This means that we _only_ keep current state around. We do not retain the history of modifications that have occurred on the database nor do we keep an event log.
@@ -33,12 +33,21 @@ You can deal with this in a few ways:
 2. In your network layer, sync after every commit
 3. In your network layer, sync all changes from N to current db_version in a single transaction
 4. In your network layer, keep a log of changeset batches to sync. Like 3 but split into chunks on transaction boundaries.
-5. Wait for v2 of cr-sqlite (we'll be publishing the design decisions behind v2 shortly)
+5. Wait for cr-sqlite to include a full fidelity transaction log for these use cases
 
 So while you can commit atomic transactions locally, when syncing a transaction _might be_ split up across two db_versions unless you've written a custom networking layer. 
 
-
 To see how we'll better support transactional guarantees in the future, see [How CR-SQLite Transactions Work Tomorrow](./how-crsqlite-transactions-work-tomorrow)
+
+## Upside
+
+Aside from minimal storage footprint, the other big advantage of the current approach is in dealing with high frequency writes. Given we only store current state, it does not matter if someone updates some set of rows thousands of times a second. Those updates:
+
+1. Will not increase the size of the databases
+2. Will not increase the number of entries in crsql_changes
+3. Will not overload the network with sync events
+
+If we kept full fidelity history of what things looked like at every transaction, high frequency updates would present a problem.
 
 ## Delta State
 
