@@ -41,4 +41,5 @@ export default async function handler(
   });
 
   res.status(200).send(feed.rss2());
+  fs.writeFileSync("./public/blog/rss.xml", feed.rss2());
 }

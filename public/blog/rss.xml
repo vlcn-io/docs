@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0">
+    <channel>
+        <title>vlcn.io blog</title>
+        <link>https://vlcn.io</link>
+        <description>vlcn.io blog</description>
+        <lastBuildDate>Thu, 06 Jul 2023 01:09:03 GMT</lastBuildDate>
+        <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
+        <generator>Feed for Node.js</generator>
+        <image>
+            <title>vlcn.io blog</title>
+            <url>https://vlcn.io/logo.png</url>
+            <link>https://vlcn.io</link>
+        </image>
+        <copyright>All rights reserved 2023, One Law LLC</copyright>
+        <item>
+            <title><![CDATA[How CR-SQLite Transactions Work Tomorrow]]></title>
+            <link>https://vlcn.io/blog/how-crsqlite-transactions-work-tomorrow</link>
+            <guid>/blog/how-crsqlite-transactions-work-tomorrow</guid>
+            <pubDate>Wed, 14 Jun 2023 04:00:00 GMT</pubDate>
+            <description><![CDATA[Future improvements for transactional guarantees]]></description>
+        </item>
+        <item>
+            <title><![CDATA[How CR-SQLite Transactions Work Today]]></title>
+            <link>https://vlcn.io/blog/how-crsqlite-transactions-work-today</link>
+            <guid>/blog/how-crsqlite-transactions-work-today</guid>
+            <pubDate>Tue, 06 Jun 2023 04:00:00 GMT</pubDate>
+            <description><![CDATA[An overview of the design decisions for the current implementation of cr-sqlite and their impact on transaction guarantees]]></description>
+        </item>
+        <item>
+            <title><![CDATA[The March to Reactivity]]></title>
+            <link>https://vlcn.io/blog/the-march-to-reactivity</link>
+            <guid>/blog/the-march-to-reactivity</guid>
+            <pubDate>Mon, 05 Jun 2023 04:00:00 GMT</pubDate>
+            <description><![CDATA[The request-response pattern isn't optimal for the types of applications we'd like to build today. If you want your application to update as soon as information is available, it is much easier for that information to be pushed to you incrementally than for you to have to go request it.]]></description>
+        </item>
+        <item>
+            <title><![CDATA[A Framework for Convergence]]></title>
+            <link>https://vlcn.io/blog/crdt-substrate</link>
+            <guid>/blog/crdt-substrate</guid>
+            <pubDate>Invalid Date</pubDate>
+            <description><![CDATA[What if I told you anyone can create a new CRDT? That you can do this without any special knowledge of distributed systems?]]></description>
+        </item>
+        <item>
+            <title><![CDATA[A Gentle Introduction to CRDTs]]></title>
+            <link>https://vlcn.io/blog/intro-to-crdts</link>
+            <guid>/blog/intro-to-crdts</guid>
+            <pubDate>Sat, 01 Apr 2023 04:00:00 GMT</pubDate>
+            <description><![CDATA[Conflict Free Replicated Data types (CRDTs) can be tricky. You may spend months reading papers and implementing different algorithms before they finally click and become simple. That or they'll seem simple out of the gate and you'll be missing a bunch of nuance.]]></description>
+        </item>
+        <item>
+            <title><![CDATA[LWW vs DAG]]></title>
+            <link>https://vlcn.io/blog/lww-vs-dag</link>
+            <guid>/blog/lww-vs-dag</guid>
+            <pubDate>Fri, 17 Feb 2023 05:00:00 GMT</pubDate>
+            <description><![CDATA[Event sourcing is a fairly common design pattern for deriving application state from a history of events. But is it possible to turn an event log into a CRDT? To allow nodes to append events to the log, without coordinating with other nodes? Can we merge all these copies of the log, proces them, and arrive at the same application state across all nodes?]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Fractional Indexing]]></title>
+            <link>https://vlcn.io/blog/fractional-indexing</link>
+            <guid>/blog/fractional-indexing</guid>
+            <pubDate>Thu, 26 Jan 2023 05:00:00 GMT</pubDate>
+            <description><![CDATA[To enable user provided ordering of rows, most people reach for a fractional index. They're great given they let you change the position of one row without modifying any other rows. Fractional indices have a number of gotchas, however.]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Recursive Ordering]]></title>
+            <link>https://vlcn.io/blog/recursive-ordering</link>
+            <guid>/blog/recursive-ordering</guid>
+            <pubDate>Tue, 20 Dec 2022 05:00:00 GMT</pubDate>
+            <description><![CDATA[Keeping things sorted without interleaving edits.]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Recursive Ordering in Sqlite]]></title>
+            <link>https://vlcn.io/blog/recursive-ordering-in-sqlite</link>
+            <guid>/blog/recursive-ordering-in-sqlite</guid>
+            <pubDate>Tue, 20 Dec 2022 05:00:00 GMT</pubDate>
+            <description><![CDATA[Sorting by recursive relationships efficiently in SQL]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Bring Your Own Crdt]]></title>
+            <link>https://vlcn.io/blog/bring-your-own-crdt</link>
+            <guid>/blog/bring-your-own-crdt</guid>
+            <pubDate>Invalid Date</pubDate>
+        </item>
+        <item>
+            <title><![CDATA[Distributed Recursive Ordering]]></title>
+            <link>https://vlcn.io/blog/distributed-recursive-ordering</link>
+            <guid>/blog/distributed-recursive-ordering</guid>
+            <pubDate>Invalid Date</pubDate>
+        </item>
+        <item>
+            <title><![CDATA[Libsql Gdoc]]></title>
+            <link>https://vlcn.io/blog/libsql-gdoc</link>
+            <guid>/blog/libsql-gdoc</guid>
+            <pubDate>Invalid Date</pubDate>
+        </item>
+        <item>
+            <title><![CDATA[Making Async Apis Synchronous]]></title>
+            <link>https://vlcn.io/blog/making-async-apis-synchronous</link>
+            <guid>/blog/making-async-apis-synchronous</guid>
+            <pubDate>Invalid Date</pubDate>
+        </item>
+        <item>
+            <title><![CDATA[Roadmap]]></title>
+            <link>https://vlcn.io/blog/roadmap</link>
+            <guid>/blog/roadmap</guid>
+            <pubDate>Invalid Date</pubDate>
+        </item>
+        <item>
+            <title><![CDATA[Simpler Materialize with a Query Database]]></title>
+            <link>https://vlcn.io/blog/simpler-materialize-with-a-query-database</link>
+            <guid>/blog/simpler-materialize-with-a-query-database</guid>
+            <pubDate>Invalid Date</pubDate>
+        </item>
+    </channel>
+</rss>
