@@ -31,7 +31,7 @@ You can bring whatever transport you like so long as you follow a few convention
 
 ## Live Query Engine
 
-To enable applications at scale and extremely time-sensitive interactions, we're building a smart live query (reactive query) engine. This is currently a work in progress, based around the ideas of [segmeent & interval trees](https://stackoverflow.com/questions/17466218/what-are-the-differences-between-segment-trees-interval-trees-binary-indexed-t) and [differential dataflow](https://github.com/TimelyDataflow/differential-dataflow).
+To enable applications at scale and extremely time-sensitive interactions, we're building a smart live query (reactive query) engine. This is currently a work in progress, based around the ideas of [segment & interval trees](https://stackoverflow.com/questions/17466218/what-are-the-differences-between-segment-trees-interval-trees-binary-indexed-t) and [differential dataflow](https://github.com/TimelyDataflow/differential-dataflow).
 
 The reactive queries available in the React integration are not yet based on this engine. They take a simpler approach of re-running queries when the tables those queries use are updated. We've seen this simple approach work for resolving ~100 concurrent queries in a single frame in the browser but we'd like to do better.
 
