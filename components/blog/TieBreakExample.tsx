@@ -8,6 +8,7 @@ const initialState: {
     node: NodeName;
     id: string;
     content: string;
+    contentFrom: NodeName | null;
     time: string;
     mergedWith: NodeName[];
   };
@@ -16,6 +17,7 @@ const initialState: {
     node: "a",
     id: "x",
     content: "z",
+    contentFrom: null,
     time: "12:00:00",
     mergedWith: [],
   },
@@ -23,6 +25,7 @@ const initialState: {
     node: "b",
     id: "x",
     content: "b",
+    contentFrom: null,
     time: "12:00:00",
     mergedWith: [],
   },
@@ -30,6 +33,7 @@ const initialState: {
     node: "c",
     id: "x",
     content: "a",
+    contentFrom: null,
     time: "12:00:00",
     mergedWith: [],
   },
@@ -53,7 +57,7 @@ export default function TieBreakExample() {
       const newState = structuredClone(state);
       const nodeState = newState[target];
       const otherNode = newState[source];
-      // TODO: Tie break
+      console.log("MERGIN!");
       switch (tieBreaker) {
         case "value":
           if (nodeState.content < otherNode.content) {
@@ -61,8 +65,9 @@ export default function TieBreakExample() {
           }
           break;
         case "nodeId":
-          if (nodeState.node < otherNode.node) {
+          if ((nodeState.contentFrom || nodeState.node) < otherNode.node) {
             nodeState.content = otherNode.content;
+            nodeState.contentFrom = otherNode.node;
           }
           break;
         case "reject":
