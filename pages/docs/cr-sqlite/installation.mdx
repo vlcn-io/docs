@@ -95,7 +95,7 @@ Examples:
 
 ## Closing Connections
 
-You should call `SELECT crsql_finalize();` before closing the database connection. This allows the extension to perform some cleanup before database shutdown. Failing to do so is not a critical error, but it may cause exceptions to be thrown when the connection is closed. The JS connection wrapper in the `crsqlite-wasm` package automatically does this for your when closing connections.
+You should call `SELECT crsql_finalize();` before closing the database connection. This allows the extension to perform some cleanup before database shutdown. Failing to do so is not a critical error, but it may cause exceptions to be thrown when the connection is closed. The JS connection wrapper in the `crsqlite-wasm` package automatically does this for you when closing connections.
 
 Example:
 
