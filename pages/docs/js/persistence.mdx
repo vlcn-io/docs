@@ -43,7 +43,7 @@ await db.exec(
     'Buy \${items[(Math.random() * items.length) | 0]}',
     0
   )\`);
-return await db.execO(\`SELECT * FROM todo\`);
+return await db.exec(\`SELECT * FROM todo\`);
 `}
 />
 
