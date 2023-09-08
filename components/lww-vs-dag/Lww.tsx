@@ -14,7 +14,7 @@ async function syncLeftToRight(l: DBAsync, r: DBAsync) {
   await r.tx(async (tx) => {
     for (const change of lChanges) {
       await tx.execA(
-        "INSERT INTO crsql_changes VALUES (?, ?, ?, ?, ?, ?, ?)",
+        "INSERT INTO crsql_changes VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
         change
       );
     }

@@ -162,12 +162,12 @@ Let us see what some of the changes in our DB looks like.
 return await db1.execA(
 \`SELECT
   "table",
-  "pk",
+  hex("pk"),
   "cid",
   "val",
   "col_version",
   "db_version",
-  quote("site_id")
+  hex("site_id")
 FROM "crsql_changes"\`);`}
 />
 
@@ -218,7 +218,7 @@ const changes = await db1.execA(\`SELECT * FROM crsql_changes WHERE db_version >
 const db2_synced = await db2.tx(async (tx) => {
   for (const change of changes) {
     await tx.exec(
-      \`INSERT INTO crsql_changes VALUES (?, ?, ?, ?, ?, ?, ?)\`,
+      \`INSERT INTO crsql_changes VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)\`,
       change,
     );
   }
@@ -239,7 +239,7 @@ slides,
 components,
 };`} />
 
-We can also perform concurrent edits on each DB and then merge them together. 
+We can also perform concurrent edits on each DB and then merge them together.
 
 ### Delta State
 

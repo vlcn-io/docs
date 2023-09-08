@@ -21,9 +21,9 @@ Tables can be thought of as a set of rows where the identity of each row is its 
 
 cr-sqlite supports modeling tables as:
 
-1. Delete Wins Sets (✅ implemented)
-2. Causal Length Sets (🦺 coming soon)
-3. Grow Only Sets (🦺 coming soon)
+1. Delete Wins Sets
+2. Causal Length Sets (sets where deleted items can later be re-inserted)
+3. Grow Only Sets (sets that can never be removed from)
 
 See [Table CRDTs](./table-crdts).
 
@@ -47,4 +47,3 @@ These more exotic types are useful for collaborative text documents and don't ha
 2. Non-interleaved fractional index
 
 See [Sequence CRDTs](./sequence-crdts).
-
