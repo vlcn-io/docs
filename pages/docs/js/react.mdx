@@ -137,7 +137,7 @@ const sqlite = await initWasm.default(
   () => "https://esm.sh/@vlcn.io/crsqlite-wasm@0.15.1/dist/crsqlite.wasm"
 );
 
-const db = await sqlite.open("react-example.db");
+const db = await sqlite.open("react_example.db");
 await db.exec(\`CREATE TABLE IF NOT EXISTS todo (id PRIMARY KEY, content, complete)\`);
 provide db;`} />
 
