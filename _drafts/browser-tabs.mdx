@@ -23,7 +23,7 @@ then create a database and table to store our demo state.
 
 <RunnableCode
   code={`use sqlite;
-const db = await sqlite.open("guide-tabs");
+const db = await sqlite.open("guide-tabs2");
 window.onbeforeunload = () => {
   return db.close();
 };
@@ -111,4 +111,3 @@ const allTodos: Todo[] = useQuery<Todo>(
 ```
 
 to subscribe a component to a query. This method is used in the [todomvc example](https://github.com/vlcn-io/live-examples).
-

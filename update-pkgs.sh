@@ -1,17 +1,24 @@
 #!/usr/bin/env bash
 
 declare -a pkgs=(
-  "@vlcn.io/react:2.4.0"
-  "@vlcn.io/direct-connect-nodejs:0.5.0"
-  "@vlcn.io/create:0.0.4"
-  "@vlcn.io/crsqlite-allinone:0.13.0"
-  "@vlcn.io/sync-p2p:0.12.0"
-  "@vlcn.io/direct-connect-browser:0.4.0"
-  "@vlcn.io/direct-connect-common:0.5.0"
-  "@vlcn.io/crsqlite-wasm:0.14.0"
-  "@vlcn.io/wa-sqlite:0.20.0"
-  "@vlcn.io/rx-tbl:0.13.0"
-  "@vlcn.io/xplat-api:0.13.0"
+  "@vlcn.io/react:3.0.2"
+  "@vlcn.io/sync-p2p:0.13.1"
+  "@vlcn.io/direct-connect-browser:0.5.1"
+  "@vlcn.io/crsqlite-wasm:0.15.1"
+  "@vlcn.io/create:0.0.5"
+  "@vlcn.io/crsqlite-allinone:0.14.1"
+  "@vlcn.io/direct-connect-common:0.6.1"
+  "@vlcn.io/direct-connect-nodejs:0.6.1"
+  "@vlcn.io/ws-common:0.1.1"
+  "@vlcn.io/xplat-api:0.14.1"
+  "@vlcn.io/rx-tbl:0.14.1"
+  "@vlcn.io/ws-browserdb:0.1.1"
+  "@vlcn.io/typed-sql:0.2.13"
+  "@vlcn.io/wa-sqlite:0.21.0"
+  "@vlcn.io/ws-server:0.1.1"
+  "@vlcn.io/ws-litefs:0.1.1"
+  "@vlcn.io/ws-client:0.1.1"
+  "@vlcn.io/typed-sql-cli:0.2.13"
 )
 
 # pkgs=("$@")

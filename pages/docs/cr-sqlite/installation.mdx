@@ -87,7 +87,7 @@ Examples:
   import wasmUrl from "@vlcn.io/crsqlite-wasm/crsqlite.wasm?url";
 
   const sqlite = await initWasm(wasmUrl);
-  const db = await sqlite.open("my_database.db");
+  const db = await sqlite.open("my-database.db");
   // the extension is statically linked into the wasm build. No need to load it explicitly.
   ```
   </Tab>

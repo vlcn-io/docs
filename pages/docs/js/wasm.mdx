@@ -27,7 +27,7 @@ Use it:
 
 ```js
 const sqlite = await initWasm(() => wasmUrl);
-const db = await sqlite.open("my_database.db");
+const db = await sqlite.open("my-database.db");
 ```
 
 For more examples, see this [annotated notebook of using `cr-sqlite` in the browser](https://observablehq.com/@tantaman/cr-sqlite-basic-setup).
@@ -70,7 +70,7 @@ function open(path?: string): Promise<DB>;
 
 **Example:**
 ```ts
-const db = await sqlite.open("my_database.db");
+const db = await sqlite.open("my-database.db");
 ```
 
 ### DB::exec

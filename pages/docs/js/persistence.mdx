@@ -13,8 +13,8 @@ A runnable persistence example using the `wasm` build is below.
 Import the required packages and init the wasm:
 
 <RunnableCode
-  code={`const initWasm = await import('https://esm.sh/@vlcn.io/crsqlite-wasm@0.14.0')
-const sqlite = await initWasm.default(() => "https://esm.sh/@vlcn.io/crsqlite-wasm@0.14.0/dist/crsqlite.wasm");
+  code={`const initWasm = await import('https://esm.sh/@vlcn.io/crsqlite-wasm@0.15.1')
+const sqlite = await initWasm.default(() => "https://esm.sh/@vlcn.io/crsqlite-wasm@0.15.1/dist/crsqlite.wasm");
 provide sqlite;`}
 />
 
@@ -22,7 +22,7 @@ Now create a database. To make it persisted all you need to do is pass in a file
 
 <RunnableCode
   code={`use sqlite;
-const db = await sqlite.open("guide-persistence");
+const db = await sqlite.open("guide-persistence2");
 window.onbeforeunload = () => {
   return db.close();
 };
@@ -50,4 +50,3 @@ return await db.execO(\`SELECT * FROM todo\`);
 To check that it did indeed persist, refresh this page a few times and see the number of todos grow!
 
 You can also see a more detailed setup guide on ObservableHQ: https://observablehq.com/@tantaman/cr-sqlite-basic-setup
-
