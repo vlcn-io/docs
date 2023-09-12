@@ -16,7 +16,9 @@ CREATE TABLE crsql_changes(
   [val] ANY,
   [col_version] INTEGER NOT NULL,
   [db_version] INTEGER NOT NULL,
-  [site_id] BLOB -- id of the peer database that made the change
+  [site_id] BLOB, -- id of the peer database that made the change
+  [cl] INTEGER NOT NULL,
+  [seq] INTEGER NOT NULL
 ) STRICT;
 ```
 
@@ -27,10 +29,13 @@ CREATE TABLE crsql_changes(
 5. **col_version** - version / lamport clock of the column. Used for merging.
 6. **db_version** - the lamport clock of the database. Used to track whether or not a site has seen changes from another database.
 7. **site_id** - the site responsible for the change
+8. **cl** - "causal length" or whether or not the row is deleted
+9. **seq** - the order within the given db_version the mutation was made. Useful for splitting up very large transactions into many packets.
 
 Local writes will always have a `NULL` site_id. This allows you to pull only local changes if desired. Note that in ANSI SQL, NULL has strange semantics. You must use `IS NULL` instead of `= NULL` and `IS NOT NULL` instead of `!= NULL` to check for NULL values.
 
 See:
+
 1. https://sqlite.org/forum/forumpost/4507acec4a8f0dc6
 2. https://stackoverflow.com/questions/5658457/not-equal-operator-on-null
 
@@ -41,7 +46,7 @@ See:
 To retrieve a changeset from the database you can query the `crsql_changes` table like any other table. The preferred way to do this, however, is as follows:
 
 ```sql
-SELECT "table", "pk", "cid", "val", "col_version", "db_version", "site_id"
+SELECT "table", "pk", "cid", "val", "col_version", "db_version", "site_id", "cl", "seq"
   FROM "crsql_changes"
   WHERE "db_version" > ?
   AND "site_id" IS NOT ?
@@ -61,7 +66,7 @@ See the [sync guide](/docs/networking/whole-crr-sync) to learn more about pullin
 The output of
 
 ```sql
-SELECT "table", "pk", "cid", "val", "col_version", "db_version", COALESCE("site_id", crsql_siteid())
+SELECT "table", "pk", "cid", "val", "col_version", "db_version", COALESCE("site_id", crsql_siteid()), "cl", "seq"
   FROM "crsql_changes"
   WHERE "db_version" > ?
   AND "site_id" IS NOT ?
@@ -73,11 +78,10 @@ can be directly fed back into a `crsql_changes` table on another database.
 
 ```sql
 INSERT INTO "crsql_changes"
-  ("table", "pk", "cid", "val", "col_version", "db_version", "site_id")
-  VALUES (?, ?, ?, ?, ?, ?, ?);
+  ("table", "pk", "cid", "val", "col_version", "db_version", "site_id", "cl", "seq")
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
 ```
 
 Note that you **MUST** use SQL bind parameters and **NOT** include the values of `crsql_changes` directly in a SQL string.
 
 `crsqlite` will process the bound values and ensure they are safe before applying them against the database. If the values are interpolated into the string, undefined behavior may result.
-
