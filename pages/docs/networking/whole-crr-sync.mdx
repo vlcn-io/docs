@@ -267,7 +267,7 @@ You can experiment with the `db_version` to see how it affects the changes that 
 You've seen how you can compose:
 
 - [crsql_as_crr](/docs/cr-sqlite/api-methods/crsql_as_crr)
-- [crsql_siteid](/docs/cr-sqlite/api-methods/crsql_siteid)
+- [crsql_site_id](/docs/cr-sqlite/api-methods/crsql_site_id)
 - [crsql_changes](/docs/cr-sqlite/api-methods/crsql_changes)
 - [crsql_tracked_peers](/docs/cr-sqlite/api-methods/crsql_tracked_peers)
 
@@ -276,7 +276,7 @@ to build a sync layer for your application.
 The basic ideas:
 
 1. Convert tables to conflict free replicated relations with `crsql_as_crr`
-2. Discover the unique id of each database with `crsql_siteid`
+2. Discover the unique id of each database with `crsql_site_id`
 3. Pull and apply changes to/from databases with `crsql_changes`
 4. Keep track of what you've synced with `crsql_tracked_peers`
 

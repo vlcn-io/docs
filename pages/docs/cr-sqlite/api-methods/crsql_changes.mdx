@@ -66,7 +66,7 @@ See the [sync guide](/docs/networking/whole-crr-sync) to learn more about pullin
 The output of
 
 ```sql
-SELECT "table", "pk", "cid", "val", "col_version", "db_version", COALESCE("site_id", crsql_siteid()), "cl", "seq"
+SELECT "table", "pk", "cid", "val", "col_version", "db_version", COALESCE("site_id", crsql_site_id()), "cl", "seq"
   FROM "crsql_changes"
   WHERE "db_version" > ?
   AND "site_id" IS NOT ?

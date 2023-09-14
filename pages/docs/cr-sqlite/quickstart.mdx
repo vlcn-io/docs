@@ -21,13 +21,13 @@ A virtual table to ask the database for changesets or to apply changesets from a
 1. Get local changes after version `v`
 
 ```sql
-SELECT "table", "pk", "cid", "val", "col_version", "db_version", COALESCE("site_id", crsql_siteid()), "cl", "seq" FROM crsql_changes WHERE db_version > :v AND site_id IS NULL
+SELECT "table", "pk", "cid", "val", "col_version", "db_version", COALESCE("site_id", crsql_site_id()), "cl", "seq" FROM crsql_changes WHERE db_version > :v AND site_id IS NULL
 ```
 
 2. Get all changes excluding those synced from `some_site` after version `v`
 
 ```sql
-SELECT "table", "pk", "cid", "val", "col_version", "db_version", COALESCE("site_id", crsql_siteid()), "cl", "seq" FROM crsql_changes WHERE db_version > :v AND site_id IS NOT :some_site
+SELECT "table", "pk", "cid", "val", "col_version", "db_version", COALESCE("site_id", crsql_site_id()), "cl", "seq" FROM crsql_changes WHERE db_version > :v AND site_id IS NOT :some_site
 ```
 
 3. Merge changes in from another peer

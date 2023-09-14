@@ -7,8 +7,8 @@
   "crsql_tracked_peers": {
     "title": "crsql_tracked_peers"
   },
-  "crsql_dbversion": "crsql_dbversion",
-  "crsql_siteid": "crsql_siteid",
+  "crsql_db_version": "crsql_db_version",
+  "crsql_site_id": "crsql_site_id",
   "crsql_fract_as_ordered": "crsql_fract_as_ordered",
   "crsql_master": "crsql_master",
   "sqlite-apis": "SQLite APIs"

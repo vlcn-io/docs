@@ -1,0 +1,11 @@
+# crsql_db_version
+
+`crsql_db_version` returns the current lamport timestamp of the database. This value is incremented on every transaction made to the database and moved up to the `MAX(this_db_version, peer_db_version)` when syncing in order to allow causal ordering of changes between databases.
+
+## Usage
+
+```sql
+SELECT crsql_db_version();
+```
+
+Also: `SELECT crsql_next_db_version()` for the version to be assigned in the current transaction.
