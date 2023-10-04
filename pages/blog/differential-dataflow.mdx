@@ -1,0 +1,10 @@
+# Differential Dataflow
+
+> This builds off of "A Framework for Convergence" which is centered around an event-sourced model
+
+Event sourced CRDT problems:
+1. Materializing the views
+2. Reactivity. Just do simple queries on complex views.
+3. Storage space. Run length encode, compute over compressed data, ?
+
+Leaving SQLite behind. Goodbye SQLite. You're not made for the browser (IO Model), you're not made for modern times (reactivity, streaming, incremental, collaboration), you're not made for apps (differing durability at write time).
