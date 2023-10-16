@@ -1,10 +1,93 @@
-# Differential Dataflow
+---
+title: "Differential Dataflow For Mere Mortals"
+description: "Demistifying Differential Dataflow"
+date: October 16th, 2023
+---
 
-> This builds off of "A Framework for Convergence" which is centered around an event-sourced model
+import { Callout } from 'nextra/components'
 
-Event sourced CRDT problems:
-1. Materializing the views
-2. Reactivity. Just do simple queries on complex views.
-3. Storage space. Run length encode, compute over compressed data, ?
+# Differential Dataflow For Mere Mortals
 
-Leaving SQLite behind. Goodbye SQLite. You're not made for the browser (IO Model), you're not made for modern times (reactivity, streaming, incremental, collaboration), you're not made for apps (differing durability at write time).
+## Differental Dataflow
+
+Differential Dataflow is a technique for incrementally maintaining views and query results.
+
+Consider a music application. A music app may normalize its data and store it across a number of tables.
+
+- Track table
+- Playlist table
+- Artist table
+- Album table
+- Playlist_Track junction table
+- Track_Artist junction table
+
+When viewing a playlist we'll need to join all of these tables together to get the whole picture.
+
+```sql
+SELECT
+  playlist.track_num,
+  track.name,
+  track.duration,
+  group_array(artist.name),
+  album.name,
+  album.art_handle
+FROM playlist
+  JOIN playlist_track ON playlist_track.playlist_id = playlist.id,
+  JOIN track ON track = playlist_track.track_id
+  JOIN album ON album = track.album_id
+  JOIN track_artist ON track_artist.track_id = track.id
+  JOIN artist ON artist.id = track_artist.artist_id
+WHERE playlist.id = 1
+```
+
+That's a very expensive operation for what will be a common query in a music application. Ideally we could de-normalize this data into a single table and query _that_ instead.
+
+```sql
+SELECT track_num, name, duration, artist_names, album_name, art_handle FROM playlist_denormalized WHERE id = 1;
+```
+
+There's a problem with de-normalizing, however. After de-normalizing there will be multiple copies of the same data to keep in sync.
+This problem can be made more tractable by forcing all de-normalized forms of the data to be read-only. Doing this means that the normalized form
+becomes the single source of truth for the data.
+
+The problem created by this solution, however, is that the de-normalized forms must somehow be updated whenever a write occurs to one of it's input tables.
+
+> How can we efficiently update the de-normalized form when a write happens to one of its input tables?
+
+This is the problem of incremental view maintenance and differential dataflow is one solution to this problem.
+
+## For Mere Mortals
+
+Knowing the problem and a solution to that problem, can the solution be made accessible to average developers?
+
+There is no lack of literature on differential dataflow:
+- https://timelydataflow.github.io/differential-dataflow/introduction.html
+- https://materialize.com/blog/differential-from-scratch/
+- https://arxiv.org/abs/2203.16684
+
+But it is rather inaccessible -- even though it is based on some simple ideas.
+
+Those ideas are:
+- The Z-Set
+- Linear and non-linear operations
+- Operator Graph
+- Operator Memory
+
+# The Z-Set
+
+> A `Z-Set` is the same thing as a set except that each element contains a magnitude indicating the number of times that element should be present. In addition, duplicate elements (same value and magnitude) are allowed as well as negative magnitudes.
+
+Before getting into how this is helpful for incremental view maintenance, it'll be useful to understand this definition a bit more.
+
+```ts
+
+```
+
+Some example z-sets that fit the definition follow.
+
+
+1. A set where each element is present exactly once
+
+```python
+a = [(A, 1), (B, 1), (C, 1)]
+```
