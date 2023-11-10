@@ -2,7 +2,6 @@ import Image from "next/image";
 import style from "./landing.module.css";
 import Header from "./Header";
 import { useEffect } from "react";
-import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faGithubAlt,
@@ -12,14 +11,13 @@ import {
 import { Reactive, Realtime, Relational, Replicated } from "./IsoCards";
 
 const data = {
-  heroHead: "Distributed State, Simplified",
+  heroHead: "State, Simplified",
   heroSubhead:
     "Develop distributed & collaborative applications that sync & react to changing state.",
   heroSubtext: (
     <>
-      Vulcan augments <a href="https://www.sqlite.org/">SQLite</a>, giving it
-      the power of eventual consistency and multi-writer replication. It&apos;s
-      like Git, for your data.
+      Vulcan Labs researches and develops databases and state management systems
+      to meet the needs of tomorrow&apos;s applications.
     </>
   ),
 };
@@ -42,18 +40,6 @@ export default function Index() {
             <h1>{data.heroHead}</h1>
             <h3>{data.heroSubhead}</h3>
             <p className={style.subtext}>{data.heroSubtext}</p>
-            <a
-              href="./waitlist.html"
-              className={style.actionBtn + " " + style.waitlistBtn}
-            >
-              Join The Beta
-            </a>
-            <Link
-              href="/docs"
-              className={style.actionBtn + " " + style.docsBtn}
-            >
-              Read the Docs
-            </Link>
           </div>
           <div className={style.sep}></div>
           <div className={style.heroImgContainer}>
@@ -68,17 +54,6 @@ export default function Index() {
             />
           </div>
         </div>
-      </section>
-      <section className={style.social}>
-        <a href="https://github.com/vlcn-io">
-          <FontAwesomeIcon icon={faGithubAlt} />
-        </a>
-        <a href="https://discord.gg/AtdVY6zDW3">
-          <FontAwesomeIcon icon={faDiscord} />
-        </a>
-        <a href="https://twitter.com/vlcnio">
-          <FontAwesomeIcon icon={faTwitter} />
-        </a>
       </section>
       <main className={style.main}>
         <Relational />

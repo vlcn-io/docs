@@ -65,7 +65,7 @@ There is no lack of literature on differential dataflow:
 - https://materialize.com/blog/differential-from-scratch/
 - https://arxiv.org/abs/2203.16684
 
-But it is rather inaccessible -- even though it is based on some simple ideas.
+But it is rather inaccessible, even though differential dataflow it based on some simple ideas.
 
 Those ideas are:
 - The Z-Set
@@ -73,14 +73,17 @@ Those ideas are:
 - Operator Graph
 - Operator Memory
 
-# The Z-Set
+## The Z-Set
 
 > A `Z-Set` is the same thing as a set except that each element contains a magnitude indicating the number of times that element should be present. In addition, duplicate elements (same value and magnitude) are allowed as well as negative magnitudes.
 
 Before getting into how this is helpful for incremental view maintenance, it'll be useful to understand this definition a bit more.
 
+Capturing the english definition as a type definition:
 ```ts
-
+// A ZSet is an array of tuples. The first element of the tuple
+// can be anything. The second element is an integer representing its weight.
+type ZSet = Vec<(any, int)>
 ```
 
 Some example z-sets that fit the definition follow.
@@ -91,3 +94,27 @@ Some example z-sets that fit the definition follow.
 ```python
 a = [(A, 1), (B, 1), (C, 1)]
 ```
+
+2. Another set where each element is present once. This set is equal to the first.
+
+```python
+a = [(A, 2), (A, -1), (B, 2), (B, -1), (C, 2), (C, -1)]
+```
+
+Normalizing or consolidating a z-set allows comparing z-sets and is a matter of summing the weights of identical elements and removing those with a weight of 0.
+
+In the examples, (2) becomes (1) after summing weights.
+
+### Application to Incremental View maintenance
+
+A `Z-Set` is useful for incremental view maintenance since its weights allow tracking how a set is changing over time.
+
+Given a stream of updates to a `Z-Set`, the weights tell:
+
+- If an item was added (positive weight)
+- If an item was removed (negative weight)
+- How many times the item was added or removed (sum of and magnitude of weight for that item)
+
+## The Simplest Incremental Pipeline
+
+

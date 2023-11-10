@@ -77,11 +77,15 @@
   padding-right: var(--hero-rightpad);
   display: flex;
   padding-bottom: 30px;
+  position: relative;
 }
 
 .heroCopy {
   width: var(--hero-copy-w);
-  margin-top: 5vw;
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .hero h1 {
