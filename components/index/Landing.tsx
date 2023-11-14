@@ -9,6 +9,7 @@ import {
   faTwitter,
 } from "@fortawesome/free-brands-svg-icons";
 import { Reactive, Realtime, Relational, Replicated } from "./IsoCards";
+import Background from "./Background";
 
 const data = {
   heroHead: "State, Simplified",
@@ -33,6 +34,7 @@ export default function Index() {
   }, []);
   return (
     <div className={style.root}>
+      <Background />
       <Header />
       <main>
         <p>
