@@ -10,6 +10,7 @@ import {
 } from "@fortawesome/free-brands-svg-icons";
 import { Reactive, Realtime, Relational, Replicated } from "./IsoCards";
 import Background from "./Background";
+import Link from "next/link";
 
 const data = {
   heroHead: "State, Simplified",
@@ -45,10 +46,50 @@ export default function Index() {
           state.
         </p>
         <p>
-          Vulcan Labs researches and develops state management primitives for
-          the coming generations of software.
+          Vulcan Labs researches and develops state management solutions for the
+          coming generations of software.
         </p>
+        <div className={style.social}></div>
       </main>
+      <div className={style.projects}>
+        <h2>Production Software</h2>
+        <CRSQLite />
+        <h2>Incubating</h2>
+        <Materialite />
+        <h2>Researching</h2>
+      </div>
     </div>
   );
+}
+
+function CRSQLite() {
+  return (
+    <div className={style.isoCard}>
+      <Image
+        width={150}
+        height={200}
+        alt="A cube where each side is a feature of vlcn, held by a hand with a lightning bolt on its palm"
+        src="/isometrics/hand-cube.png"
+      />
+      <div className={style.isoDesc}>
+        <h3>CR-SQLite</h3>
+        <p>
+          An extension to SQLite that allows different SQLite databases to be
+          merged together. This unlocks the ability for applications that can be
+          used offline and merge their data back with the server, or peers, when
+          internet connectivity is available.{" "}
+          <Link href="/docs/cr-sqlite/intro">Read More</Link>
+        </p>
+        <div className={style.isoSponsors}>
+          sponsors: <a href="fly.io">fly.io</a>, <a href="expo.dev">expo.dev</a>
+          , <a href="electric-sql.com">electric-sql.com</a>,{" "}
+          <a href="turso.tech">turso.tech</a>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Materialite() {
+  return <div className={style.isoCard}></div>;
 }

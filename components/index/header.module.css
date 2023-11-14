@@ -1,12 +1,24 @@
-.header > h1 {
+.header > div > h1 {
   font-size: 4em;
   line-height: 1;
 }
 
-.header > p {
+.header > div > p {
   font-size: 1.5em;
   line-height: 1;
   left: 1.5em;
   position: relative;
-  color: #ccc;
+  color: #888;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+}
+
+.nav {
+}
+
+.logo {
+  flex-grow: 1;
 }
