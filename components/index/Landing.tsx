@@ -42,8 +42,7 @@ export default function Index() {
           Most of our time as developers is dealing with state. Ensuring it
           remains valid, syncing it to different devices, protecting it from
           unauthorized access, transforming it into new forms for new use cases,
-          indexing it for faster access, and responding to changes in that
-          state.
+          indexing it for faster access, and reacting to changes in state.
         </p>
         <p>
           Vulcan Labs researches and develops state management solutions for the
@@ -81,9 +80,10 @@ function CRSQLite() {
           <Link href="/docs/cr-sqlite/intro">Read More</Link>
         </p>
         <div className={style.isoSponsors}>
-          sponsors: <a href="fly.io">fly.io</a>, <a href="expo.dev">expo.dev</a>
-          , <a href="electric-sql.com">electric-sql.com</a>,{" "}
-          <a href="turso.tech">turso.tech</a>
+          sponsors: <a href="https://fly.io">fly.io</a>,{" "}
+          <a href="https://expo.dev">expo.dev</a>,{" "}
+          <a href="https://electric-sql.com">electric-sql.com</a>,{" "}
+          <a href="https://turso.tech">turso.tech</a>
         </div>
       </div>
     </div>
@@ -91,5 +91,30 @@ function CRSQLite() {
 }
 
 function Materialite() {
-  return <div className={style.isoCard}></div>;
+  return (
+    <div className={style.isoCard}>
+      <Image
+        alt="metal lightning bolt"
+        width={150}
+        height={200}
+        src="/isometrics/realtime.png"
+      />
+      <div className={style.isoDesc}>
+        <h3>Materialite</h3>
+        <p>
+          Incremental computation for JavaScript. When data changes, only run
+          your computation against the items that changed rather than the entire
+          collection.{" "}
+          <a href="https://github.com/vlcn-io/materialite/tree/main">
+            Read More
+          </a>
+        </p>
+        <div className={style.isoSponsors}>
+          sponsors: <a href="https://rocicorp.dev/">Rocicorp</a>
+        </div>
+      </div>
+    </div>
+  );
 }
+
+function TypedSQL() {}
