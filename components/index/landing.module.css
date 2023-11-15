@@ -72,3 +72,17 @@
   border-radius: 0.5em;
   background: hsl(var(--nextra-primary-hue) 100% 39%/0.05);
 }
+
+.social {
+  /* background: black; */
+  /* padding-left: var(--hero-leftpad); */
+  /* font-size: var(--social-fs); */
+  /* padding-bottom: 2vw; */
+  margin-top: 12px;
+  font-size: 2rem;
+  float: right;
+}
+
+.social > a {
+  margin-right: 24px;
+}

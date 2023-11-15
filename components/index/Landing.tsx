@@ -49,7 +49,17 @@ export default function Index() {
           Vulcan Labs researches and develops state management solutions for the
           coming decades of software.
         </p>
-        <div className={style.social}></div>
+        <div className={style.social}>
+          <a href="https://github.com/vlcn-io">
+            <FontAwesomeIcon icon={faGithubAlt} />
+          </a>
+          <a href="https://discord.gg/AtdVY6zDW3">
+            <FontAwesomeIcon icon={faDiscord} />
+          </a>
+          <a href="https://twitter.com/vlcnio">
+            <FontAwesomeIcon icon={faTwitter} />
+          </a>
+        </div>
       </main>
       <div className={style.projects}>
         <h2>Production Software</h2>
