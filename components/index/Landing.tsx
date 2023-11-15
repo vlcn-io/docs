@@ -115,11 +115,11 @@ function CRSQLite() {
       <div className={style.isoDesc}>
         <h3>CR-SQLite</h3>
         <p>
-          An extension to SQLite that allows different SQLite databases to be
-          merged together. This allows SQLite backed applications to take writes
-          while offline and then merge those writes with the server, or peers,
-          when internet connectivity is available. Kind of like Git, for your
-          application databases.{" "}
+          An extension to SQLite that allows databases to be merged together.
+          This enables SQLite backed applications to take writes while offline
+          and then merge those writes with the server, or peers, whenever
+          internet connectivity is available. Like Git but for your application
+          databases.{" "}
           <Link href="/docs/cr-sqlite/intro" className={style.more}>
             Read More...
           </Link>
@@ -231,8 +231,8 @@ function TypedSQL() {
       <div className={style.isoDesc}>
         <h3>Typed-SQL</h3>
         <p>
-          Updating TypeScript to understand SQL so it seamlessly integrates with
-          your applicaiton.{" "}
+          Updating TypeScript to understand SQL so SQL seamlessly integrates
+          with your applicaiton.{" "}
           <a href="https://github.com/vlcn-io/typed-sql" className={style.more}>
             Read More...
           </a>
