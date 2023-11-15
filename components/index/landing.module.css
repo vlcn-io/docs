@@ -4,6 +4,8 @@
 .body {
   margin: 0;
   padding: 0;
+  margin-left: 10px;
+  margin-right: 10px;
   font-family: "Raleway", sans-serif;
   /* color: #fffeee; */
   /* background: #111; */
@@ -18,7 +20,7 @@
 }
 
 .root {
-  width: 860px;
+  max-width: 860px;
   margin-left: auto;
   margin-right: auto;
   margin-top: 20px;
