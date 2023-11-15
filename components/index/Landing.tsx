@@ -102,6 +102,7 @@ function CRSQLite() {
     <div className={style.isoCard}>
       <Link
         href="/docs/cr-sqlite/intro"
+        className={style.isoImg}
         style={{ width: "100%", maxWidth: 180, minWidth: 180 }}
       >
         <Image
@@ -142,6 +143,7 @@ function VulcanWeb() {
       <Link
         href="/docs/js/first-app"
         style={{ width: "100%", maxWidth: 180, minWidth: 180 }}
+        className={style.isoImg}
       >
         <Image
           style={{ marginRight: 15, marginLeft: 15 }}
@@ -176,6 +178,7 @@ function Materialite() {
       <a
         href="https://github.com/vlcn-io/materialite"
         style={{ width: "100%", maxWidth: 180, minWidth: 180 }}
+        className={style.isoImg}
       >
         <Image
           alt="metal lightning bolt"
@@ -220,6 +223,7 @@ function TypedSQL() {
       <a
         href="https://github.com/vlcn-io/typed-sql"
         style={{ width: "100%", maxWidth: 180, minWidth: 180 }}
+        className={style.isoImg}
       >
         <Image
           alt="folder and file"
@@ -259,6 +263,7 @@ function TreeSQL() {
       <a
         href="https://github.com/tantaman/TreeSQL"
         style={{ width: "100%", maxWidth: 180, minWidth: 180 }}
+        className={style.isoImg}
       >
         <Image alt="scientist" width={150} height={345} src="/scientist.png" />
       </a>
@@ -286,6 +291,7 @@ function CRDTSubstrate() {
       <a
         href="/blog/crdt-substrate"
         style={{ width: "100%", maxWidth: 180, minWidth: 180 }}
+        className={style.isoImg}
       >
         <Image alt="scientist" width={150} height={345} src="/scientist.png" />
       </a>

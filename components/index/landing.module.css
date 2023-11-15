@@ -128,3 +128,14 @@
 .projects ul {
   margin-top: 40px;
 }
+
+@media screen and (max-width: 680px) {
+  .isoCard {
+    flex-direction: column;
+  }
+
+  .isoImg {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}

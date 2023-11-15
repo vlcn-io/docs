@@ -17,9 +17,16 @@
   align-items: center;
 }
 
-.nav {
-}
-
 .logo {
   flex-grow: 1;
+}
+
+@media screen and (max-width: 680px) {
+  .header {
+    flex-direction: column;
+  }
+
+  .nav {
+    margin-top: 1em;
+  }
 }
