@@ -64,6 +64,7 @@ export default function Index() {
         <TypedSQL />
         <h2>Researching</h2>
         <TreeSQL />
+        <VanillaFetch />
         <ul>
           <li>CRDT Substrate</li>
           <li>Rebasing SQLite</li>
@@ -265,7 +266,7 @@ function TreeSQL() {
         style={{ width: "100%", maxWidth: 180, minWidth: 180 }}
         className={style.isoImg}
       >
-        <Image alt="scientist" width={150} height={345} src="/scientist.png" />
+        <Image alt="tree" width={150} height={345} src="/scientist.png" />
       </a>
       <div className={style.isoDesc}>
         <h3>TreeQL</h3>
@@ -280,6 +281,31 @@ function TreeSQL() {
           </a>
         </p>
         <TreeSQLCode />
+      </div>
+    </div>
+  );
+}
+
+function VanillaFetch() {
+  return (
+    <div className={style.isoCard}>
+      <a
+        href="https://github.com/tantaman/vanilla-fetch/"
+        style={{ width: "100%", maxWidth: 180, minWidth: 180 }}
+        className={style.isoImg}
+      ></a>
+      <div className={style.isoDesc}>
+        <h3>VanillaFetch</h3>
+        <p>
+          How can we use standard language primitives to fetch data for our
+          components? And avoid loading waterfalls?{" "}
+          <a
+            href="https://github.com/tantaman/vanilla-fetch/"
+            className={style.more}
+          >
+            Read More...
+          </a>
+        </p>
       </div>
     </div>
   );
