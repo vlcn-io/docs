@@ -266,7 +266,7 @@ function TreeSQL() {
         style={{ width: "100%", maxWidth: 180, minWidth: 180 }}
         className={style.isoImg}
       >
-        <Image alt="tree" width={150} height={345} src="/scientist.png" />
+        <Image alt="tree" width={150} height={345} src="/isometrics/tree.png" />
       </a>
       <div className={style.isoDesc}>
         <h3>TreeQL</h3>
@@ -293,7 +293,14 @@ function VanillaFetch() {
         href="https://github.com/tantaman/vanilla-fetch/"
         style={{ width: "100%", maxWidth: 180, minWidth: 180 }}
         className={style.isoImg}
-      ></a>
+      >
+        <Image
+          alt="tree"
+          width={150}
+          height={345}
+          src="/isometrics/vanilla-extract.png"
+        />
+      </a>
       <div className={style.isoDesc}>
         <h3>VanillaFetch</h3>
         <p>
