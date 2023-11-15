@@ -4,6 +4,8 @@ import Header from "./Header";
 import { useEffect } from "react";
 import CRSQLiteCode from "./CRSQLiteCode.mdx";
 import VulcanWebCode from "./VulcanWebCode.mdx";
+import MaterialiteCode from "./MaterialiteCode.mdx";
+import TreeSQLCode from "./TreeSQLCode.mdx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faGithubAlt,
@@ -12,18 +14,6 @@ import {
 } from "@fortawesome/free-brands-svg-icons";
 import Background from "./Background";
 import Link from "next/link";
-
-const data = {
-  heroHead: "State, Simplified",
-  heroSubhead:
-    "Develop distributed & collaborative applications that sync & react to changing state.",
-  heroSubtext: (
-    <>
-      Vulcan Labs researches and develops databases and state management systems
-      to meet the needs of tomorrow&apos;s applications.
-    </>
-  ),
-};
 
 export default function Index() {
   useEffect(() => {
@@ -69,8 +59,36 @@ export default function Index() {
         <Materialite />
         <TypedSQL />
         <h2>Researching</h2>
-        <h2>Clients & Sponsors</h2>
+        <TreeSQL />
+        <ul>
+          <li>CRDT Substrate</li>
+          <li>Rebasing SQLite</li>
+        </ul>
       </div>
+      <footer className={style.footer}>
+        <Image
+          className={style.flogo}
+          alt="Vulcan forging new weapons, in the battle against complexity, on an anvil"
+          src="/logo.png"
+          width={182}
+          height={76}
+        />
+        <hr />
+        <div className={style.fsocial}>
+          <a href="https://github.com/vlcn-io">
+            <FontAwesomeIcon icon={faGithubAlt} />
+          </a>
+          <a href="https://discord.gg/AtdVY6zDW3">
+            <FontAwesomeIcon icon={faDiscord} />
+          </a>
+          <a href="https://twitter.com/vlcnio">
+            <FontAwesomeIcon icon={faTwitter} />
+          </a>
+        </div>
+        <div className={style.copyright}>
+          Copyright © 2023 One Law LLC, All rights reserved.
+        </div>
+      </footer>
     </div>
   );
 }
@@ -183,6 +201,7 @@ function Materialite() {
             Read More...
           </a>
         </p>
+        <MaterialiteCode />
         <div className={style.isoSponsors}>
           sponsors: <a href="https://rocicorp.dev/">rocicorp.dev</a>
         </div>
@@ -230,4 +249,56 @@ function TypedSQL() {
   );
 }
 
-function TreeSQL() {}
+function TreeSQL() {
+  return (
+    <div className={style.isoCard}>
+      <a
+        href="https://github.com/tantaman/TreeSQL"
+        style={{ width: "100%", maxWidth: 180, minWidth: 180 }}
+      >
+        <Image alt="scientist" width={150} height={345} src="/scientist.png" />
+      </a>
+      <div className={style.isoDesc}>
+        <h3>TreeQL</h3>
+        <p>
+          The relational model is great -- you can always access the data you
+          need and re-form it into whatever is required. Flat tables, however,
+          are not always an ideal structure for an application to deal with its
+          data. Would SQL be more palatable if it could understand how to return
+          trees of data?{" "}
+          <a href="https://github.com/tantaman/TreeSQL" className={style.more}>
+            Read More...
+          </a>
+        </p>
+        <TreeSQLCode />
+      </div>
+    </div>
+  );
+}
+
+function CRDTSubstrate() {
+  return (
+    <div className={style.isoCard}>
+      <a
+        href="/blog/crdt-substrate"
+        style={{ width: "100%", maxWidth: 180, minWidth: 180 }}
+      >
+        <Image alt="scientist" width={150} height={345} src="/scientist.png" />
+      </a>
+      <div className={style.isoDesc}>
+        <h3>Distributed p2p event log</h3>
+        <p>
+          The relational model is great -- you can always access the data you
+          need and re-form it into whatever is required. Flat tables, however,
+          are not always an ideal structure for an application to deal with its
+          data. Would SQL be more palatable if it could understand how to return
+          trees of data?{" "}
+          <a href="/blog/crdt-substrate" className={style.more}>
+            Read More...
+          </a>
+        </p>
+        <TreeSQLCode />
+      </div>
+    </div>
+  );
+}
