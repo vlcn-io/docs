@@ -266,7 +266,7 @@ function TreeSQL() {
         style={{ width: "100%", maxWidth: 180, minWidth: 180 }}
         className={style.isoImg}
       >
-        <Image alt="tree" width={150} height={345} src="/isometrics/tree.png" />
+        <Image alt="tree" width={150} height={345} src="/scientist.png" />
       </a>
       <div className={style.isoDesc}>
         <h3>TreeQL</h3>
