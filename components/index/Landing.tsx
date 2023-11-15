@@ -3,13 +3,13 @@ import style from "./landing.module.css";
 import Header from "./Header";
 import { useEffect } from "react";
 import CRSQLiteCode from "./CRSQLiteCode.mdx";
+import VulcanWebCode from "./VulcanWebCode.mdx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faGithubAlt,
   faDiscord,
   faTwitter,
 } from "@fortawesome/free-brands-svg-icons";
-import { Reactive, Realtime, Relational, Replicated } from "./IsoCards";
 import Background from "./Background";
 import Link from "next/link";
 
@@ -47,7 +47,7 @@ export default function Index() {
         </p>
         <p>
           Vulcan Labs researches and develops state management solutions for the
-          coming generations of software.
+          coming decades of software.
         </p>
         <div className={style.social}></div>
       </main>
@@ -57,7 +57,9 @@ export default function Index() {
         <VulcanWeb />
         <h2>Incubating</h2>
         <Materialite />
+        <TypedSQL />
         <h2>Researching</h2>
+        <h2>Clients & Sponsors</h2>
       </div>
     </div>
   );
@@ -102,11 +104,6 @@ function CRSQLite() {
   );
 }
 
-const vlcnWebCodeString = `function App() {
-  ...
-  const todos = useQuery(\`SELECT * FROM todo WHERE filter = ?\`, [filter]);
-  return <div>{todos.map(todo)}</div>;
-}`;
 function VulcanWeb() {
   return (
     <div className={style.isoCard}>
@@ -125,16 +122,14 @@ function VulcanWeb() {
       <div className={style.isoDesc}>
         <h3>Vulcan Web</h3>
         <p>
-          Vulcan Labs projects combined and running in the browser to create a
-          web & mobile development stack. Vulcan Web grows over time as projects
-          move from incubation to production ready.{" "}
+          Combination of projects as they reach maturity, running in the browser
+          to create a web & mobile development stack. Vulcan Web will grow over
+          time as projects move from incubation to production ready.{" "}
           <Link href="/docs/js/first-app" className={style.more}>
             Read More...
           </Link>
         </p>
-        <pre>
-          <code>{vlcnWebCodeString}</code>
-        </pre>
+        <VulcanWebCode />
         <div className={style.isoSponsors}>
           sponsors: <a href="https://electric-sql.com">electric-sql.com</a>
         </div>
@@ -163,7 +158,10 @@ function Materialite() {
           Incremental computation for JavaScript. When data changes, only run
           computations against the items that changed rather than the entire
           collection.{" "}
-          <a href="https://observablehq.com/@tantaman/materialite">
+          <a
+            href="https://observablehq.com/@tantaman/materialite"
+            className={style.more}
+          >
             Early benchmarks
           </a>{" "}
           show that we can maintain computations over millions of items in less
@@ -183,4 +181,43 @@ function Materialite() {
   );
 }
 
-function TypedSQL() {}
+function TypedSQL() {
+  return (
+    <div className={style.isoCard}>
+      <a
+        href="https://github.com/vlcn-io/typed-sql"
+        style={{ width: "100%", maxWidth: 180, minWidth: 180 }}
+      >
+        <Image
+          alt="folder and file"
+          width={150}
+          height={150}
+          src="/isometrics/transaction.png"
+        />
+      </a>
+      <div className={style.isoDesc}>
+        <h3>Typed-SQL</h3>
+        <p>
+          Updating TypeScript to understand SQL so it seamlessly integrates with
+          your applicaiton.{" "}
+          <a href="https://github.com/vlcn-io/typed-sql" className={style.more}>
+            Read More...
+          </a>
+        </p>
+        <div style={{ height: 400, overflow: "hidden" }}>
+          <video
+            autoPlay
+            loop
+            src="https://user-images.githubusercontent.com/1009003/255424407-4459edb2-4a52-4641-819d-5805c04d943a.mov"
+            data-canonical-src="https://user-images.githubusercontent.com/1009003/255424407-4459edb2-4a52-4641-819d-5805c04d943a.mov"
+            controls
+            muted
+            style={{ maxHeight: 640, minHeight: 200, marginTop: "1em" }}
+          ></video>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function TreeSQL() {}

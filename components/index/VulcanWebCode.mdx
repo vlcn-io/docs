@@ -1,0 +1,7 @@
+```ts
+function App() {
+  ...
+  const todos = useQuery(`SELECT * FROM todo WHERE status = ?`, [filter]).data;
+  return <div>{todos.map(todo => <Todo item={todo} />)}</div>;
+}
+```
