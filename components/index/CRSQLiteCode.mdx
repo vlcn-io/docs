@@ -1,0 +1,9 @@
+```sql
+-- pull changes from one database
+SELECT * FROM crsql_changes;
+
+-- merge changes into another DB
+INSERT INTO crsql_changes VALUES (
+  :output_of_select_star_from_crsql_changes
+);
+```

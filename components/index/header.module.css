@@ -1,6 +1,7 @@
 .header > div > h1 {
   font-size: 4em;
   line-height: 1;
+  font-weight: 600;
 }
 
 .header > div > p {

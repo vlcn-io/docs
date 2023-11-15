@@ -13,6 +13,10 @@
   text-decoration: underline;
 }
 
+.more {
+  color: #51809f;
+}
+
 .root {
   width: 860px;
   margin-left: auto;
@@ -59,4 +63,12 @@
 .isoSponsors {
   margin-top: 10px;
   color: #888;
+}
+
+.isoCard pre {
+  padding-left: 0;
+  margin-top: 1em;
+  padding: 1em;
+  border-radius: 0.5em;
+  background: hsl(var(--nextra-primary-hue) 100% 39%/0.05);
 }
