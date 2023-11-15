@@ -2,9 +2,13 @@ import Image from "next/image";
 import style from "./landing.module.css";
 import Header from "./Header";
 import { useEffect } from "react";
+// @ts-ignore
 import CRSQLiteCode from "./CRSQLiteCode.mdx";
+// @ts-ignore
 import VulcanWebCode from "./VulcanWebCode.mdx";
+// @ts-ignore
 import MaterialiteCode from "./MaterialiteCode.mdx";
+// @ts-ignore
 import TreeSQLCode from "./TreeSQLCode.mdx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
