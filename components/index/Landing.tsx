@@ -158,8 +158,15 @@ function VulcanWeb() {
         <h3>Vulcan Web</h3>
         <p>
           Combination of projects as they reach maturity, running in the browser
-          to create a web & mobile development stack. Vulcan Web will grow over
-          time as projects move from incubation to production ready.{" "}
+          to create a web & mobile development stack. Vulcan Web lets you use
+          SQLite as a{" "}
+          <a
+            href="https://www.youtube.com/watch?v=T1ES9x8DKR4"
+            className={style.more}
+          >
+            collaborative application file format
+          </a>{" "}
+          for multiplayer, local & offline-first software.{" "}
           <Link href="/docs/js/first-app" className={style.more}>
             Read More...
           </Link>
