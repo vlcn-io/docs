@@ -18,10 +18,10 @@ CREATE TABLE crsql_tracked_peers(
 
 1. **site_id** - the unique id of the peer
 2. **version** - falls into two categories:
-3. For receive events: The clock value we last _received_ from that peer
-4. For send events: The clock value we last _sent_ that peer. I.e., For sends, this is _our_ db's clock not the peer's.
-5. **tag** - used to differentiate sync sets. Tag is set to `0` for whole database syncs. Inserts into `crsql_changes` where tag is set to `-1` will not create tracking events. If you're only syncing subsets of the databse then this tag represents the subset you're syncing, such as an id of a "root node" of some sub-graph. Coming soon -- see [[docs/replicated-subgraphs]]
-6. **event** - 0 for receive events, 1 for send events. Values below 1000 are reserved for `crsqlite`
+    For receive events: The clock value we last _received_ from that peer
+    For send events: The clock value we last _sent_ that peer. I.e., For sends, this is _our_ db's clock not the peer's.
+3. **tag** - used to differentiate sync sets. Tag is set to `0` for whole database syncs. Inserts into `crsql_changes` where tag is set to `-1` will not create tracking events. If you're only syncing subsets of the databse then this tag represents the subset you're syncing, such as an id of a "root node" of some sub-graph. Coming soon -- see [[docs/replicated-subgraphs]]
+4. **event** - 0 for receive events, 1 for send events. Values below 1000 are reserved for `crsqlite`
 
 ## Tag Values
 
