@@ -179,7 +179,7 @@ The API looks something like:
 
 Creating CRRs:
 
-- create table foo (id primary key, x, y);
+- create table foo (id primary key NOT NULL, x, y);
 - select crsql_as_crr(‘foo’); -- upgrade foo to a CRR
 
 Getting and applying changesets:
@@ -221,7 +221,7 @@ sqlite> .tables
 
 When upgrading a table to a crr, a bookkeeping table is created which exists in user space.
 
-sqlite> CREATE TABLE todo (id primary key, content, complete);
+sqlite> CREATE TABLE todo (id primary key NOT NULL, content, complete);
 
 sqlite> .tables
 

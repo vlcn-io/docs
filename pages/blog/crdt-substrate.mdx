@@ -202,7 +202,7 @@ A different approach to preserving intent is to reach for an existing [CRDT](htt
 
 ```sql
 CREATE TABLE post (
- id INTEGER PRIMARY KEY,
+ id INTEGER PRIMARY KEY NOT NULL,
  views COUNTER,
  content PERITEXT,
  owner_id LWW INTEGER

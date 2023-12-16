@@ -88,7 +88,7 @@ function exec(sql: string, bind?: SQLiteCompatibleType[]): Promise<void>;
 
 **Example:**
 ```ts
-await db.exec("CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT)");
+await db.exec("CREATE TABLE users (id INTEGER PRIMARY KEY NOT NULL, name TEXT)");
 ```
 
 ### DB::execO
@@ -135,8 +135,8 @@ function execMany(sql: string[]): Promise<void>;
 **Example:**
 ```ts
 await db.execMany([
-  `CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT);`,
-  `CREATE TABLE posts (id INTEGER PRIMARY KEY, user_id INTEGER, title TEXT);`,
+  `CREATE TABLE users (id INTEGER PRIMARY KEY NOT NULL, name TEXT);`,
+  `CREATE TABLE posts (id INTEGER PRIMARY KEY NOT NULL, user_id INTEGER, title TEXT);`,
 ]);
 ```
 

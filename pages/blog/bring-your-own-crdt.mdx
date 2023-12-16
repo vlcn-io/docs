@@ -55,14 +55,14 @@ To do so, we'll need some tables to represent out event log.
 
 ```sql
 CREATE TABLE event (
-  id INTEGER PRIMARY KEY,
+  id INTEGER PRIMARY KEY NOT NULL,
   mutation_name TEXT,
   args ANY
 ) STRICT;
 
 CREATE TABLE event_dag (
-  parent_id ANY, -- the event that came before this one
-  event_id INTEGER, -- the id of the event
+  parent_id ANY NOT NULL, -- the event that came before this one
+  event_id INTEGER NOT NULL, -- the id of the event
   PRIMARY KEY (parent_id, event_id)
 ) STRICT;
 
@@ -72,9 +72,9 @@ CREATE INDEX event_dag_event ON event_dag (event_id);
 And then table(s) to represent the application which, for this example, is a basic todo app.
 
 ```sql
-CREATE TABLE todo (id INTEGER PRIMARY KEY, content TEXT, completed BOOLEAN);
+CREATE TABLE todo (id INTEGER PRIMARY KEY NOT NULL, content TEXT, completed BOOLEAN);
 -- and a counter just for a bit of fun
-CREATE TABLE counter (id INTEGER PRIMARY KEY CHECK (id = 0), count INTEGER DEFAULT 0);
+CREATE TABLE counter (id INTEGER PRIMARY KEY NOT NULL CHECK (id = 0), count INTEGER DEFAULT 0);
 ```
 
 ## Declaring Mutations

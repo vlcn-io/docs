@@ -32,16 +32,16 @@ We can start by defining the base data model as normal `sqlite` tables.
 <RunnableCode
   code={`const baseSchema = [
   \`CREATE TABLE IF NOT EXISTS "deck" (
-    "id" primary key,
+    "id" primary key NOT NULL,
     "name"
   );\`,
   \`CREATE TABLE IF NOT EXISTS "slide" (
-    "id" primary key,
+    "id" primary key NOT NULL,
     "deck_id",
     "order"
   );\`,
   \`CREATE TABLE IF NOT EXISTS "component" (
-    "id" primary key,
+    "id" primary key NOT NULL,
     "slide_id",
     "type",
     "content",
@@ -52,10 +52,10 @@ We can start by defining the base data model as normal `sqlite` tables.
     "rotation"
   );\`,
   \`CREATE TABLE IF NOT EXISTS "selected_slide" (
-    "deck_id", "slide_id", primary key ("deck_id", "slide_id")
+    "deck_id" NOT NULL, "slide_id" NOT NULL, primary key ("deck_id", "slide_id")
   );\`,
   \`CREATE TABLE IF NOT EXISTS "selected_component" (
-    "slide_id", "component_id", primary key ("slide_id", "component_id")
+    "slide_id" NOT NULL, "component_id" NOT NULL, primary key ("slide_id", "component_id")
   );\`
 ];
 provide baseSchema;

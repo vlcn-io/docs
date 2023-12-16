@@ -70,8 +70,8 @@ Usage looks like:
 .load crsqlite
 .mode column
 -- create tables as normal
-create table foo (a primary key, b);
-create table baz (a primary key, b, c, d);
+create table foo (a primary key NOT NULL, b);
+create table baz (a primary key NOT NULL, b, c, d);
 
 -- update those tables to be crrs / crdts
 select crsql_as_crr('foo');

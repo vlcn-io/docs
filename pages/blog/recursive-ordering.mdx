@@ -41,7 +41,7 @@ You can create a linked list in a table through a schema like the following:
 
 ```sql
 CREATE TABLE node (
-  id primary key,
+  id primary key NOT NULL,
   parent_id,
   content,
 );

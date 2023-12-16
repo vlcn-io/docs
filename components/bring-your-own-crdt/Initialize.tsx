@@ -71,13 +71,13 @@ async function init() {
 async function createSchema(db: DB) {
   await db.tx(async (tx) => {
     await tx.exec(`CREATE TABLE event (
-      id INTEGER PRIMARY KEY,
+      id INTEGER PRIMARY KEY NOT NULL,
       mutation_name TEXT,
       args ANY
     ) STRICT;`);
     await tx.exec(`CREATE TABLE event_dag (
-      parent_id ANY, -- the event that came before this one
-      event_id INTEGER, -- the id of the event
+      parent_id ANY NOT NULL, -- the event that came before this one
+      event_id INTEGER NOT NULL, -- the id of the event
       PRIMARY KEY (parent_id, event_id)
     ) STRICT;`);
 
@@ -86,10 +86,10 @@ async function createSchema(db: DB) {
     await tx.exec("SELECT crsql_as_crr('event_dag');");
 
     await tx.exec(
-      `CREATE TABLE todo (id INTEGER PRIMARY KEY, content TEXT, completed INTEGER);`
+      `CREATE TABLE todo (id INTEGER PRIMARY KEY NOT NULL, content TEXT, completed INTEGER);`
     );
     await tx.exec(
-      `CREATE TABLE counter (id INTEGER PRIMARY KEY CHECK (id = 0), count INTEGER DEFAULT 0)`
+      `CREATE TABLE counter (id INTEGER PRIMARY KEY NOT NULL CHECK (id = 0), count INTEGER DEFAULT 0)`
     );
   });
 }

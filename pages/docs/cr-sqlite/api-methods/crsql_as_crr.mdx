@@ -20,7 +20,7 @@ SELECT crsql_as_crr('table_name');
 
 ```sql
 BEGIN;
-CREATE TABLE foo (a primary key, b);
+CREATE TABLE foo (a primary key NOT NULL, b);
 SELECT crsql_as_crr('foo');
 COMMIT;
 ```

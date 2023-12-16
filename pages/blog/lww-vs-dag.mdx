@@ -113,8 +113,8 @@ DAG Schema:
 
 ```sql
 CREATE TABLE event_dag (
-      parent_id ANY, -- the event that came before this one
-      event_id INTEGER, -- the id of the event
+      parent_id ANY NOT NULL, -- the event that came before this one
+      event_id INTEGER NOT NULL, -- the id of the event
       PRIMARY KEY (parent_id, event_id)
     ) STRICT;
 CREATE INDEX event_dag_event ON event_dag (event_id);

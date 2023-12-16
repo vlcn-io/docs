@@ -334,7 +334,7 @@ Eventually we'll get into the theory and abstract definition of a CRDT.
 If you just want CRDTs in your relational database then try `vlcn` and [`cr-sqlite`](https://github.com/vlcn-io/cr-sqlite)! We're solving all of these problems and bringing a simple, declarative and easy to use APIs to `CRDTs`!
 
 ```sql
-CREATE TABLE foo (id primary key, bar, baz);
+CREATE TABLE foo (id primary key NOT NULL, bar, baz);
 SELECT crsql_as_crr('foo'); -- (crr means conflict free replicated relation)
 ```
 

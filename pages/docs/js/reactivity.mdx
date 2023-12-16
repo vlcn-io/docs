@@ -135,7 +135,7 @@ const nanoid=(t=21)=>crypto.getRandomValues(new Uint8Array(t)).reduce(((t,e)=>t+
 provide nanoid;
 
 const db = await sqlite.open(":memory:");
-await db.exec(\`CREATE TABLE IF NOT EXISTS todo (id PRIMARY KEY, content, complete)\`);
+await db.exec(\`CREATE TABLE IF NOT EXISTS todo (id PRIMARY KEY NOT NULL, content, complete)\`);
 provide db;`} />
 
 Now set up rx-tbl.

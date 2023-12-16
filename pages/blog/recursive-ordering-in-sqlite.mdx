@@ -15,7 +15,7 @@ The schema would look like:
 
 ```sql
 CREATE TABLE node (
-  id primary key,
+  id primary key NOT NULL,
   parent_id,
   content,
 );
@@ -87,7 +87,7 @@ sqlite3InitModule = sqlite3Import.default;
 const sqlite3 = await sqlite3InitModule();
 const db = new sqlite3.oo1.DB();
 db.exec([
-  \`CREATE TABLE node (id, parent_id, content, primary key (id));\`,
+  \`CREATE TABLE node (id NOT NULL, parent_id, content, primary key (id));\`,
   \`CREATE INDEX node_parent_id ON node (parent_id);\`
 ]);
 provide db;`} />

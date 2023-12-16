@@ -8,7 +8,7 @@ Notional example (as a [custom syntax for crdts](/docs/cr-sqlite/custom-syntax))
 
 ```sql
 CREATE CLSet post (
- id INTEGER PRIMARY KEY,
+ id INTEGER PRIMARY KEY NOT NULL,
  views COUNTER,
  content PERITEXT,
  owner_id LWW INTEGER

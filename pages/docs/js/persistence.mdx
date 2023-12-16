@@ -27,7 +27,7 @@ window.onbeforeunload = () => {
   return db.close();
 };
 await db.exec(
-\`CREATE TABLE IF NOT EXISTS todo (id primary key, "text", completed)\`
+\`CREATE TABLE IF NOT EXISTS todo (id primary key NOT NULL, "text", completed)\`
 );
 provide db;`}
 />

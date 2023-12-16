@@ -86,7 +86,7 @@ async function init() {
 
 async function createSchema(db: DB) {
   await db.exec(
-    'CREATE TABLE todo (id INTEGER PRIMARY KEY, "text" TEXT, completed INTEGER);'
+    'CREATE TABLE todo (id INTEGER PRIMARY KEY NOT NULL, "text" TEXT, completed INTEGER);'
   );
   await db.exec("SELECT crsql_as_crr('todo');");
 }
@@ -94,15 +94,15 @@ async function createSchema(db: DB) {
 async function createDagSchema(db: DB) {
   await db.tx(async (tx) => {
     await tx.exec(
-      'CREATE TABLE todo (id INTEGER PRIMARY KEY, "text" TEXT, completed INTEGER);'
+      'CREATE TABLE todo (id INTEGER PRIMARY KEY NOT NULL, "text" TEXT, completed INTEGER);'
     );
     await tx.exec(
-      "CREATE TABLE event (id INTEGER PRIMARY KEY, item_id INTEGER, [type] TEXT, value ANY);"
+      "CREATE TABLE event (id INTEGER PRIMARY KEY NOT NULL, item_id INTEGER, [type] TEXT, value ANY);"
     );
     await tx.exec("CREATE INDEX event_item ON event (item_id);");
     await tx.exec(`CREATE TABLE event_dag (
-      parent_id ANY, -- the event that came before this one
-      event_id INTEGER, -- the id of the event
+      parent_id ANY NOT NULL, -- the event that came before this one
+      event_id INTEGER NOT NULL, -- the id of the event
       foo ANY,
       PRIMARY KEY (parent_id, event_id)
     ) STRICT;`);

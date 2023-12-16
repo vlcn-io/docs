@@ -138,7 +138,7 @@ const sqlite = await initWasm.default(
 );
 
 const db = await sqlite.open("react_example.db");
-await db.exec(\`CREATE TABLE IF NOT EXISTS todo (id PRIMARY KEY, content, complete)\`);
+await db.exec(\`CREATE TABLE IF NOT EXISTS todo (id PRIMARY KEY NOT NULL, content, complete)\`);
 provide db;`} />
 
 Now we'll write the react component for our todo list.

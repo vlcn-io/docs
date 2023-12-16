@@ -12,7 +12,7 @@ Luckily, we're partnering with the folks over at the [libsql](https://libsql.org
 
 ```sql
 CREATE TABLE post (
- id INTEGER PRIMARY KEY,
+ id INTEGER PRIMARY KEY NOT NULL,
  views COUNTER,
  content PERITEXT,
  owner_id LWW INTEGER
@@ -72,7 +72,7 @@ Example:
 
 ```sql
 CREATE TABLE foo (
-  id PRIMARY KEY,
+  id PRIMARY KEY NOT NULL,
   views COUNTER,
   content PERITEXT,
   owner_id LWW INTEGER
