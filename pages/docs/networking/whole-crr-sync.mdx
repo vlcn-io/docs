@@ -214,7 +214,7 @@ And finally apply all changes from the first database to the second.
   code={`use db2;
 use deckid;
 // example of selecting changes after a db_version and only made locally
-const changes = await db1.execA(\`SELECT * FROM crsql_changes WHERE db_version > 0 AND site_id IS NULL\`);
+const changes = await db1.execA(\`SELECT * FROM crsql_changes WHERE db_version > 0 AND site_id = crsql_site_id()\`);
 const db2_synced = await db2.tx(async (tx) => {
   for (const change of changes) {
     await tx.exec(
@@ -257,7 +257,7 @@ example --
 
 <RunnableCode
   code={`use deckid;
-return await db1.execA(\`SELECT * FROM crsql_changes WHERE db_version > ? AND site_id IS NULL\`, [4]);`}
+return await db1.execA(\`SELECT * FROM crsql_changes WHERE db_version > ? AND site_id = crsql_site_id()\`, [4]);`}
 />
 
 You can experiment with the `db_version` to see how it affects the changes that are returned.

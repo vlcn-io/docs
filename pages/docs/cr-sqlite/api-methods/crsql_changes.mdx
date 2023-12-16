@@ -32,7 +32,7 @@ CREATE TABLE crsql_changes(
 8. **cl** - "causal length" or whether or not the row is deleted
 9. **seq** - the order within the given db_version the mutation was made. Useful for splitting up very large transactions into many packets.
 
-Local writes will always have a `NULL` site_id. This allows you to pull only local changes if desired. Note that in ANSI SQL, NULL has strange semantics. You must use `IS NULL` instead of `= NULL` and `IS NOT NULL` instead of `!= NULL` to check for NULL values.
+Local writes will have a site_id equal to `crsql_site_id()`. This allows you to pull only local changes if desired. E.g., `SELECT * FROM crsql_changes WHERE db_version > ? AND site_id = crsql_site_id()`
 
 See:
 
