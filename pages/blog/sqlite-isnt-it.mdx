@@ -1,16 +1,16 @@
 ---
-description: SQLite is not it
+description: SQLite isn't it
 date: December 18, 2023
 draft: true
 ---
 
 Related: [[reflections]]
 
-> Preface: I've been building with nothing but SQLite for 2 solid years. Apps from [strut.io](http://strut.io), to Linear.app clones to music players. I've also bet most of my work on the future of SQLite when it comes to [vlcn.io](https://vlcn.io). SQLite is still the best we have in terms of embedded relational DBs but, all that said, it's a square peg trying to fit a round hole.
+> Preface: I've been building with nothing but SQLite for 2 solid years. Apps from [strut.io](http://strut.io), to Linear.app clones to music players. I've also bet most of my work on the future of SQLite when it comes to [vlcn.io](https://vlcn.io). SQLite is still the best we have in terms of embedded relational DBs but, all that said, it's a square peg trying to fit a round hole. I'm also aware that I'm posting this at a time of SQLite being hyped, loved and adored.
 
 [SQLite](https://sqlite.org/) is a bad fit for client side applications. It is designed for 1990's- early 2000's era request-response style and it completely misses the mark when it comes to addressing the needs of today's client side applications.
 
-Let's take a step back and think about how today's applications would make use of an embedded database. Applications with a large presence on the client and a high degree of interactivity.
+Let's take a step back. How do today's client side applications make use of client side data stores?
 
 > To provide clarity, I'm thinking of applications like: [Notion](https://www.notion.so/), [Figma](https://figma.com/), Google Docs, Google Maps, WhatsApp, Messenger, Spotify, etc.
 
@@ -56,7 +56,6 @@ SQLite does provide [data change notification callbacks](https://www.sqlite.org/
 4. They only tell you the `rowid`, `table`, `db`, and `operation` of the change. It is your job to figure out what queries that would impact.
 5. They don't contain the data that changed meaning you need to re-query to get the new values
 
-
 The data change notification callbacks are what Vulcan-web currently use to provide reactivity (as well as other projects like [GRDB](https://github.com/groue/GRDB.swift)). These projects show that these limitations can be worked around if you're clever (by combining sqlite's byte code extension, pre_update hook, commit_hook, authorizer callbacks and more) but you run into another wall.
 
 The solutions:
@@ -89,17 +88,76 @@ Downsides:
 
 It is a shock that the status quo has been to use this fraught approach for so long. My theory is that the cause is due to SQLite's design being influenced by client-server databases and not embracing everything that becomes possible by being embedded. More on that later.
 
-# Observation 2: Views are De-normalized
+Rather than creating a db outside the db, applications should be able to code directly against the database and let the database manage everything it is good at:
+
+- atomicity
+- consistency
+- isolation & concurrency
+- durability
+- indexing
+- querying
+
+More on this idea here: https://riffle.systems/essays/prelude/
+
+# Observation 2: UIs Present De-normalized Data
 
 Data should always be stored in a normalized form. It ensures there is only ever one copy of a thing and that inconsistent states do not occur. The relational model also ensures that the applications built on top can always access the data in a way that makes sense to them. Contrast with the network or graph models which require knowing specific paths to objects in order to load them and create a tight coupling between how data is laid out and how it is accessed.
 
 I can't defend the relational model any better than it was first defended in 1970 and reading the original rationale for the creation of relational DBs, which have dominated the market ever since, is always illuminating: https://www.seas.upenn.edu/~zives/03f/cis550/codd.pdf
 
-Once the data starts to be used, however, it must be de-normalized.
+Or, a tldr from [here](https://www.scattered-thoughts.net/writing/against-sql/):
 
-- A presentation editor like (strut.io)[https://strut.io] is going to show Slide Decks, Slide, and Components as nested objects not as relations
+> The relational model is great:
+> - A shared universal data model allows cooperation between programs written in many different languages, running on different > machines and with different lifespans.
+> - Normalization allows updating data without worrying about forgetting to update derived data.
+> - Physical data independence allows changing data-structures and query plans without having to change all of your queries.
+> - Declarative constraints clearly communicate application invariants and are automatically enforced.
+> - Unlike imperative languages, relational query languages don't have false data dependencies created by loop counters and aliasable pointers. This makes relational languages:
+>    - A good match for modern machines. Data can be rearranged for more compact layouts, even automatic compression. Operations can be reordered for high cache locality, pipeline-friendly hot loops, simd etc.
+>    - Amenable to automatic parallelization.
+>    - Amenable to incremental maintenance.
+
+
+Once the data starts to be used, however, it is almost always used in a de-normalized way.
+
+- A presentation editor like [strut.io](https://strut.io) is going to show Slide Decks, Slides, and Components as nested objects not as relations
 - A music player is going to join `artist`, `album`, `track`, `playlist` tables to create a single track list view
-- A task app like (linear)[linear.app]
+- A task app like (linear)[linear.app] will join extra data source to enrich a task or task list.
+
+Given:
+
+1. Apps have many static queries
+2. These queries fetch de-normalized data
+
+An embedded DB for client side applications should have first class support for incrementally maintained views. There should be no need to re-run the set of joins required to produce a view every time the view is requested.
+
+Taking this a step further -- an embedded DB could even preclude the developer from having to define indices. If the views and queries are known ahead of time (which they are), a build process can create the correct indices to serve the needs of the application.
+
+SQLite, unfortunately, has no support for incrementally maintained views just as it has limited support for subscriptions. One could maintain sets of triggers to manually maintain incremental views but this isn't ideal.
+
+> The counter-argument is that: SQLite, being embedded, [makes many small queries efficient](https://www.sqlite.org/np1queryprob.html) which obviates the need for joins. While this is true, it doesn't completely remove the need for them. In addition, the cost of traversing `WASM<->JS` boundaries in the web platform, makes many small queries much less attractive. Finally, being able to see the full data needs of a UI tree as a single query opens up many new avenues in terms of data syncing and collaboration.
+
+# Observation 3: Language Barrier
+
+- SQL and types
+- SQL and composition
+- SQL and moated language - https://www.scattered-thoughts.net/writing/against-sql/
+- No common prepared statement cache
+- 
+
+# Observation 4: Concurrent Writes, Write priorities
+
+# Observation 5: Collaboration
+
+# Ideal
+
+- Code to the DB.
+
+# What Now?
+
+For me? I'm still figuring it out. Maybe I can re-work SQLite enough to shore up these problems in a fork. Maybe it requires something new.
+
+---
 
 - commits
 - durability
@@ -121,6 +179,7 @@ SQLite has minimal support for this setup.
 - Index selection and creation
 - Query layer / lack of SDK
 - Collaboration
+- Write prioriteis
 
 
 What are all of the knock on effects of this?
@@ -140,3 +199,11 @@ Re-running queries is especially problematic on the web platform.
 It's design follows too much in the footsteps of client-server DBs and it doesn't leverage its unique position as an embedded database as well as it could.
 
 You can get very clever and work around all of these limitations. E.g., by watching the DB files (WAL, Journal, SHMem, main DB file) to understand when other processes write, by using a single write connection or coordinating write connections, by inspecting the byte code of read queries to understand all the tables they use, by hacking together `authorizer` and `pre_update` hooks to understand columns used and written. But at the end of the day, it is still a far cry from incremental subscriptions.
+
+# Lessons Learned
+
+Research more? lol
+
+
+Messenger: https://softwareengineeringdaily.com/2020/03/31/facebook-messenger-engineering-with-mohsen-agsen/
+Riffle: https://riffle.systems/
