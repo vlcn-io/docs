@@ -6,7 +6,7 @@ draft: true
 
 Related: [[reflections]]
 
-> Preface: I've been building with nothing but SQLite for 2 solid years. Apps from [strut.io](http://strut.io), to Linear.app clones to music players. I've also bet most of my work on the future of SQLite when it comes to [vlcn.io](https://vlcn.io). SQLite is still the best we have in terms of embedded relational DBs but, all that said, it's a square peg trying to fit a round hole. I'm also aware that I'm posting this at a time of SQLite being hyped, loved and adored.
+> Preface: I've been building with nothing but SQLite for 2 solid years. Apps from [strut.io](https://strut.io), to [linear.app](https://linear.app) clones to music players. I've also bet most of my work on the future of SQLite when it comes to [vlcn.io](https://vlcn.io). SQLite is still the best we have in terms of embedded relational DBs but, all that said, it's a square peg trying to fit a round hole.
 
 [SQLite](https://sqlite.org/) is a bad fit for client side applications. It is designed for 1990's- early 2000's era request-response style and it completely misses the mark when it comes to addressing the needs of today's client side applications.
 
@@ -86,7 +86,9 @@ Downsides:
 7. Writes may no longer go directly to the DB. Allowing someone to bypass the in-memory model to issue a write will cause the DB and in-memory model to fall out of sync. Trying to subscribe the in-memory model to the DB to fix this lands us back to square 1.
 8. Limited subscription primitives. The in-memory model can only be subscribed to on a collection of key-value basis. No subscribing to other styles of queries.
 
-It is a shock that the status quo has been to use this fraught approach for so long. My theory is that the cause is due to SQLite's design being influenced by client-server databases and not embracing everything that becomes possible by being embedded. More on that later.
+But [don't just take my word for it](https://www.scattered-thoughts.net/writing/against-sql/#the-application-layer).
+
+It is a shock that the status quo has been to use this fraught approach for so long.
 
 Rather than creating a db outside the db, applications should be able to code directly against the database and let the database manage everything it is good at:
 
@@ -97,26 +99,11 @@ Rather than creating a db outside the db, applications should be able to code di
 - indexing
 - querying
 
-More on this idea here: https://riffle.systems/essays/prelude/
-
 # Observation 2: UIs Present De-normalized Data
 
 Data should always be stored in a normalized form. It ensures there is only ever one copy of a thing and that inconsistent states do not occur. The relational model also ensures that the applications built on top can always access the data in a way that makes sense to them. Contrast with the network or graph models which require knowing specific paths to objects in order to load them and create a tight coupling between how data is laid out and how it is accessed.
 
 I can't defend the relational model any better than it was first defended in 1970 and reading the original rationale for the creation of relational DBs, which have dominated the market ever since, is always illuminating: https://www.seas.upenn.edu/~zives/03f/cis550/codd.pdf
-
-Or, a tldr from [here](https://www.scattered-thoughts.net/writing/against-sql/):
-
-> The relational model is great:
-> - A shared universal data model allows cooperation between programs written in many different languages, running on different > machines and with different lifespans.
-> - Normalization allows updating data without worrying about forgetting to update derived data.
-> - Physical data independence allows changing data-structures and query plans without having to change all of your queries.
-> - Declarative constraints clearly communicate application invariants and are automatically enforced.
-> - Unlike imperative languages, relational query languages don't have false data dependencies created by loop counters and aliasable pointers. This makes relational languages:
->    - A good match for modern machines. Data can be rearranged for more compact layouts, even automatic compression. Operations can be reordered for high cache locality, pipeline-friendly hot loops, simd etc.
->    - Amenable to automatic parallelization.
->    - Amenable to incremental maintenance.
-
 
 Once the data starts to be used, however, it is almost always used in a de-normalized way.
 
@@ -137,17 +124,35 @@ SQLite, unfortunately, has no support for incrementally maintained views just as
 
 > The counter-argument is that: SQLite, being embedded, [makes many small queries efficient](https://www.sqlite.org/np1queryprob.html) which obviates the need for joins. While this is true, it doesn't completely remove the need for them. In addition, the cost of traversing `WASM<->JS` boundaries in the web platform, makes many small queries much less attractive. Finally, being able to see the full data needs of a UI tree as a single query opens up many new avenues in terms of data syncing and collaboration.
 
-# Observation 3: Language Barrier
+# Observation 3: Write Priorities
 
+Not all writes are created equal. Some writes, like those initiated by a user event, need to be responded to immediately. Other writes, such as a background import of some data, can be given a lower priority.
+
+An example of the latter case is a music app. While importing user tracks, much manual care had to be taken to schedule these writes such that they would not impact read queries that were servicing the UI.
+
+Along the same lines as write priorities, not all writes need to be immediately durable. To give the user a faster experience, it may be preferable to non-durably write their update in order to reflect back changes more quickly.
+
+The inability to selectively relax durability is a performance bottleneck when it comes to responding to writes as we're limited [by the transaction throughput of writing to disk](https://www.sqlite.org/faq.html#q19). SQLite is designed to handle bulk updates well by amortizing the cost of writing to disk over all the statements in a transaction. It is not designed to handle the many small updates you'd get in most applications. E.g., typing characters into a doc, dragging shapes in figma, scrubbing the playback state over a video or song.
+
+# Observation 4: Collaboration
+
+The world of client side applications is not what it was two decades ago when SQLite was created. In the 90's and early 2000's a client side application only had to concern itself with the computer it was running on. Fastforward a bit, everyone has many devices and expects their data to be available on all of those devices.
+
+# Problem: Language Barrier
+
+Application developers would rather query their data in a language that more closely integrates and embeds into their host language. SQL is also an opaque barrier that hides many useful features of the DB. E.g., the query planner or direct index access.
+
+I don't
+
+- Native Language
+- GraphQL?
 - SQL and types
 - SQL and composition
 - SQL and moated language - https://www.scattered-thoughts.net/writing/against-sql/
 - No common prepared statement cache
 - 
 
-# Observation 4: Concurrent Writes, Write priorities
-
-# Observation 5: Collaboration
+# Problem: The Browser Platform
 
 # Ideal
 
@@ -207,3 +212,26 @@ Research more? lol
 
 Messenger: https://softwareengineeringdaily.com/2020/03/31/facebook-messenger-engineering-with-mohsen-agsen/
 Riffle: https://riffle.systems/
+
+
+
+Or, a tldr from [here](https://www.scattered-thoughts.net/writing/against-sql/):
+
+> The relational model is great:
+> - A shared universal data model allows cooperation between programs written in many different languages, running on different > machines and with different lifespans.
+> - Normalization allows updating data without worrying about forgetting to update derived data.
+> - Physical data independence allows changing data-structures and query plans without having to change all of your queries.
+> - Declarative constraints clearly communicate application invariants and are automatically enforced.
+> - Unlike imperative languages, relational query languages don't have false data dependencies created by loop counters and aliasable pointers. This makes relational languages:
+>    - A good match for modern machines. Data can be rearranged for more compact layouts, even automatic compression. Operations can be reordered for high cache locality, pipeline-friendly hot loops, simd etc.
+>    - Amenable to automatic parallelization.
+>    - Amenable to incremental maintenance.
+
+
+
+>  But in the database world there is a missing step between demos on toy relational algebras and handling the enormity of SQL, down which most compelling research quietly plummets. Bringing anything novel to a usable level requires a substantial investment of time and money that most researchers simply don't have.
+
+More on this idea here: https://riffle.systems/essays/prelude/
+
+https://github.com/EvgSkv/logica
+https://github.com/tonsky/datascript
