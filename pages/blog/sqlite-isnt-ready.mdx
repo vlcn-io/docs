@@ -6,14 +6,15 @@ draft: true
 
 Related: [[reflections]]
 
-My claim is that SQLite is a bad fit for today's client side applications. That it is designed for 2000's era "request-response" style websites and it misses the mark when it comes to addressing the needs of client side applications.
+> Preface: I've been building with nothing but SQLite for 2 solid years. Apps from [strut.io](http://strut.io), to Linear.app clones to music players. I've also bet most of my work on the future of SQLite when it comes to [vlcn.io](https://vlcn.io). SQLite is still the best we have in terms of embedded relational DBs but, all that said, it's a square peg trying to fit a round hole.
 
-Let's take a step back and think about how today's applications could make use of an embedded database.
+[SQLite](https://sqlite.org/) is a bad fit for client side applications. It is designed for 1990's- early 2000's era request-response style and it completely misses the mark when it comes to addressing the needs of today's client side applications.
 
-> To provide clarity, I'm thinking of applications like: Notion, Figma, Google Docs, Google Maps, WhatsApp, Messenger, Spotify, etc.
-These are applications with a large presence on the client and a high degree of interactivity.
+Let's take a step back and think about how today's applications would make use of an embedded database. Applications with a large presence on the client and a high degree of interactivity.
 
-# Static Queries, Dynamic Data
+> To provide clarity, I'm thinking of applications like: [Notion](https://www.notion.so/), [Figma](https://figma.com/), Google Docs, Google Maps, WhatsApp, Messenger, Spotify, etc.
+
+# Observation 1: Static Queries, Dynamic Data
 
 > Most databases were built when data was static and queries were dynamic. For applications, most queries are static and the data is dynamic
 
@@ -31,22 +32,21 @@ but SQLite only provides a request-response model for queries.
 
 Since SQLite only support request-response, using it to implement a view that updates whenever the underlying data changes requires one or more of:
 
-- Polling SQLite
-- Relying on the shaky `update_hook` mechanism provided by SQLite
-- Creating a separate data model (e.g., a View Model or a Domain Model) on top of SQLite that handles reactivity 
-  - data flow problems
-  - consistency problems
-  - persist fail problems
+1. Polling SQLite
+2. Relying on the shaky [data change notification callbacks](https://www.sqlite.org/c3ref/update_hook.html) provided by SQLite
+3. Creating a separate data model (e.g., a View Model or a Domain Model) on top of SQLite that handles reactivity 
 
 ## Polling
 
 Polling isn't ideal since:
 
-1. It introduces latency into the system. Responding to a write is only as quick as the poll interval.
+1. It introduces latency into the system. Responding to a write is only as quick as the polling interval.
 2. Wastes resources. The data may not have changed between polls.
 3. Wastes resources. Re-runs a full query rather than only computing a difference.
 
-## Separate Data Model 
+This doesn't mean that polling _can't_ work. Maybe you have few enough objects returned by all your queries that you can take the hit of re-running them 30-60 times a second. Or maybe only a few things need to update in the next frame, everything else can wait seconds. While this may be the case today, it'll also need to be the case tomorrow.
+
+## Data Change Notifications
 
 SQLite does provide [data change notification callbacks](https://www.sqlite.org/c3ref/update_hook.html) but they're severely limited.
 
@@ -56,8 +56,58 @@ SQLite does provide [data change notification callbacks](https://www.sqlite.org/
 4. They only tell you the `rowid`, `table`, `db`, and `operation` of the change. It is your job to figure out what queries that would impact.
 5. They don't contain the data that changed meaning you need to re-query to get the new values
 
-The data change notification callbacks are what Vulcan-web currently use to provide reactivity (as well as other projects like [GRDB](https://github.com/groue/GRDB.swift)). So these limitations can be worked around if you're clever but you run into another wall.
 
+The data change notification callbacks are what Vulcan-web currently use to provide reactivity (as well as other projects like [GRDB](https://github.com/groue/GRDB.swift)). These projects show that these limitations can be worked around if you're clever (by combining sqlite's byte code extension, pre_update hook, commit_hook, authorizer callbacks and more) but you run into another wall.
+
+The solutions:
+
+1. Are not incremental. They require re-running the entire query if the data it used changed.
+2. Over-invalidate. Other than point queries (`SELECT FROM foo WHERE id = ?`), you'll need to invalidate and re-run all queries that used any table that was written.
+
+## Separate Data Model 
+
+A final option is building out a separate data model on top of the database. Something where you read and write to objects that exist in-memory and later persist them to the database. This is today's status quo. Think things like CoreData, MobX + Persistence, Room Persistence Library.
+
+Benefits:
+
+1. Read are as fast as working with memory (after initial hydration)
+2. Writes are as fast as working with memory (when persistence is done lazily)
+3. The libraries include fine grained subscriptions to objects, object properties and collections of objects.
+
+These benefits come with huge downsides as in-memory model is effectively building a database outside of the database.
+
+Downsides:
+
+1. Increased complexity. Must deal with the DB idiosynchracies as well as the ORM / in-memory model's. The in-memory model adds a whole new layer that requires mapping results to/from.
+2. Transactions I. Many of these solutions do not provide an ability to update the in-memory model transactionally, leading to observation of stale state.
+3. Transactions II. If many writes are made to the in-memory model then the lazy persist fails, what can be done? Can the in-memory model be rolled back?
+4. Invariants. The DB will have foreign key constraints, check constraints, and unique indices. For the in-memory model to always succeed in persisting to the DB, these constraints must be replicated and checked there too.
+5. Concurrency. the database will have a defined concurrent model to deal with concurrent updates. Now that needs to be replicated in the in-memory model or concurrency must be forbidden.
+6. Other processes. The in-model can not observe writes made by other processes and coordinating processes must be eliminated else risk model & db divergence.
+7. Writes may no longer go directly to the DB. Allowing someone to bypass the in-memory model to issue a write will cause the DB and in-memory model to fall out of sync. Trying to subscribe the in-memory model to the DB to fix this lands us back to square 1.
+8. Limited subscription primitives. The in-memory model can only be subscribed to on a collection of key-value basis. No subscribing to other styles of queries.
+
+It is a shock that the status quo has been to use this fraught approach for so long. My theory is that the cause is due to SQLite's design being influenced by client-server databases and not embracing everything that becomes possible by being embedded. More on that later.
+
+# Observation 2: Views are De-normalized
+
+Data should always be stored in a normalized form. It ensures there is only ever one copy of a thing and that inconsistent states do not occur. The relational model also ensures that the applications built on top can always access the data in a way that makes sense to them. Contrast with the network or graph models which require knowing specific paths to objects in order to load them and create a tight coupling between how data is laid out and how it is accessed.
+
+I can't defend the relational model any better than it was first defended in 1970 and reading the original rationale for the creation of relational DBs, which have dominated the market ever since, is always illuminating: https://www.seas.upenn.edu/~zives/03f/cis550/codd.pdf
+
+Once the data starts to be used, however, it must be de-normalized.
+
+- A presentation editor like (strut.io)[https://strut.io] is going to show Slide Decks, Slide, and Components as nested objects not as relations
+- A music player is going to join `artist`, `album`, `track`, `playlist` tables to create a single track list view
+- A task app like (linear)[linear.app]
+
+- commits
+- durability
+- concurrency
+- invariants
+- unidirectional 
+
+---
 
 This means that to support the use case of dynamic data you need to implement some sort of polling or manually invalidate and re-run entire queries.
 
@@ -69,7 +119,8 @@ SQLite has minimal support for this setup.
 - Normalized
 - To de-Normalized
 - Index selection and creation
-- 
+- Query layer / lack of SDK
+- Collaboration
 
 
 What are all of the knock on effects of this?
@@ -82,8 +133,10 @@ What are all of the knock on effects of this?
 - Collaboration
 
 
+Re-running queries is especially problematic on the web platform.
 
 ----
 
 It's design follows too much in the footsteps of client-server DBs and it doesn't leverage its unique position as an embedded database as well as it could.
 
+You can get very clever and work around all of these limitations. E.g., by watching the DB files (WAL, Journal, SHMem, main DB file) to understand when other processes write, by using a single write connection or coordinating write connections, by inspecting the byte code of read queries to understand all the tables they use, by hacking together `authorizer` and `pre_update` hooks to understand columns used and written. But at the end of the day, it is still a far cry from incremental subscriptions.
