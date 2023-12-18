@@ -1,0 +1,89 @@
+---
+description: SQLite is not it
+date: December 18, 2023
+draft: true
+---
+
+Related: [[reflections]]
+
+My claim is that SQLite is a bad fit for today's client side applications. That it is designed for 2000's era "request-response" style websites and it misses the mark when it comes to addressing the needs of client side applications.
+
+Let's take a step back and think about how today's applications could make use of an embedded database.
+
+> To provide clarity, I'm thinking of applications like: Notion, Figma, Google Docs, Google Maps, WhatsApp, Messenger, Spotify, etc.
+These are applications with a large presence on the client and a high degree of interactivity.
+
+# Static Queries, Dynamic Data
+
+> Most databases were built when data was static and queries were dynamic. For applications, most queries are static and the data is dynamic
+
+Applications, other than BI and analytics apps, have relatively static queries but dynamic data.
+
+Take Messenger as an example. The query that shows the user their list of threads is a static one. It is the same query every time. The threads that that query is surfacing, however, are changing all the time. Same with a Google doc. The queries to show its content, comments, edits, viewers, etc. are all static. Each of those datasets, however, changes all the time.
+
+The model of static queries and dynamic data requires a subscription model
+
+```sql
+SUBSCRIBE TO SELECT thread.name, group_array(user.status) FROM thread JOIN user ON user.id IN thread.participants;
+```
+
+but SQLite only provides a request-response model for queries.
+
+Since SQLite only support request-response, using it to implement a view that updates whenever the underlying data changes requires one or more of:
+
+- Polling SQLite
+- Relying on the shaky `update_hook` mechanism provided by SQLite
+- Creating a separate data model (e.g., a View Model or a Domain Model) on top of SQLite that handles reactivity 
+  - data flow problems
+  - consistency problems
+  - persist fail problems
+
+## Polling
+
+Polling isn't ideal since:
+
+1. It introduces latency into the system. Responding to a write is only as quick as the poll interval.
+2. Wastes resources. The data may not have changed between polls.
+3. Wastes resources. Re-runs a full query rather than only computing a difference.
+
+## Separate Data Model 
+
+SQLite does provide [data change notification callbacks](https://www.sqlite.org/c3ref/update_hook.html) but they're severely limited.
+
+1. They do not work on `without rowid` tables
+2. They do not provide notifications if other connections make a write
+3. They do not provide notifications if other processes make a write
+4. They only tell you the `rowid`, `table`, `db`, and `operation` of the change. It is your job to figure out what queries that would impact.
+5. They don't contain the data that changed meaning you need to re-query to get the new values
+
+The data change notification callbacks are what Vulcan-web currently use to provide reactivity (as well as other projects like [GRDB](https://github.com/groue/GRDB.swift)). So these limitations can be worked around if you're clever but you run into another wall.
+
+
+This means that to support the use case of dynamic data you need to implement some sort of polling or manually invalidate and re-run entire queries.
+
+What you need to support this is queries to which you can subscribe. The model of 
+
+SQLite has minimal support for this setup.
+
+
+- Normalized
+- To de-Normalized
+- Index selection and creation
+- 
+
+
+What are all of the knock on effects of this?
+
+
+- Reactivity
+- Intent -> SQL -> Parse -> Plan -> Execute -> Finally deliver
+- Write priorities. Single writer.
+- Incremental View Maintenance
+- Collaboration
+
+
+
+----
+
+It's design follows too much in the footsteps of client-server DBs and it doesn't leverage its unique position as an embedded database as well as it could.
+
