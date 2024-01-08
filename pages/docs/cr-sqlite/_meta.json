@@ -2,7 +2,11 @@
   "intro": "Intro",
   "installation": "Installation",
   "quickstart": "Quickstart",
+  "js": {
+    "title": "JS & The Browser"
+  },
   "api-methods": "API Methods",
   "migrations": {},
-  "crdts": "CRDTs"
+  "crdts": "CRDTs",
+  "networking": "Networking & Syncing"
 }

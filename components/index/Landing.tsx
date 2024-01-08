@@ -142,7 +142,7 @@ function VulcanWeb() {
   return (
     <div className={style.isoCard}>
       <Link
-        href="/docs/js/first-app"
+        href="/docs/cr-sqlite/js/first-app"
         style={{ width: "100%", maxWidth: 180, minWidth: 180 }}
         className={style.isoImg}
       >
@@ -167,7 +167,7 @@ function VulcanWeb() {
             collaborative application file format
           </a>{" "}
           for multiplayer, local & offline-first software.{" "}
-          <Link href="/docs/js/first-app" className={style.more}>
+          <Link href="/docs/cr-sqlite/js/first-app" className={style.more}>
             Read More...
           </Link>
         </p>

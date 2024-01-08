@@ -2,7 +2,7 @@ import { Callout } from "nextra-theme-docs";
 
 # Background
 
-[cr-sqlite](/docs/cr-sqlite/intro) is network agnostic. You can use [crsql_changes](/docs/cr-sqlite/api-methods/crsql_changes) to pull changes from one database, ship them over any protocol you like, then use [crsql_changes](/docs/cr-sqlite/api-methods/crsql_changes) on the other end to apply the changes. In any case, a WebSocket implementation is provided for convenience [here](/docs/js/networking) and an overview of writing your own network code [here](./whole-crr-sync).
+[cr-sqlite](/docs/cr-sqlite/intro) is network agnostic. You can use [crsql_changes](/docs/cr-sqlite/api-methods/crsql_changes) to pull changes from one database, ship them over any protocol you like, then use [crsql_changes](/docs/cr-sqlite/api-methods/crsql_changes) on the other end to apply the changes. In any case, a WebSocket implementation is provided for convenience [here](/docs/cr-sqlite/js/networking) and an overview of writing your own network code [here](./whole-crr-sync).
 
 Only changes made to [CRRs](/docs/appendix/crr) are returned by [crsql_changes](/docs/cr-sqlite/api-methods/crsql_changes). This allows you to have data which should be completely local (regular tables) and data which is intended to be synced with other databases (CRRs).
 

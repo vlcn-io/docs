@@ -1,0 +1,443 @@
+
+> vlcn-nextra@0.1.0 links /Users/tantaman/vlcn/vulcan/vlcn.io
+> blc http://localhost:3000/ -ro
+
+Getting links from: http://localhost:3000/
+├───OK─── http://localhost:3000/docs
+├───OK─── http://localhost:3000/docs/getting-started
+├───OK─── http://localhost:3000/docs/cr-sqlite/intro
+├───OK─── http://localhost:3000/docs/cr-sqlite/installation
+├───OK─── http://localhost:3000/docs/cr-sqlite/quickstart
+├───OK─── http://localhost:3000/docs/cr-sqlite/js/first-app
+├───OK─── http://localhost:3000/docs/cr-sqlite/js/react
+├───OK─── http://localhost:3000/docs/cr-sqlite/js/wasm
+├───OK─── http://localhost:3000/docs/cr-sqlite/js/persistence
+├───OK─── http://localhost:3000/docs/cr-sqlite/js/networking
+├───OK─── http://localhost:3000/docs/cr-sqlite/js/reactivity
+├───OK─── http://localhost:3000/docs/cr-sqlite/js/nodejs
+├───OK─── http://localhost:3000/docs/cr-sqlite/js/example-apps
+├───OK─── http://localhost:3000/docs/cr-sqlite/api-methods/crsql_as_crr
+├───OK─── http://localhost:3000/docs/cr-sqlite/api-methods/crsql_finalize
+├───OK─── http://localhost:3000/docs/cr-sqlite/api-methods/crsql_changes
+├───OK─── http://localhost:3000/docs/cr-sqlite/api-methods/crsql_begin_alter
+├───OK─── http://localhost:3000/docs/cr-sqlite/api-methods/crsql_commit_alter
+├───OK─── http://localhost:3000/docs/cr-sqlite/api-methods/crsql_tracked_peers
+├───OK─── http://localhost:3000/docs/cr-sqlite/api-methods/crsql_db_version
+├───OK─── http://localhost:3000/docs/cr-sqlite/api-methods/crsql_site_id
+├───OK─── http://localhost:3000/docs/cr-sqlite/api-methods/crsql_fract_as_ordered
+├───OK─── http://localhost:3000/docs/cr-sqlite/api-methods/crsql_master
+├───OK─── http://localhost:3000/docs/cr-sqlite/api-methods/sqlite-apis
+├───OK─── http://localhost:3000/docs/cr-sqlite/migrations
+├───OK─── http://localhost:3000/docs/cr-sqlite/crdts/about
+├───OK─── http://localhost:3000/docs/cr-sqlite/crdts/table-crdts
+├───OK─── http://localhost:3000/docs/cr-sqlite/crdts/column-crdts
+├───OK─── http://localhost:3000/docs/cr-sqlite/crdts/sequence-crdts
+├───OK─── http://localhost:3000/docs/cr-sqlite/networking/background
+├───OK─── http://localhost:3000/docs/cr-sqlite/networking/whole-crr-sync
+├───OK─── http://localhost:3000/docs/cr-sqlite/networking/partial-crr-sync
+├───OK─── http://localhost:3000/docs/cr-sqlite/networking/implementations
+├───OK─── http://localhost:3000/docs/cr-sqlite/constraints
+├───OK─── http://localhost:3000/docs/cr-sqlite/custom-syntax
+├───OK─── http://localhost:3000/docs/appendix/crr
+├───OK─── http://localhost:3000/docs/appendix/causal-consistency
+├───OK─── http://localhost:3000/docs/appendix/languages
+├───OK─── http://localhost:3000/examples
+├───OK─── http://localhost:3000/blog
+├───OK─── http://localhost:3000/about
+├───OK─── https://github.com/vlcn-io
+├───OK─── https://discord.gg/AtdVY6zDW3
+├─BROKEN─ https://twitter.com/vlcnio (HTTP_403)
+├───OK─── http://localhost:3000/_next/image?url=%2Fisometrics%2Freplicated.png&w=384&q=75
+├───OK─── https://fly.io/
+├───OK─── https://expo.dev/
+├───OK─── https://electric-sql.com/
+├───OK─── https://turso.tech/
+├───OK─── http://localhost:3000/_next/image?url=%2Fisometrics%2Fhand-cube.png&w=384&q=75
+├───OK─── https://www.youtube.com/watch?v=T1ES9x8DKR4
+├───OK─── https://github.com/vlcn-io/materialite
+├───OK─── http://localhost:3000/_next/image?url=%2Fisometrics%2Frealtime.png&w=384&q=75
+├───OK─── https://observablehq.com/@tantaman/materialite
+├───OK─── https://rocicorp.dev/
+├───OK─── https://github.com/vlcn-io/typed-sql
+├───OK─── http://localhost:3000/_next/image?url=%2Fisometrics%2Ftransaction.png&w=384&q=75
+├───OK─── https://user-images.githubusercontent.com/1009003/255424407-4459edb2-4a52-4641-819d-5805c04d943a.mov
+├───OK─── https://github.com/tantaman/TreeSQL
+├───OK─── http://localhost:3000/_next/image?url=%2Fscientist.png&w=384&q=75
+├───OK─── https://github.com/tantaman/vanilla-fetch/
+├───OK─── http://localhost:3000/_next/image?url=%2Fisometrics%2Fvanilla-extract.png&w=384&q=75
+├───OK─── http://localhost:3000/_next/image?url=%2Flogo.png&w=384&q=75
+├─BROKEN─ https://twitter.com/vlcnio (HTTP_403)
+Finished! 88 links found. 24 excluded. 2 broken.
+
+Getting links from: http://localhost:3000/docs
+├───OK─── http://localhost:3000/logo.png
+├───OK─── https://github.com/vlcn-io/cr-sqlite
+├───OK─── https://github.com/vlcn-io/docs/issues/new?title=Feedback%20for%20%E2%80%9CBackground%E2%80%9D&labels=feedback
+├───OK─── https://github.com/vlcn-io/docs/tree/main/pages/docs/index.mdx
+├───OK─── https://en.wikipedia.org/wiki/Multi-master_replication
+├───OK─── https://en.wikipedia.org/wiki/Network_partition
+├───OK─── https://en.wikipedia.org/wiki/Conflict-free_replicated_data_type
+├───OK─── https://vlcn.io/
+Finished! 109 links found. 101 excluded. 0 broken.
+
+Getting links from: http://localhost:3000/docs/getting-started
+├───OK─── https://github.com/vlcn-io/docs/issues/new?title=Feedback%20for%20%E2%80%9CGetting%20Started%E2%80%9D&labels=feedback
+├───OK─── https://github.com/vlcn-io/docs/tree/main/pages/docs/getting-started.mdx
+├───OK─── https://stackoverflow.com/questions/17466218/what-are-the-differences-between-segment-trees-interval-trees-binary-indexed-t
+├───OK─── https://github.com/TimelyDataflow/differential-dataflow
+Finished! 118 links found. 114 excluded. 0 broken.
+
+Getting links from: http://localhost:3000/docs/cr-sqlite/intro
+├───OK─── https://github.com/vlcn-io/docs/issues/new?title=Feedback%20for%20%E2%80%9CIntro%E2%80%9D&labels=feedback
+├───OK─── https://github.com/vlcn-io/docs/tree/main/pages/docs/cr-sqlite/intro.mdx
+├───OK─── https://www.sqlite.org/loadext.html
+├───OK─── https://www.sqlite.org/index.html
+├───OK─── https://github.com/libsql/libsql
+Finished! 108 links found. 103 excluded. 0 broken.
+
+Getting links from: http://localhost:3000/docs/cr-sqlite/installation
+├───OK─── https://github.com/vlcn-io/docs/issues/new?title=Feedback%20for%20%E2%80%9CInstallation%E2%80%9D&labels=feedback
+├───OK─── https://github.com/vlcn-io/docs/tree/main/pages/docs/cr-sqlite/installation.mdx
+├───OK─── https://github.com/vlcn-io/cr-sqlite/releases
+├───OK─── https://www.sqlite.org/c3ref/load_extension.html
+Finished! 115 links found. 111 excluded. 0 broken.
+
+Getting links from: http://localhost:3000/docs/cr-sqlite/quickstart
+├───OK─── https://github.com/vlcn-io/docs/issues/new?title=Feedback%20for%20%E2%80%9CQuickstart%E2%80%9D&labels=feedback
+├───OK─── https://github.com/vlcn-io/docs/tree/main/pages/docs/cr-sqlite/quickstart.mdx
+├───OK─── https://observablehq.com/@tantaman/cr-sqlite-basic-setup
+Finished! 119 links found. 116 excluded. 0 broken.
+
+Getting links from: http://localhost:3000/docs/cr-sqlite/js/first-app
+├───OK─── https://github.com/vlcn-io/docs/issues/new?title=Feedback%20for%20%E2%80%9CYour%20First%20App%E2%80%9D&labels=feedback
+├─BROKEN─ https://github.com/vlcn-io/docs/tree/main/pages/docs/cr-sqlite/js/first-app.mdx (HTTP_404)
+├───OK─── https://vite-starter2.fly.dev/
+Finished! 101 links found. 98 excluded. 1 broken.
+
+Getting links from: http://localhost:3000/docs/cr-sqlite/js/react
+├───OK─── https://github.com/vlcn-io/docs/issues/new?title=Feedback%20for%20%E2%80%9CReact%E2%80%9D&labels=feedback
+├─BROKEN─ https://github.com/vlcn-io/docs/tree/main/pages/docs/cr-sqlite/js/react.mdx (HTTP_404)
+├───OK─── https://github.com/vlcn-io/vite-starter/blob/1c0088a7301ae98054d866d70db4bd654f16ec2d/src/main.tsx#L40-L44
+├───OK─── https://github.com/vlcn-io/vite-starter/blob/1c0088a7301ae98054d866d70db4bd654f16ec2d/src/App.tsx#L14-L29
+├───OK─── https://www.npmjs.com/package/@vlcn.io/react
+├───OK─── https://github.com/developit/htm
+Finished! 122 links found. 116 excluded. 1 broken.
+
+Getting links from: http://localhost:3000/docs/cr-sqlite/js/wasm
+├───OK─── https://github.com/vlcn-io/docs/issues/new?title=Feedback%20for%20%E2%80%9CWASM%20%26%20Browser%20APIs%E2%80%9D&labels=feedback
+├─BROKEN─ https://github.com/vlcn-io/docs/tree/main/pages/docs/cr-sqlite/js/wasm.mdx (HTTP_404)
+├───OK─── https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API
+├───OK─── https://developer.mozilla.org/en-US/docs/Glossary/Main_thread
+├───OK─── https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API
+├───OK─── https://developer.mozilla.org/en-US/docs/Web/API/SharedWorker
+├───OK─── https://www.npmjs.com/package/@vlcn.io/crsqlite-wasm
+├───OK─── https://esm.sh/@vlcn.io/crsqlite-wasm
+├───OK─── https://vitejs.dev/
+├───OK─── https://www.sqlite.org/c3ref/update_hook.html
+├───OK─── https://www.npmjs.com/package/better-sqlite3
+├───OK─── https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/FinalizationRegistry
+Finished! 151 links found. 139 excluded. 1 broken.
+
+Getting links from: http://localhost:3000/docs/cr-sqlite/js/persistence
+├───OK─── https://github.com/vlcn-io/docs/issues/new?title=Feedback%20for%20%E2%80%9CPersistence%E2%80%9D&labels=feedback
+├─BROKEN─ https://github.com/vlcn-io/docs/tree/main/pages/docs/cr-sqlite/js/persistence.mdx (HTTP_404)
+├───OK─── https://www.sqlite.org/lang_createtable.html
+Finished! 102 links found. 99 excluded. 1 broken.
+
+Getting links from: http://localhost:3000/docs/cr-sqlite/js/networking
+├───OK─── https://github.com/vlcn-io/docs/issues/new?title=Feedback%20for%20%E2%80%9CNetworking%20%F0%9F%9A%A7%E2%80%9D&labels=feedback
+├─BROKEN─ https://github.com/vlcn-io/docs/tree/main/pages/docs/cr-sqlite/js/networking.mdx (HTTP_404)
+├───OK─── https://github.com/vlcn-io/vite-starter
+├───OK─── https://github.com/vlcn-io/example-rest
+Finished! 102 links found. 98 excluded. 1 broken.
+
+Getting links from: http://localhost:3000/docs/cr-sqlite/js/reactivity
+├───OK─── https://github.com/vlcn-io/docs/issues/new?title=Feedback%20for%20%E2%80%9CReactivity%E2%80%9D&labels=feedback
+├─BROKEN─ https://github.com/vlcn-io/docs/tree/main/pages/docs/cr-sqlite/js/reactivity.mdx (HTTP_404)
+├───OK─── https://www.sqlite.org/rowidtable.html
+Finished! 121 links found. 118 excluded. 1 broken.
+
+Getting links from: http://localhost:3000/docs/cr-sqlite/js/nodejs
+├───OK─── https://github.com/vlcn-io/docs/issues/new?title=Feedback%20for%20%E2%80%9CNodeJS%E2%80%9D&labels=feedback
+├─BROKEN─ https://github.com/vlcn-io/docs/tree/main/pages/docs/cr-sqlite/js/nodejs.mdx (HTTP_404)
+├───OK─── https://github.com/WiseLibs/better-sqlite3
+├───OK─── https://www.npmjs.com/package/sqlite3
+Finished! 114 links found. 110 excluded. 1 broken.
+
+Getting links from: http://localhost:3000/docs/cr-sqlite/js/example-apps
+├───OK─── https://github.com/vlcn-io/docs/issues/new?title=Feedback%20for%20%E2%80%9CExample%20Apps%E2%80%9D&labels=feedback
+├─BROKEN─ https://github.com/vlcn-io/docs/tree/main/pages/docs/cr-sqlite/js/example-apps.mdx (HTTP_404)
+├───OK─── https://vlcn-live-examples.fly.dev/
+├───OK─── https://github.com/vlcn-io/live-examples
+├───OK─── https://strut.io/
+├───OK─── https://github.com/tantaman/strut
+Finished! 106 links found. 100 excluded. 1 broken.
+
+Getting links from: http://localhost:3000/docs/cr-sqlite/api-methods/crsql_as_crr
+├───OK─── https://github.com/vlcn-io/docs/issues/new?title=Feedback%20for%20%E2%80%9Ccrsql_as_crr%E2%80%9D&labels=feedback
+├───OK─── https://github.com/vlcn-io/docs/tree/main/pages/docs/cr-sqlite/api-methods/crsql_as_crr.mdx
+Finished! 107 links found. 105 excluded. 0 broken.
+
+Getting links from: http://localhost:3000/docs/cr-sqlite/api-methods/crsql_finalize
+├───OK─── https://github.com/vlcn-io/docs/issues/new?title=Feedback%20for%20%E2%80%9Ccrsql_finalize%E2%80%9D&labels=feedback
+├───OK─── https://github.com/vlcn-io/docs/tree/main/pages/docs/cr-sqlite/api-methods/crsql_finalize.mdx
+├───OK─── https://sqlite.org/forum/forumpost/c94f943821
+Finished! 101 links found. 98 excluded. 0 broken.
+
+Getting links from: http://localhost:3000/docs/cr-sqlite/api-methods/crsql_changes
+├───OK─── https://github.com/vlcn-io/docs/issues/new?title=Feedback%20for%20%E2%80%9Ccrsql_changes%E2%80%9D&labels=feedback
+├───OK─── https://github.com/vlcn-io/docs/tree/main/pages/docs/cr-sqlite/api-methods/crsql_changes.mdx
+├───OK─── https://sqlite.org/forum/forumpost/4507acec4a8f0dc6
+├───OK─── https://stackoverflow.com/questions/5658457/not-equal-operator-on-null
+Finished! 116 links found. 112 excluded. 0 broken.
+
+Getting links from: http://localhost:3000/docs/cr-sqlite/api-methods/crsql_begin_alter
+├───OK─── https://github.com/vlcn-io/docs/issues/new?title=Feedback%20for%20%E2%80%9Ccrsql_begin_alter%E2%80%9D&labels=feedback
+├───OK─── https://github.com/vlcn-io/docs/tree/main/pages/docs/cr-sqlite/api-methods/crsql_begin_alter.mdx
+Finished! 108 links found. 106 excluded. 0 broken.
+
+Getting links from: http://localhost:3000/docs/cr-sqlite/api-methods/crsql_commit_alter
+├───OK─── https://github.com/vlcn-io/docs/issues/new?title=Feedback%20for%20%E2%80%9Ccrsql_commit_alter%E2%80%9D&labels=feedback
+├───OK─── https://github.com/vlcn-io/docs/tree/main/pages/docs/cr-sqlite/api-methods/crsql_commit_alter.mdx
+Finished! 107 links found. 105 excluded. 0 broken.
+
+Getting links from: http://localhost:3000/docs/cr-sqlite/api-methods/crsql_tracked_peers
+├───OK─── https://github.com/vlcn-io/docs/issues/new?title=Feedback%20for%20%E2%80%9Ccrsql_tracked_peers%E2%80%9D&labels=feedback
+├───OK─── https://github.com/vlcn-io/docs/tree/main/pages/docs/cr-sqlite/api-methods/crsql_tracked_peers.mdx
+Finished! 109 links found. 107 excluded. 0 broken.
+
+Getting links from: http://localhost:3000/docs/cr-sqlite/api-methods/crsql_db_version
+├───OK─── https://github.com/vlcn-io/docs/issues/new?title=Feedback%20for%20%E2%80%9Ccrsql_db_version%E2%80%9D&labels=feedback
+├───OK─── https://github.com/vlcn-io/docs/tree/main/pages/docs/cr-sqlite/api-methods/crsql_db_version.mdx
+Finished! 103 links found. 101 excluded. 0 broken.
+
+Getting links from: http://localhost:3000/docs/cr-sqlite/api-methods/crsql_site_id
+├───OK─── https://github.com/vlcn-io/docs/issues/new?title=Feedback%20for%20%E2%80%9Ccrsql_site_id%E2%80%9D&labels=feedback
+├───OK─── https://github.com/vlcn-io/docs/tree/main/pages/docs/cr-sqlite/api-methods/crsql_site_id.mdx
+├───OK─── https://www.ietf.org/archive/id/draft-peabody-dispatch-new-uuid-format-01.html#name-uuidv7-layout-and-bit-order
+Finished! 104 links found. 101 excluded. 0 broken.
+
+Getting links from: http://localhost:3000/docs/cr-sqlite/api-methods/crsql_fract_as_ordered
+├───OK─── https://github.com/vlcn-io/docs/issues/new?title=Feedback%20for%20%E2%80%9Ccrsql_fract_as_ordered%E2%80%9D&labels=feedback
+├───OK─── https://github.com/vlcn-io/docs/tree/main/pages/docs/cr-sqlite/api-methods/crsql_fract_as_ordered.mdx
+├───OK─── https://www.youtube.com/watch?v=BghFgK6VJIE
+Finished! 101 links found. 98 excluded. 0 broken.
+
+Getting links from: http://localhost:3000/docs/cr-sqlite/api-methods/crsql_master
+├───OK─── https://github.com/vlcn-io/docs/issues/new?title=Feedback%20for%20%E2%80%9CCrsql%20Master%E2%80%9D&labels=feedback
+├───OK─── https://github.com/vlcn-io/docs/tree/main/pages/docs/cr-sqlite/api-methods/crsql_master.mdx
+Finished! 100 links found. 98 excluded. 0 broken.
+
+Getting links from: http://localhost:3000/docs/cr-sqlite/api-methods/sqlite-apis
+├───OK─── https://github.com/vlcn-io/docs/issues/new?title=Feedback%20for%20%E2%80%9CSQLite%20APIs%E2%80%9D&labels=feedback
+├───OK─── https://github.com/vlcn-io/docs/tree/main/pages/docs/cr-sqlite/api-methods/sqlite-apis.mdx
+├───OK─── https://www.sqlite.org/
+├───OK─── https://www.sqlite.org/capi3ref.html
+├───OK─── https://docs.python.org/3/library/sqlite3.html
+├───OK─── https://github.com/rusqlite/rusqlite
+├───OK─── https://pkg.go.dev/mod/github.com/mattn/go-sqlite3
+├───OK─── https://www.sqlitetutorial.net/sqlite-java/
+├───OK─── https://learn.microsoft.com/en-us/dotnet/standard/data/sqlite/?tabs=netcore-cli
+├───OK─── https://github.com/stephencelis/SQLite.swift
+Finished! 110 links found. 100 excluded. 0 broken.
+
+Getting links from: http://localhost:3000/docs/cr-sqlite/migrations
+├───OK─── https://github.com/vlcn-io/docs/issues/new?title=Feedback%20for%20%E2%80%9CMigrations%E2%80%9D&labels=feedback
+├───OK─── https://github.com/vlcn-io/docs/tree/main/pages/docs/cr-sqlite/migrations.mdx
+Finished! 111 links found. 109 excluded. 0 broken.
+
+Getting links from: http://localhost:3000/docs/cr-sqlite/crdts/about
+├───OK─── https://github.com/vlcn-io/docs/issues/new?title=Feedback%20for%20%E2%80%9CAbout%E2%80%9D&labels=feedback
+├───OK─── https://github.com/vlcn-io/docs/tree/main/pages/docs/cr-sqlite/crdts/about.mdx
+Finished! 113 links found. 111 excluded. 0 broken.
+
+Getting links from: http://localhost:3000/docs/cr-sqlite/crdts/table-crdts
+├───OK─── https://github.com/vlcn-io/docs/issues/new?title=Feedback%20for%20%E2%80%9CTable%20CRDTs%E2%80%9D&labels=feedback
+├───OK─── https://github.com/vlcn-io/docs/tree/main/pages/docs/cr-sqlite/crdts/table-crdts.mdx
+Finished! 100 links found. 98 excluded. 0 broken.
+
+Getting links from: http://localhost:3000/docs/cr-sqlite/crdts/column-crdts
+├───OK─── https://github.com/vlcn-io/docs/issues/new?title=Feedback%20for%20%E2%80%9CColumn%20CRDTs%E2%80%9D&labels=feedback
+├───OK─── https://github.com/vlcn-io/docs/tree/main/pages/docs/cr-sqlite/crdts/column-crdts.mdx
+Finished! 110 links found. 108 excluded. 0 broken.
+
+Getting links from: http://localhost:3000/docs/cr-sqlite/crdts/sequence-crdts
+├───OK─── https://github.com/vlcn-io/docs/issues/new?title=Feedback%20for%20%E2%80%9CSequence%20CRDTs%E2%80%9D&labels=feedback
+├───OK─── https://github.com/vlcn-io/docs/tree/main/pages/docs/cr-sqlite/crdts/sequence-crdts.mdx
+├───OK─── https://github.com/vlcn-io/cr-sqlite/issues/65
+Finished! 101 links found. 98 excluded. 0 broken.
+
+Getting links from: http://localhost:3000/docs/cr-sqlite/networking/background
+├─BROKEN─ https://github.com/vlcn-io/docs/tree/main/pages/docs/cr-sqlite/networking/background.mdx (HTTP_404)
+├───OK─── https://www.sqlite.org/appfileformat.html
+Finished! 119 links found. 117 excluded. 1 broken.
+
+Getting links from: http://localhost:3000/docs/cr-sqlite/networking/whole-crr-sync
+├───OK─── https://github.com/vlcn-io/docs/issues/new?title=Feedback%20for%20%E2%80%9CWhole%20CRR%20Sync%E2%80%9D&labels=feedback
+├─BROKEN─ https://github.com/vlcn-io/docs/tree/main/pages/docs/cr-sqlite/networking/whole-crr-sync.mdx (HTTP_404)
+├───OK─── https://github.com/vlcn-io/vite-starter/
+├───OK─── https://github.com/vlcn-io/js/tree/main/packages/p2p
+Finished! 138 links found. 134 excluded. 1 broken.
+
+Getting links from: http://localhost:3000/docs/cr-sqlite/networking/partial-crr-sync
+├───OK─── https://github.com/vlcn-io/docs/issues/new?title=Feedback%20for%20%E2%80%9CPartial%20CRR%20Sync%E2%80%9D&labels=feedback
+├─BROKEN─ https://github.com/vlcn-io/docs/tree/main/pages/docs/cr-sqlite/networking/partial-crr-sync.mdx (HTTP_404)
+Finished! 100 links found. 98 excluded. 1 broken.
+
+Getting links from: http://localhost:3000/docs/cr-sqlite/networking/implementations
+├───OK─── https://github.com/vlcn-io/docs/issues/new?title=Feedback%20for%20%E2%80%9CImplementations%E2%80%9D&labels=feedback
+├─BROKEN─ https://github.com/vlcn-io/docs/tree/main/pages/docs/cr-sqlite/networking/implementations.mdx (HTTP_404)
+Finished! 103 links found. 101 excluded. 1 broken.
+
+Getting links from: http://localhost:3000/docs/cr-sqlite/constraints
+├───OK─── https://github.com/vlcn-io/docs/issues/new?title=Feedback%20for%20%E2%80%9CConstraints%E2%80%9D&labels=feedback
+├───OK─── https://github.com/vlcn-io/docs/tree/main/pages/docs/cr-sqlite/constraints.mdx
+Finished! 100 links found. 98 excluded. 0 broken.
+
+Getting links from: http://localhost:3000/docs/cr-sqlite/custom-syntax
+├───OK─── https://github.com/vlcn-io/docs/issues/new?title=Feedback%20for%20%E2%80%9CCustom%20Syntax%E2%80%9D&labels=feedback
+├───OK─── https://github.com/vlcn-io/docs/tree/main/pages/docs/cr-sqlite/custom-syntax.mdx
+├───OK─── https://libsql.org/
+├───OK─── https://github.com/vlcn-io/cr-sqlite/issues/181
+├───OK─── https://dl.acm.org/doi/pdf/10.1145/3380787.3393678
+├───OK─── https://www.cs.utexas.edu/~rossbach/cs380p/papers/Counters.html
+├───OK─── https://www.inkandswitch.com/peritext/
+├───OK─── https://github.com/libsql/libsql/issues/147#issuecomment-1495970616
+Finished! 117 links found. 109 excluded. 0 broken.
+
+Getting links from: http://localhost:3000/docs/appendix/crr
+├───OK─── https://github.com/vlcn-io/docs/issues/new?title=Feedback%20for%20%E2%80%9Ccrr%E2%80%9D&labels=feedback
+├───OK─── https://github.com/vlcn-io/docs/tree/main/pages/docs/appendix/crr.mdx
+├───OK─── https://hal.inria.fr/hal-02983557/document
+Finished! 111 links found. 108 excluded. 0 broken.
+
+Getting links from: http://localhost:3000/docs/appendix/causal-consistency
+├───OK─── https://github.com/vlcn-io/docs/issues/new?title=Feedback%20for%20%E2%80%9CDeep%20Dive%E2%80%9D&labels=feedback
+├───OK─── https://github.com/vlcn-io/docs/tree/main/pages/docs/appendix/causal-consistency.mdx
+├───OK─── http://localhost:3000/blog/intro-to-crdts
+├───OK─── https://tantaman.com/2022-10-18-lamport-sufficient-for-lww.html
+├───OK─── https://tantaman.com/2022-10-18-lamport-clock.html
+Finished! 104 links found. 99 excluded. 0 broken.
+
+Getting links from: http://localhost:3000/docs/appendix/languages
+├───OK─── https://github.com/vlcn-io/docs/issues/new?title=Feedback%20for%20%E2%80%9CLanguages%E2%80%9D&labels=feedback
+├───OK─── https://github.com/vlcn-io/docs/tree/main/pages/docs/appendix/languages.mdx
+Finished! 108 links found. 106 excluded. 0 broken.
+
+Getting links from: http://localhost:3000/examples
+Finished! 64 links found. 64 excluded. 0 broken.
+
+Getting links from: http://localhost:3000/blog
+├───OK─── http://localhost:3000/blog/how-crsqlite-transactions-work-tomorrow
+├───OK─── http://localhost:3000/blog/how-crsqlite-transactions-work-today
+├───OK─── http://localhost:3000/blog/the-march-to-reactivity
+├───OK─── http://localhost:3000/blog/crdt-substrate
+├───OK─── http://localhost:3000/blog/lww-vs-dag
+├───OK─── http://localhost:3000/blog/fractional-indexing
+├───OK─── http://localhost:3000/blog/recursive-ordering
+├───OK─── http://localhost:3000/blog/recursive-ordering-in-sqlite
+├───OK─── http://localhost:3000/blog/a-million-rows-with-differential-dataflow
+├───OK─── http://localhost:3000/blog/differential-dataflow
+Finished! 91 links found. 81 excluded. 0 broken.
+
+Getting links from: http://localhost:3000/about
+├───OK─── http://localhost:3000/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fme.ca48107e.jpeg&w=828&q=75
+├───OK─── https://www.erdosmiller.com/
+├─BROKEN─ https://twitter.com/schickling (HTTP_403)
+├───OK─── https://localfirstweb.dev/
+Finished! 64 links found. 60 excluded. 1 broken.
+
+Getting links from: http://localhost:3000/blog/intro-to-crdts
+├───OK─── http://localhost:3000/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fbusiness-doc-central.83ec55f0.png&w=3840&q=75
+├───OK─── http://localhost:3000/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Frealtime-ex.f77abc0b.png&w=3840&q=75
+├───OK─── http://localhost:3000/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fbusiness-doc-p2p.3fb14fce.png&w=1920&q=75
+├───OK─── https://blog.devgenius.io/analyzing-new-unique-identifier-formats-uuidv6-uuidv7-and-uuidv8-d6cc5cd7391a
+├───OK─── http://localhost:3000/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Frecord-max.2150ffab.png&w=1920&q=75
+├───OK─── http://localhost:3000/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fproxy-push.a654c361.png&w=2048&q=75
+├───OK─── https://www.eecis.udel.edu/~ntp/ntpfaq/NTP-s-sw-clocks.htm
+├───OK─── https://engineering.fb.com/2022/07/25/production-engineering/its-time-to-leave-the-leap-second-in-the-past/
+├───OK─── https://blog.cloudflare.com/how-and-why-the-leap-second-affected-cloudflare-dns/
+├───OK─── https://www.ibm.com/support/pages/clock-moves-backwards-big-old-168817-168816-example
+├───OK─── https://braid.org/
+├───OK─── https://en.wikipedia.org/wiki/Compare-and-swap
+├───OK─── https://en.wikipedia.org/wiki/Directed_acyclic_graph
+Finished! 87 links found. 74 excluded. 0 broken.
+
+Getting links from: http://localhost:3000/blog/how-crsqlite-transactions-work-tomorrow
+├───OK─── https://en.wikipedia.org/wiki/Persistent_data_structure
+Finished! 61 links found. 60 excluded. 0 broken.
+
+Getting links from: http://localhost:3000/blog/how-crsqlite-transactions-work-today
+├───OK─── http://localhost:3000/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Ftx-sync.287137be.png&w=1920&q=75
+Finished! 65 links found. 64 excluded. 0 broken.
+
+Getting links from: http://localhost:3000/blog/the-march-to-reactivity
+├───OK─── https://tinybase.org/
+├───OK─── https://tanstack.com/query/v3/
+├───OK─── https://tantaman.com/2022-05-26-query-planning.html
+├───OK─── https://github.com/mit-pdos/noria
+├───OK─── https://materialize.com/
+├───OK─── https://readyset.io/
+├───OK─── https://github.com/wotbrew/relic
+├───OK─── https://github.com/ccorcos/tuple-database
+├───OK─── https://www.figma.com/blog/livegraph-real-time-data-fetching-at-figma/
+Finished! 73 links found. 64 excluded. 0 broken.
+
+Getting links from: http://localhost:3000/blog/crdt-substrate
+├───OK─── http://localhost:3000/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Ftold-you.7a0a742b.jpg&w=3840&q=75
+├───OK─── http://localhost:3000/blog/crdt-substrate/two-remove.webm
+├───OK─── http://localhost:3000/blog/crdt-substrate/two-remove.mp4
+├───OK─── http://localhost:3000/blog/crdt-substrate/delete-item.webm
+├───OK─── http://localhost:3000/blog/crdt-substrate/delete-item.mp4
+├───OK─── http://localhost:3000/blog/crdt-substrate/fix-two-remove.webm
+├───OK─── http://localhost:3000/blog/crdt-substrate/fix-two-remove.mp4
+├───OK─── http://localhost:3000/blog/crdt-substrate/girl-boy.webm
+├───OK─── http://localhost:3000/blog/crdt-substrate/girl-boy.mp4
+├───OK─── https://calendly.com/matt-wonlaw/30min
+├───OK─── http://localhost:3000/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fdag.dcccc9ce.png&w=1080&q=75
+├───OK─── https://mathworld.wolfram.com/ConnectedGraph.html
+├───OK─── https://en.wikipedia.org/wiki/Breadth-first_search
+├───OK─── https://github.com/vlcn-io/docs/blob/main/components/crdt-substrate/DAG.ts
+├───OK─── https://replicache.dev/
+├─BROKEN─ https://twitter.com/aboodman (HTTP_403)
+├───OK─── https://www.youtube.com/watch?v=7Bb0KRLL8FI&t=1892s
+├─BROKEN─ https://twitter.com/founderYonz (HTTP_403)
+Finished! 93 links found. 75 excluded. 2 broken.
+
+Getting links from: http://localhost:3000/blog/lww-vs-dag
+├───OK─── https://observablehq.com/d/dc2bbfad6d64fb5e
+Finished! 62 links found. 61 excluded. 0 broken.
+
+Getting links from: http://localhost:3000/blog/fractional-indexing
+├───OK─── https://observablehq.com/@dgreensp/implementing-fractional-indexing
+├───OK─── https://mattweidner.com/2022/10/21/basic-list-crdt.html#intro-string-implementation
+Finished! 72 links found. 70 excluded. 0 broken.
+
+Getting links from: http://localhost:3000/blog/recursive-ordering
+├───OK─── http://localhost:3000/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Flist.b700e9bc.png&w=1920&q=75
+├───OK─── http://localhost:3000/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Finsert-before-b.84fd0489.png&w=3840&q=75
+├───OK─── http://localhost:3000/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fmove-d-after-b.94591768.png&w=3840&q=75
+Finished! 67 links found. 64 excluded. 0 broken.
+
+Getting links from: http://localhost:3000/blog/recursive-ordering-in-sqlite
+├───OK─── https://sqlite.org/wasm/doc/trunk/index.md
+├───OK─── http://localhost:3000/blog/distributed-recursive-ordering
+├───OK─── https://www.sqlite.org/lang_with.html#outlandish_recursive_query_examples
+Finished! 68 links found. 65 excluded. 0 broken.
+
+Getting links from: http://localhost:3000/blog/a-million-rows-with-differential-dataflow
+Finished! 59 links found. 59 excluded. 0 broken.
+
+Getting links from: http://localhost:3000/blog/differential-dataflow
+├───OK─── https://timelydataflow.github.io/differential-dataflow/introduction.html
+├───OK─── https://materialize.com/blog/differential-from-scratch/
+├───OK─── https://arxiv.org/abs/2203.16684
+Finished! 67 links found. 64 excluded. 0 broken.
+
+Getting links from: http://localhost:3000/blog/distributed-recursive-ordering
+├───OK─── https://crdt.tech/
+Finished! 61 links found. 60 excluded. 0 broken.
+
+Finished! 5331 links found. 5057 excluded. 17 broken.
+Elapsed time: 1 minute, 1 second
+ ELIFECYCLE  Command failed with exit code 1.
