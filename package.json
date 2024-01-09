@@ -10,6 +10,11 @@
     "links": "blc http://localhost:3000/ -ro",
     "test": "vitest run"
   },
+  "pnpm": {
+    "overrides": {
+      "flexsearch": "0.7.31"
+    }
+  },
   "dependencies": {
     "@codemirror/commands": "^6.2.4",
     "@codemirror/lang-javascript": "^6.1.8",
@@ -33,6 +38,7 @@
     "eslint": "8.41.0",
     "eslint-config-next": "13.4.4",
     "feed": "^4.2.2",
+    "flexsearch": "^0.7.41",
     "mermaid": "^10.2.1",
     "next": "13.4.4",
     "nextra": "^2.13.2",
