@@ -38,11 +38,11 @@ But it got me thinking, can we bring the Replicache model to CRDTs? Can we give 
 
 ## Bring your own CRDT
 
-Yes we can! For lack of a better term, I'm calling it "CRDT substrate". It is a re-think on my earlier work ([LWW vs DAG](./lww-vs-dag)) to incoroprate named mutations, inspired by Replicache and [another earlier work](https://aphrodite.sh/docs/mutations-and-transactions).
+Yes we can! For lack of a better term, I'm calling it "CRDT substrate". It is a re-think on my earlier work ([LWW vs DAG](./lww-vs-dag)) to incorporate named mutations, inspired by Replicache and [another earlier work](https://aphrodite.sh/docs/mutations-and-transactions).
 
 ## Building the Event Log
 
-The basis of the model is an event log. Just like Replicache, we'll model the event log as `[mutation_name, ...args]` tuples. One thing we'll add to each event, however, is a pointer back to the event which preceeded it. This pointer will allow us to build a tree of events where forks represent concurrent edits. A traversal of this tree will create a total ordering of events and allow us to converge on a single state.
+The basis of the model is an event log. Just like Replicache, we'll model the event log as `[mutation_name, ...args]` tuples. One thing we'll add to each event, however, is a pointer back to the event which preceded it. This pointer will allow us to build a tree of events where forks represent concurrent edits. A traversal of this tree will create a total ordering of events and allow us to converge on a single state.
 
 The tree is a CRDT given:
 - The tree is inflationary with a partial ordering, forming a semi-lattice
@@ -102,7 +102,7 @@ const bareMutations = {
   async completeAllTodos(tx) {
     await tx.exec(`UPDATE todo SET completed = 1 WHERE completed = 0`);
   },
-  async uncompleteAllTodos(tx) {
+  async incompleteAllTodos(tx) {
     await tx.exec(`UPDATE todo SET completed = 0 WHERE completed = 1`);
   },
   async clearCompletedTodos(tx) {
