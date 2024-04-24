@@ -3,7 +3,7 @@
 Partial CRR sync is useful for cases where:
 
 1. You need row level security
-2. You have mutli-tenant database where data from many users exists in the same tables / crrs.
+2. You have multi-tenant database where data from many users exists in the same tables / crrs.
 3. You want to sync only a subset of the data from the backend to the frontend due to dataset size.
 
 While it is possible to implement partial sync with the primitives available to you today, **it is not advised and not supported**. In **Q3/Q4 2023** we will be releasing primitives specifically intended to support partial sync, row level security, and large scale multi-tenant databases.
