@@ -197,8 +197,8 @@ const stmt = await db.prepare("INSERT INTO users (id, name) VALUES (?, ?)");
 
 await db.tx(async (tx) => {
   // run the statement with the tx
-  await stmt.run(tx, [shortuuid(), "Alice"]);
-  await stmt.run(tx, [shortuuid(), "Bob"]);
+  await stmt.run(tx, shortuuid(), "Alice");
+  await stmt.run(tx, shortuuid(), "Bob");
 });
 
 await stmt.finalize(null);
@@ -256,8 +256,8 @@ function run(tx: TXAsync | null, ...bind?: SQLiteCompatibleType[]): Promise<void
 **Example:**
 ```ts
 const stmt = await db.prepare("INSERT INTO users (id, name) VALUES (?, ?)");
-await stmt.run(null, [shortuuid(), "Alice"]);
-await stmt.run(null, [shortuuid(), "Bob"]);
+await stmt.run(null, shortuuid(), "Alice");
+await stmt.run(null, shortuuid(), "Bob");
 ```
 
 ### Stmt::get
@@ -275,7 +275,7 @@ function get<T extends {}>(tx: TXAsync | null, ...bind?: SQLiteCompatibleType[])
 **Example:**
 ```ts
 const stmt = await db.prepare("SELECT * FROM users WHERE id = ?");
-const user = await stmt.get<{ id: bigint, name: string }>(null, [id]);
+const user = await stmt.get<{ id: bigint, name: string }>(null, id);
 ```
 
 ### Stmt::all
@@ -341,8 +341,8 @@ function finalize(tx: TXAsync | null): Promise<void>;
 **Example:**
 ```ts
 const stmt = await db.prepare("INSERT INTO users (id, name) VALUES (?, ?)");
-await stmt.run(null, [shortuuid(), "Alice"]);
-await stmt.run(null, [shortuuid(), "Bob"]);
+await stmt.run(null, shortuuid(), "Alice");
+await stmt.run(null, shortuuid(), "Bob");
 await stmt.finalize(null);
 ```
 
