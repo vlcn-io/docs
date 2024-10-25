@@ -71,7 +71,7 @@ A CRDT is a data type that can be:
 
 Going back to git, it's the same as giving every developer a copy of the repository and allowing each developer to make changes locally. At the end of the day, every developer in an organization can merge changes with every other developer however they like: pair-wise, round-robin, or through a central repository. Once all merges are complete, every developer will have the same state (assuming merge conflicts were deterministically resolved). Unlike git, a CRDT wouldn't hit merge conflicts and can merge out of order changes.
 
-Let's see how this actually works and how you can implement it in the large (full blown applications) and in the small (individiual fields in a record).
+Let's see how this actually works and how you can implement it in the large (full blown applications) and in the small (individual fields in a record).
 
 ## A Simple CRDT
 
@@ -96,7 +96,7 @@ A table structured in this way can always be written to by separate nodes and me
 
 <GSetExample />
 
-A grow only table is intereseting but you'll eventually want to do one or more of the following:
+A grow only table is interesting but you'll eventually want to do one or more of the following:
 
 1. Modify a row
 2. Run a reduce job over a set of rows to come up with a "view" of some object state
@@ -112,7 +112,7 @@ Looking into the ways it can be incorrectly implemented will help us understand 
 
 We'll take that "last write wins" is acceptable for the use case as a given. Now let's take some stabs at implementing a grow only table that supports last write replacements of rows.
 
-The first solution would be to timestamp rows with the current system time of the node that did the write. Remember we need nodes to be able to work without internet connectivitiy so we only have access to that node's local clock.
+The first solution would be to timestamp rows with the current system time of the node that did the write. Remember we need nodes to be able to work without internet connectivity so we only have access to that node's local clock.
 
 From simplest to most complex, the four common mistakes in a last write wins setup are:
 
@@ -145,7 +145,7 @@ A\<-\>B merge and say B does not update the time for it's row to match the max b
 | --- | -------- | -------------------------------------------- |
 | x   | **this** | <span style={{color: "red"}}>12:00:00</span> |
 
-Now if Node C comes along with a modificaiton to the same row, but at time 12:30, it'll overwrite the current value. This, however, isn't the last write since A's write was later. We now have an inconsistent state.
+Now if Node C comes along with a modification to the same row, but at time 12:30, it'll overwrite the current value. This, however, isn't the last write since A's write was later. We now have an inconsistent state.
 
 This is a trivial bug but covering it will help to understand logical clocks. To reiterate, the correct solution is to take the whole row including timestamp.
 
@@ -252,7 +252,7 @@ In our proxy example:
 
 1. When B receives new rows from C, it tags all those rows' `local_row_time` column with current time.
 2. When A wants changes from B, it tracks `changes_since` by recording the largest `local_row_time` it has seen from B
-3. Merging is done via `row_time` so last write semantics are still corretly respected.
+3. Merging is done via `row_time` so last write semantics are still correctly respected.
 
 You can play with the idea below. Note that each node's local time is just a simple integer counter in this case. Works just as well as (actually better than) system time for our purposes and is a gentle introduction to the next error.
 
@@ -271,7 +271,7 @@ System time moves with its own rules and breaks many assumptions we have about i
 
 ## About Time
 
-So how do we handle time? CRDTs do not require a notion of time -- it isn't part of the strict mathematical definiton. [Mike Toomim](https://braid.org) has a great quote about how CRDTs collapse time, they remove time from the equation.
+So how do we handle time? CRDTs do not require a notion of time -- it isn't part of the strict mathematical definition. [Mike Toomim](https://braid.org) has a great quote about how CRDTs collapse time, they remove time from the equation.
 
 Take a grow only set as an example. Time doesn't matter -- the state can always merge and merge at any point even without knowing about time.
 
