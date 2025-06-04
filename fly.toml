@@ -1,45 +1,55 @@
-# fly.toml app configuration file generated for vlcnio on 2023-06-01T10:16:40-04:00
+# fly.toml app configuration file generated for vlcnio on 2025-05-16T11:31:02-04:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = "vlcnio"
-primary_region = "iad"
-kill_signal = "SIGINT"
-kill_timeout = "5s"
+app = 'vlcnio'
+primary_region = 'iad'
+kill_signal = 'SIGINT'
+kill_timeout = '5s'
 
 [experimental]
   auto_rollback = true
 
-[env]
-  PORT = "8080"
-  PRIMARY_REGION = "iad"
+[build]
 
-[[mounts]]
-  source = "vlcn_sqlite_machines"
-  destination = "/mnt/vlcn_sqlite"
-  processes = ["app"]
+[env]
+  PORT = '8080'
+  PRIMARY_REGION = 'iad'
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
 
 [[services]]
-  protocol = "tcp"
+  protocol = 'tcp'
   internal_port = 8080
-  processes = ["app"]
+  processes = ['app']
 
   [[services.ports]]
     port = 80
-    handlers = ["http"]
+    handlers = ['http']
     force_https = true
 
   [[services.ports]]
     port = 443
-    handlers = ["tls", "http"]
+    handlers = ['tls', 'http']
+
   [services.concurrency]
-    type = "connections"
+    type = 'connections'
     hard_limit = 250
     soft_limit = 200
 
   [[services.tcp_checks]]
-    interval = "15s"
-    timeout = "2s"
-    grace_period = "1s"
-    restart_limit = 0
+    interval = '15s'
+    timeout = '2s'
+    grace_period = '1s'
+
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1
