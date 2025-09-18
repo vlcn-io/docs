@@ -75,7 +75,7 @@ These benefits come with huge downsides as in-memory model is effectively buildi
 
 Downsides:
 
-1. Increased complexity. Must deal with the DB idiosynchracies as well as the ORM / in-memory model's. The in-memory model adds a whole new layer that requires mapping results to/from.
+1. Increased complexity. Must deal with the DB idiosyncrasies as well as the ORM / in-memory model's. The in-memory model adds a whole new layer that requires mapping results to/from.
 2. Transactions I. Many of these solutions do not provide an ability to update the in-memory model transactionally, leading to observation of stale state.
 3. Transactions II. If many writes are made to the in-memory model then the lazy persist fails, what can be done? Can the in-memory model be rolled back?
 4. Invariants. The DB will have foreign key constraints, check constraints, and unique indices. For the in-memory model to always succeed in persisting to the DB, these constraints must be replicated and checked there too.
