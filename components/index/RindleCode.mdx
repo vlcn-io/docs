@@ -1,0 +1,12 @@
+```ts
+const hotThreads = store.query.thread
+  .orderBy("votes", "desc")
+  .limit(6)
+  .sub(
+    "comments",
+    comment,
+    { parent: ["id"], child: ["threadID"] },
+    (c) => c.orderBy("id", "desc").limit(2)
+  )
+  .materialize();
+```

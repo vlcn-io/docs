@@ -7,6 +7,8 @@ import CRSQLiteCode from "./CRSQLiteCode.mdx";
 // @ts-ignore
 import VulcanWebCode from "./VulcanWebCode.mdx";
 // @ts-ignore
+import RindleCode from "./RindleCode.mdx";
+// @ts-ignore
 import MaterialiteCode from "./MaterialiteCode.mdx";
 // @ts-ignore
 import TreeSQLCode from "./TreeSQLCode.mdx";
@@ -207,6 +209,7 @@ function Rindle() {
             Read More...
           </a>
         </p>
+        <RindleCode />
       </div>
     </div>
   );
