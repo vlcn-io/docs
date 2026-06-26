@@ -2,6 +2,7 @@
   "name": "vlcn-nextra",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@10.13.1",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -13,7 +14,16 @@
   "pnpm": {
     "overrides": {
       "flexsearch": "0.7.31"
-    }
+    },
+    "onlyBuiltDependencies": [
+      "@fortawesome/fontawesome-common-types",
+      "@fortawesome/fontawesome-svg-core",
+      "@fortawesome/free-brands-svg-icons",
+      "@fortawesome/free-solid-svg-icons",
+      "better-sqlite3",
+      "esbuild",
+      "sharp"
+    ]
   },
   "dependencies": {
     "@codemirror/commands": "^6.2.4",

@@ -1,43 +1,38 @@
 # Install dependencies only when needed
-FROM node:16-alpine AS builder
+FROM node:20-alpine AS builder
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
-RUN apk add --no-cache libc6-compat
+RUN apk add --no-cache libc6-compat python3 make g++
 WORKDIR /app
+RUN corepack enable && corepack prepare pnpm@10.13.1 --activate
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
 COPY . .
-RUN yarn install --frozen-lockfile
 
-# If using npm with a `package-lock.json` comment out above and use below instead
-# RUN npm ci
-
-ENV NEXT_TELEMETRY_DISABLED 1
+ENV NEXT_TELEMETRY_DISABLED=1
 
 # Add `ARG` instructions below if you need `NEXT_PUBLIC_` variables
 # then put the value on your fly.toml
 # Example:
 # ARG NEXT_PUBLIC_EXAMPLE="value here"
 
-RUN yarn build
-
-# If using npm comment out above and use below instead
-# RUN npm run build
+RUN pnpm build
 
 # Production image, copy all the files and run next
-FROM node:16-alpine AS runner
+FROM node:20-alpine AS runner
 WORKDIR /app
 
-ENV NODE_ENV production
-ENV NEXT_TELEMETRY_DISABLED 1
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
 
+RUN apk add --no-cache libc6-compat
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
-
-COPY --from=builder /app ./
+RUN chown nextjs:nodejs /app \
+  && mkdir -p /mnt/vlcn_sqlite \
+  && chown nextjs:nodejs /mnt/vlcn_sqlite
 
 COPY --chown=nextjs:nodejs --from=builder /app/ ./
 
 USER nextjs
 
-CMD ["yarn", "start"]
-
-# If using npm comment out above and use below instead
-# CMD ["npm", "run", "start"]
+CMD ["node", "node_modules/next/dist/bin/next", "start"]
