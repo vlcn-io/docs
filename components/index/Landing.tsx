@@ -57,6 +57,7 @@ export default function Index() {
       </main>
       <div className={style.projects}>
         <h2>Production Software</h2>
+        <Rindle />
         <CRSQLite />
         <VulcanWeb />
         <h2>Incubating</h2>
@@ -175,6 +176,37 @@ function VulcanWeb() {
         <div className={style.isoSponsors}>
           sponsors: <a href="https://electric-sql.com">electric-sql.com</a>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function Rindle() {
+  return (
+    <div className={style.isoCard}>
+      <a
+        href="https://rindle.sh"
+        style={{ width: "100%", maxWidth: 180, minWidth: 180 }}
+        className={style.isoImg}
+      >
+        <Image
+          width={180}
+          height={154}
+          alt="interconnected reactive data nodes"
+          src="/isometrics/reactive.png"
+        />
+      </a>
+      <div className={style.isoDesc}>
+        <h3>Rindle</h3>
+        <p>
+          Reactive queries and incremental view maintenance that run wherever
+          your data does: in the browser, Node, over the wire, or embedded in
+          Rust. Rindle turns tables, streams, APIs, and queues into materialized
+          views that update as writes land.{" "}
+          <a href="https://rindle.sh" className={style.more}>
+            Read More...
+          </a>
+        </p>
       </div>
     </div>
   );
