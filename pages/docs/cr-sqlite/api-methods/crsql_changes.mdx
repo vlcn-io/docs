@@ -52,7 +52,7 @@ SELECT "table", "pk", "cid", "val", "col_version", "db_version", "site_id", "cl"
   AND "site_id" IS NOT ?
 ```
 
-This query will return all changes from the databse after a provided version and not applied by a given peer.
+This query will return all changes from the database after a provided version and not applied by a given peer.
 
 - The `site_id IS NOT ?` is included as an optimization that reduces total sync roundtrips by one by preventing sites from receiving their own changes back.
 - Passing `site_id IS NULL` will only fetch changes that were made locally and not received through data sync (assuming the network layer is writing site ids which is optional).
